@@ -17,11 +17,10 @@ async function makeConnection (host, port) {
 }
 
 async function canhazdb (options) {
-  const uri = `haz://${options.host}:${options.port}`;
-
   const state = {
     nodes: [{
-      uri,
+      host: options.host,
+      port: options.port,
       info: {
         version: packageJson.version
       }
@@ -45,17 +44,16 @@ async function canhazdb (options) {
 
         state,
 
-        join: async rawUri => {
-          const uri = new URL(rawUri);
-
-          if (state.nodes.find(node => node.uri === rawUri)) {
+        join: async ({ host, port }) => {
+          if (state.nodes.find(node => node.host === host && node.port === port)) {
             return;
           }
 
-          const connection = await makeConnection(uri.hostname, uri.port);
+          const connection = await makeConnection(host, port);
 
           state.nodes.push({
-            uri: rawUri,
+            host,
+            port,
             connection,
             info: await connection.ask(INFO)
           });

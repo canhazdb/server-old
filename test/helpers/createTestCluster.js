@@ -15,7 +15,7 @@ async function createTestCluster (count) {
     return Array(count)
       .fill(null)
       .map((_, index) => {
-        return node.join('haz://localhost:' + (7060 + index));
+        return node.join({ host: 'localhost', port: 7060 + index });
       });
   }).flat());
 

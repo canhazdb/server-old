@@ -26,11 +26,11 @@ test('create two node', async t => {
   ]);
 
   await Promise.all([
-    node1.join('haz://localhost:7062'),
-    node2.join('haz://localhost:7061')
+    node1.join({ host: 'localhost', port: 7062 }),
+    node2.join({ host: 'localhost', port: 7061 })
   ]);
 
-  const request = await httpRequest('http://localhost:8061/tests');
+  const request = await httpRequest(`${node1.url}/tests`);
 
   node1.close();
   node2.close();
