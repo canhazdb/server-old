@@ -1,0 +1,36 @@
+{
+  "name": "canhazdb",
+  "version": "1.0.3",
+  "description": "A shaded and clustered database communicated over http rest.",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "assign-deep": "^1.0.1",
+    "axios": "^0.20.0",
+    "final-stream": "^2.0.0",
+    "tcpocket": "^1.0.1",
+    "uuid": "^8.3.1",
+    "write-response": "^1.2.3"
+  },
+  "devDependencies": {
+    "c8": "^7.3.3",
+    "tape": "^5.0.1",
+    "tape-catch": "^1.0.6"
+  },
+  "scripts": {
+    "test": "c8 -o /tmp node test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/markwylde/canhazdb.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/markwylde/canhazdb/issues"
+  },
+  "homepage": "https://github.com/markwylde/canhazdb#readme"
+}
