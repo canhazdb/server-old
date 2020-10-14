@@ -8,8 +8,8 @@ const createInternalServer = require('./createInternalServer');
 
 const { INFO } = require('./constants');
 
-async function makeConnection (host, port) {
-  const client = await tcpocket.createClient({ host, port });
+async function makeConnection (host, port, tls) {
+  const client = await tcpocket.createClient({ host, port, tls });
   client.on('testResp', (data, sender) => {
     console.log(data);
   });
@@ -29,9 +29,9 @@ async function canhazdb (options) {
     data: {}
   };
 
-  const internalServer = await createInternalServer(state, options.port);
+  const internalServer = await createInternalServer(state, options.port, options.tls);
 
-  state.nodes[0].connection = await makeConnection(options.host, options.port);
+  state.nodes[0].connection = await makeConnection(options.host, options.port, options.tls);
 
   const server = http.createServer(handleExternal.bind(null, state));
 
@@ -49,7 +49,7 @@ async function canhazdb (options) {
             return;
           }
 
-          const connection = await makeConnection(host, port);
+          const connection = await makeConnection(host, port, options.tls);
 
           state.nodes.push({
             host,

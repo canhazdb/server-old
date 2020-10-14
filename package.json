@@ -7,10 +7,9 @@
     "test": "test"
   },
   "dependencies": {
-    "assign-deep": "^1.0.1",
     "axios": "^0.20.0",
     "final-stream": "^2.0.0",
-    "tcpocket": "^1.0.1",
+    "tcpocket": "^1.1.1",
     "uuid": "^8.3.1",
     "write-response": "^1.2.3"
   },
@@ -20,7 +19,7 @@
     "tape-catch": "^1.0.6"
   },
   "scripts": {
-    "test": "c8 -o /tmp node test"
+    "test": "./makeCerts.sh && c8 -o /tmp node test"
   },
   "repository": {
     "type": "git",

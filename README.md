@@ -9,13 +9,34 @@
 A sharded and clustered database communicated over http rest.
 
 ## Getting Started
+Create the tls files you need to secure your cluster.
+
+```bash
+mkdir certs
+
+# Create a new Certificate Authority
+openssl genrsa -out certs/ca.key 2048
+openssl req -new -x509 -key certs/ca.key -subj "/C=GB/L=interwebz/O=acme/CN=localhost" -out certs/ca.crt
+
+# Create a new keypair for your first node
+openssl req -new -nodes -days 365 -subj "/C=GB/L=interwebz/O=acme/CN=localhost" -keyout certs/node1.key -out certs/node1.csr
+openssl x509 -req -in certs/node1.csr -CA certs/ca.crt -CAkey certs/ca.key -CAcreateserial -out certs/node1.crt -days 365 -sha256
+```
+
 ```javascript
+const fs = require('fs');
 const axios = require('axios');
 const canhazdb = require('canhazdb');
 
 async function main () {
-  const node1 = await canhazdb({ host: 'localhost', port: 7061, queryPort: 8061 })
-  const node2 = await canhazdb({ host: 'localhost', port: 7062, queryPort: 8062 })
+  const tls = {
+    key: fs.readFileSync('certs/node1.key'),
+    cert: fs.readFileSync('certs/node1.crt'),
+    ca: [ fs.readFileSync('certs/ca.crt') ]
+  };
+
+  const node1 = await canhazdb({ host: 'localhost', port: 7061, queryPort: 8061, tls })
+  const node2 = await canhazdb({ host: 'localhost', port: 7062, queryPort: 8062, tls })
 
   await node1.join({ host: 'localhost', port: 7062 })
   await node2.join({ host: 'localhost', port: 7061 })
@@ -35,8 +56,8 @@ async function main () {
 
   /*
     {
-      b: 2,
       a: 1,
+      b: 2,
       c: 3
     }
   */

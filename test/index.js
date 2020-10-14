@@ -1,13 +1,21 @@
+const fs = require('fs');
+
 const test = require('tape-catch');
 const httpRequest = require('./helpers/httpRequest');
 
 const createTestCluster = require('./helpers/createTestCluster');
 const canhazdb = require('../');
 
+const tls = {
+  key: fs.readFileSync('./certs/localhost.privkey.pem'),
+  cert: fs.readFileSync('./certs/localhost.cert.pem'),
+  ca: [fs.readFileSync('./certs/ca.cert.pem')]
+};
+
 test('create one node', async t => {
   t.plan(2);
 
-  const node = await canhazdb({ host: 'localhost', port: 7061, queryPort: 8061 });
+  const node = await canhazdb({ host: 'localhost', port: 7061, queryPort: 8061, tls });
 
   const request = await httpRequest('http://localhost:8061/tests');
 
@@ -21,8 +29,8 @@ test('create two node', async t => {
   t.plan(4);
 
   const [node1, node2] = await Promise.all([
-    canhazdb({ host: 'localhost', port: 7061, queryPort: 8061 }),
-    canhazdb({ host: 'localhost', port: 7062, queryPort: 8062 })
+    canhazdb({ host: 'localhost', port: 7061, queryPort: 8061, tls }),
+    canhazdb({ host: 'localhost', port: 7062, queryPort: 8062, tls })
   ]);
 
   await Promise.all([
@@ -44,7 +52,7 @@ test('create two node', async t => {
 test('post: and get some data', async t => {
   t.plan(3);
 
-  const cluster = await createTestCluster(3);
+  const cluster = await createTestCluster(3, tls);
   const node = cluster.getRandomNodeUrl();
 
   const postRequest = await httpRequest(`${node.url}/tests`, {
@@ -73,7 +81,7 @@ test('post: and get some data', async t => {
 test('post: and get some data - 404 on another node', async t => {
   t.plan(3);
 
-  const cluster = await createTestCluster(3);
+  const cluster = await createTestCluster(3, tls);
 
   const postRequest = await httpRequest(`${cluster.nodes[1].url}/tests`, {
     method: 'POST',
@@ -97,7 +105,7 @@ test('post: and get some data - 404 on another node', async t => {
 test('delete: record returns a 404', async t => {
   t.plan(4);
 
-  const cluster = await createTestCluster(3);
+  const cluster = await createTestCluster(3, tls);
 
   const postRequest = await httpRequest(`${cluster.nodes[1].url}/tests`, {
     method: 'POST',
@@ -126,7 +134,7 @@ test('delete: record returns a 404', async t => {
 test('find: return all three records', async t => {
   t.plan(8);
 
-  const cluster = await createTestCluster(3);
+  const cluster = await createTestCluster(3, tls);
 
   await Promise.all([
     httpRequest(`${cluster.nodes[1].url}/tests`, {
@@ -166,7 +174,7 @@ test('find: return all three records', async t => {
 test('filter: find one out of three records', async t => {
   t.plan(4);
 
-  const cluster = await createTestCluster(3);
+  const cluster = await createTestCluster(3, tls);
 
   await Promise.all([
     httpRequest(`${cluster.nodes[1].url}/tests`, {

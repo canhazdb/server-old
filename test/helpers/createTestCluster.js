@@ -2,7 +2,7 @@ const canhazdb = require('../../');
 
 const selectRandomItemFromArray = require('../../utils/selectRandomItemFromArray');
 
-async function createTestCluster (count) {
+async function createTestCluster (count, tls) {
   const nodePromises = Array(count)
     .fill(null)
     .map((_, index) => {

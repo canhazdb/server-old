@@ -123,8 +123,8 @@ async function info (state, data, sender) {
   });
 }
 
-async function createInternalServer (state, port) {
-  const internalServer = await tcpocket.createServer({ port });
+async function createInternalServer (state, port, tls) {
+  const internalServer = await tcpocket.createServer({ port, tls });
 
   internalServer.on(INFO, info.bind(null, state));
   internalServer.on(GET_ONE, getOne.bind(null, state));
