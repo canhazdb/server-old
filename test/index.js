@@ -202,3 +202,23 @@ test('filter: find one out of three records', async t => {
 
   t.deepEqual(getRequest.data[0], { d: 4, e: 5, f: 6 });
 });
+
+test('autojoin: join learned nodes automatically', async t => {
+  t.plan(4);
+
+  const cluster = await createTestCluster(3, tls);
+  const node = cluster.getRandomNodeUrl();
+
+  const node4 = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls });
+  await node4.join({ host: node.host, port: node.port });
+
+  cluster.closeAll();
+  node4.close();
+
+  const getAllPorts = node => node.state.nodes.map(node => node.port).sort();
+  t.deepEqual(getAllPorts(node4), [7060, 7061, 7062, 7071]);
+
+  t.deepEqual(getAllPorts(cluster.nodes[0]), [7060, 7061, 7062, 7071]);
+  t.deepEqual(getAllPorts(cluster.nodes[1]), [7060, 7061, 7062, 7071]);
+  t.deepEqual(getAllPorts(cluster.nodes[2]), [7060, 7061, 7062, 7071]);
+});

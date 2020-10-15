@@ -6,7 +6,7 @@ async function createTestCluster (count, tls) {
   const nodePromises = Array(count)
     .fill(null)
     .map((_, index) => {
-      return canhazdb({ host: 'localhost', port: 7060 + index, queryPort: 8060 + index });
+      return canhazdb({ host: 'localhost', port: 7060 + index, queryPort: 8060 + index, tls });
     });
 
   const nodes = await Promise.all(nodePromises);

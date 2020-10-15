@@ -1,6 +1,7 @@
 module.exports = {
   STATUS: 'F1',
   DOCUMENT: 'F2',
+  DATA: 'F3',
   INFO: 'C0',
   GET_ONE: 'C1',
   GET_ALL: 'C2',

@@ -3,6 +3,7 @@ const uuid = require('uuid').v4;
 
 const {
   STATUS,
+  DATA,
   DOCUMENT,
   INFO,
   GET_ONE,
@@ -118,8 +119,13 @@ async function del (state, data, sender) {
 }
 
 async function info (state, data, sender) {
+  await Promise.all(data.nodes.map(node => state.join(node, true)));
+
   sender.reply({
-    [STATUS]: 200
+    [STATUS]: 200,
+    [DATA]: {
+      nodes: state.nodes.map(node => ({ host: node.host, port: node.port }))
+    }
   });
 }
 

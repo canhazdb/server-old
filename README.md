@@ -34,7 +34,6 @@ async function main () {
   const node1 = await canhazdb({ host: 'localhost', port: 7061, queryPort: 8061, tls })
   const node2 = await canhazdb({ host: 'localhost', port: 7062, queryPort: 8062, tls })
 
-  await node1.join({ host: 'localhost', port: 7062 })
   await node2.join({ host: 'localhost', port: 7061 })
 
   const postRequest = await axios(`${node1.url}/tests`, {

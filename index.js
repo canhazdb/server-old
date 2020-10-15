@@ -5,7 +5,7 @@ const tcpocket = require('tcpocket');
 const handleExternal = require('./handleExternal');
 const createInternalServer = require('./createInternalServer');
 
-const { INFO } = require('./constants');
+const { INFO, DATA } = require('./constants');
 
 async function makeConnection (host, port, tls) {
   const client = await tcpocket.createClient({ host, port, tls });
@@ -42,27 +42,46 @@ async function canhazdb (options) {
 
   server.listen(options.queryPort);
 
+  async function join ({ host, port }, alreadyRecursed) {
+    if (state.nodes.find(node => node.host === host && node.port === port)) {
+      return;
+    }
+
+    const newNode = {
+      host,
+      port
+    };
+
+    state.nodes.push(newNode);
+
+    newNode.connection = await makeConnection(host, port, options.tls);
+
+    newNode.info = await newNode.connection.ask(INFO, {
+      nodes: state.nodes.map(node => ({ host: node.host, port: node.port }))
+    });
+
+    if (!alreadyRecursed) {
+      const otherJoins = newNode.info[DATA].nodes.map(node => {
+        return join({ ...node }, true);
+      });
+
+      await Promise.all(otherJoins);
+    }
+  }
+
+  state.join = join;
+
   return new Promise((resolve) => {
     server.on('listening', async () => {
       resolve({
         url: `${options.tls ? 'https' : 'http'}://` + options.host + ':' + options.queryPort,
+        host: options.host,
+        port: options.port,
+        queryPort: options.queryPort,
 
         state,
 
-        join: async ({ host, port }) => {
-          if (state.nodes.find(node => node.host === host && node.port === port)) {
-            return;
-          }
-
-          const connection = await makeConnection(host, port, options.tls);
-
-          state.nodes.push({
-            host,
-            port,
-            connection,
-            info: await connection.ask(INFO)
-          });
-        },
+        join,
 
         close: () => {
           state.nodes.forEach(node => {
