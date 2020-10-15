@@ -1,6 +1,5 @@
 const packageJson = require('./package.json');
 
-const http = require('http');
 const tcpocket = require('tcpocket');
 
 const handleExternal = require('./handleExternal');
@@ -33,14 +32,20 @@ async function canhazdb (options) {
 
   state.nodes[0].connection = await makeConnection(options.host, options.port, options.tls);
 
-  const server = http.createServer(handleExternal.bind(null, state));
+  let server;
+
+  if (options.tls) {
+    server = require('https').createServer(options.tls, handleExternal.bind(null, state));
+  } else {
+    server = require('http').createServer(handleExternal.bind(null, state));
+  }
 
   server.listen(options.queryPort);
 
   return new Promise((resolve) => {
     server.on('listening', async () => {
       resolve({
-        url: 'http://' + options.host + ':' + options.queryPort,
+        url: `${options.tls ? 'https' : 'http'}://` + options.host + ':' + options.queryPort,
 
         state,
 

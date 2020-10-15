@@ -46,6 +46,7 @@ async function main () {
     }
   });
 
+  // node2.url === 'https://localhost:8061'
   const result = await axios(`${node2.url}/tests/${postRequest.data.id}`);
 
   console.log(result.data);

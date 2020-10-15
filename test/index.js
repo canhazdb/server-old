@@ -16,8 +16,7 @@ test('create one node', async t => {
   t.plan(2);
 
   const node = await canhazdb({ host: 'localhost', port: 7061, queryPort: 8061, tls });
-
-  const request = await httpRequest('http://localhost:8061/tests');
+  const request = await httpRequest(`${node.url}/tests`);
 
   node.close();
 
