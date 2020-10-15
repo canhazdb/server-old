@@ -39,6 +39,14 @@ canhazdb --host localhost \
          --tls-cert ./certs/localhost.cert.pem \
          --tls-key ./certs/localhost.privkey.pem \
          --join localhost:7061
+
+canhazdb --host localhost \
+         --port 7063 \
+         --query-port 8063 \
+         --tls-ca ./certs/ca.cert.pem \
+         --tls-cert ./certs/localhost.cert.pem \
+         --tls-key ./certs/localhost.privkey.pem \
+         --join localhost:7061
 ```
 
 ### Via NodeJS
@@ -56,7 +64,7 @@ async function main () {
     key: fs.readFileSync('certs/localhost.privkey.pem'),
     cert: fs.readFileSync('certs/localhost.cert.pem'),
     ca: [ fs.readFileSync('certs/ca.cert.pem') ],
-    requestCert: true /* this denys and cert not signed with our ca above */
+    requestCert: true /* this denys any cert not signed with our ca above */
   };
 
   const node1 = await canhazdb({ host: 'localhost', port: 7061, queryPort: 8061, tls })

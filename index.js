@@ -16,6 +16,8 @@ async function makeConnection (host, port, tls) {
 }
 
 async function canhazdb (options) {
+  options.port = parseInt(options.port);
+
   const state = {
     nodes: [{
       host: options.host,
@@ -43,6 +45,8 @@ async function canhazdb (options) {
   server.listen(options.queryPort);
 
   async function join ({ host, port }, alreadyRecursed) {
+    port = parseInt(port);
+
     if (state.nodes.find(node => node.host === host && node.port === port)) {
       return;
     }

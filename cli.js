@@ -34,7 +34,6 @@ async function main (options) {
 
   if (options.join) {
     const [host, port] = options.join.split(':');
-    console.log(`  joining ${host}:${port}`);
     await node.join({ host, port });
   }
 }
