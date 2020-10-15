@@ -28,7 +28,9 @@ async function main (options) {
   const port = options.port;
   const node = await canhazdb({ host, port, queryPort: options.queryPort, tls });
 
-  console.log(`canhazdb listening on ${host}:${port}`);
+  console.log('');
+  console.log(`${chalk.cyan('internal server')}: ${host}:${port}`);
+  console.log(`${chalk.cyan('query server')}:    ${node.url}`);
 
   if (options.join) {
     const [host, port] = options.join.split(':');
@@ -66,7 +68,7 @@ if (argv.help) {
   main({
     host: argv.host || 'localhost',
     port: argv.port || 7060,
-    queryPort: argv.queryPort || 8060,
+    queryPort: argv['query-port'] || 8060,
 
     tlsCa: argv['tls-ca'],
     tlsCert: argv['tls-cert'],
