@@ -47,6 +47,8 @@ async function canhazdb (options) {
       return;
     }
 
+    console.log(`  joining ${host}:${port}`);
+
     const newNode = {
       host,
       port

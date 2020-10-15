@@ -3,12 +3,16 @@
   "version": "1.1.2",
   "description": "A shaded and clustered database communicated over http rest.",
   "main": "index.js",
+  "bin": {
+    "canhazdb": "cli.js"
+  },
   "directories": {
     "test": "test"
   },
   "dependencies": {
     "axios": "^0.20.0",
     "final-stream": "^2.0.0",
+    "minimist": "^1.2.5",
     "tcpocket": "^1.1.3",
     "uuid": "^8.3.1",
     "write-response": "^1.2.3"

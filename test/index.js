@@ -9,7 +9,8 @@ const canhazdb = require('../');
 const tls = {
   key: fs.readFileSync('./certs/localhost.privkey.pem'),
   cert: fs.readFileSync('./certs/localhost.cert.pem'),
-  ca: [fs.readFileSync('./certs/ca.cert.pem')]
+  ca: [fs.readFileSync('./certs/ca.cert.pem')],
+  requestCert: true
 };
 
 test('create one node', async t => {

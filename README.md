@@ -11,13 +11,40 @@ A sharded and clustered database communicated over http rest.
 ## Getting Started
 Create the tls files you need to secure your cluster.
 
-A bash script './makeCerts.sh' provided will create a folder with test certs you can use.
+A bash script `./makeCerts.sh` provided will create a folder with test certs you can use.
 
 ```bash
 ./makeCerts.sh
 ```
 
 You can opt out of tls by omitting the tls option from canhazdb.
+
+### Via the CLI
+```bash
+npm install --global canhazdb
+```
+
+```bash
+canhazdb --host localhost \
+         --port 7061 \
+         --query-port 8061 \
+         --tls-ca ./certs/ca.cert.pem \
+         --tls-cert ./certs/localhost.cert.pem \
+         --tls-key ./certs/localhost.privkey.pem
+
+canhazdb --host localhost \
+         --port 7062 \
+         --query-port 8062 \
+         --tls-ca ./certs/ca.cert.pem \
+         --tls-cert ./certs/localhost.cert.pem \
+         --tls-key ./certs/localhost.privkey.pem \
+         --join localhost:7061
+```
+
+### Via NodeJS
+```bash
+npm install --save canhazdb
+```
 
 ```javascript
 const fs = require('fs');
@@ -28,7 +55,8 @@ async function main () {
   const tls = {
     key: fs.readFileSync('certs/localhost.privkey.pem'),
     cert: fs.readFileSync('certs/localhost.cert.pem'),
-    ca: [ fs.readFileSync('certs/ca.cert.pem') ]
+    ca: [ fs.readFileSync('certs/ca.cert.pem') ],
+    requestCert: true /* this denys and cert not signed with our ca above */
   };
 
   const node1 = await canhazdb({ host: 'localhost', port: 7061, queryPort: 8061, tls })
