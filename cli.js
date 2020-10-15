@@ -11,17 +11,17 @@ async function main (options) {
   let tls;
 
   if (options.tlsCa || options.tlsCert || options.tlsKey) {
-    tls = {
-      key: fs.readFileSync(options.tlsKey),
-      cert: fs.readFileSync(options.tlsCert),
-      ca: [fs.readFileSync(options.tlsca)],
-      requestCert: true
-    };
-
-    if (!tls.key || !tls.cert || !tls.ca) {
+    if (!options.tlsCa || !options.tlsCert || !options.tlsKey) {
       console.log(chalk.red('You must specifiy either all [tls-key, tls-cert, tls-ca] or none of them'));
       return;
     }
+
+    tls = {
+      key: fs.readFileSync(options.tlsKey),
+      cert: fs.readFileSync(options.tlsCert),
+      ca: [fs.readFileSync(options.tlsCa)],
+      requestCert: true
+    };
   }
 
   const host = options.host;
@@ -65,8 +65,8 @@ if (argv.help) {
 } else {
   main({
     host: argv.host || 'localhost',
-    port: argv.host || 7060,
-    queryPort: argv.host || 8060,
+    port: argv.port || 7060,
+    queryPort: argv.queryPort || 8060,
 
     tlsCa: argv['tls-ca'],
     tlsCert: argv['tls-cert'],
