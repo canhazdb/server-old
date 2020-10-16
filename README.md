@@ -28,6 +28,7 @@ npm install --global canhazdb
 canhazdb --host localhost \
          --port 7061 \
          --query-port 8061 \
+         --data-dir ./canhazdb/one \
          --tls-ca ./certs/ca.cert.pem \
          --tls-cert ./certs/localhost.cert.pem \
          --tls-key ./certs/localhost.privkey.pem
@@ -35,6 +36,7 @@ canhazdb --host localhost \
 canhazdb --host localhost \
          --port 7062 \
          --query-port 8062 \
+         --data-dir ./canhazdb/two \
          --tls-ca ./certs/ca.cert.pem \
          --tls-cert ./certs/localhost.cert.pem \
          --tls-key ./certs/localhost.privkey.pem \
@@ -43,6 +45,7 @@ canhazdb --host localhost \
 canhazdb --host localhost \
          --port 7063 \
          --query-port 8063 \
+         --data-dir ./canhazdb/three \
          --tls-ca ./certs/ca.cert.pem \
          --tls-cert ./certs/localhost.cert.pem \
          --tls-key ./certs/localhost.privkey.pem \
@@ -136,7 +139,7 @@ async function main () {
   <tr>
     <td><a href="https://www.github.com/markwylde/canhazdb">1.4</a></td>
     <td>POST</td>
-    <td>/:collectionId/:resourceId</td>
+    <td>/:collectionId</td>
     <td>Create a new resource</td>
   </tr>
   <tr>
