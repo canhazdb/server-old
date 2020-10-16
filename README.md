@@ -67,8 +67,12 @@ async function main () {
     requestCert: true /* this denys any cert not signed with our ca above */
   };
 
-  const node1 = await canhazdb({ host: 'localhost', port: 7061, queryPort: 8061, tls })
-  const node2 = await canhazdb({ host: 'localhost', port: 7062, queryPort: 8062, tls })
+  const node1 = await canhazdb({
+    host: 'localhost', port: 7061, queryPort: 8061, dataDirectory: './canhazdata/one', tls
+  })
+  const node2 = await canhazdb({
+    host: 'localhost', port: 7062, queryPort: 8062, dataDirectory: './canhazdata/two', tls
+  })
 
   await node2.join({ host: 'localhost', port: 7061 })
 
@@ -121,31 +125,37 @@ async function main () {
     <td><a href="https://www.github.com/markwylde/canhazdb">1.2</a></td>
     <td>GET</td>
     <td>/:collectionId?query={"a":1}</td>
-    <td>List all resources partially matching query</td>
+    <td>List all resources matching mongodb query syntax</td>
   </tr>
   <tr>
     <td><a href="https://www.github.com/markwylde/canhazdb">1.3</a></td>
     <td>GET</td>
     <td>/:collectionId/:resourceId</td>
-    <td>Get all fields for a resource</td>
+    <td>Get a resource by id</td>
   </tr>
   <tr>
     <td><a href="https://www.github.com/markwylde/canhazdb">1.4</a></td>
     <td>POST</td>
     <td>/:collectionId/:resourceId</td>
-    <td>Remove then set all fields on a resource</td>
+    <td>Create a new resource</td>
   </tr>
   <tr>
     <td><a href="https://www.github.com/markwylde/canhazdb">1.5</a></td>
-    <td>PATCH</td>
+    <td>PUT</td>
     <td>/:collectionId/:resourceId</td>
-    <td>Set fields on a resource</td>
+    <td>Replace a resource by id</td>
   </tr>
   <tr>
     <td><a href="https://www.github.com/markwylde/canhazdb">1.6</a></td>
+    <td>PATCH</td>
+    <td>/:collectionId/:resourceId</td>
+    <td>Replace specified fields for a resource by id</td>
+  </tr>
+  <tr>
+    <td><a href="https://www.github.com/markwylde/canhazdb">1.7</a></td>
     <td>DELETE</td>
     <td>/:collectionId/:resourceId</td>
-    <td>Delete all fields for a resource</td>
+    <td>Delete a resource by id</td>
   </tr>
 </table>
 
