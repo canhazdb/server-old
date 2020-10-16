@@ -1,6 +1,5 @@
 # canhazdb
 [![Build Status](https://travis-ci.org/markwylde/canhazdb.svg?branch=master)](https://travis-ci.org/markwylde/canhazdb)
-[![David DM](https://david-dm.org/markwylde/canhazdb.svg)](https://david-dm.org/markwylde/canhazdb)
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/markwylde/canhazdb)
 [![GitHub package.json version](https://img.shields.io/github/package-json/v/markwylde/canhazdb)](https://github.com/markwylde/canhazdb/blob/master/package.json)
 [![GitHub](https://img.shields.io/github/license/markwylde/canhazdb)](https://github.com/markwylde/canhazdb/blob/master/LICENSE)
