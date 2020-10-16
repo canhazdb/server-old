@@ -1,12 +1,19 @@
-const canhazdb = require('../../');
+const canhazdb = require('../../lib');
 
-const selectRandomItemFromArray = require('../../utils/selectRandomItemFromArray');
+const selectRandomItemFromArray = require('../../lib/utils/selectRandomItemFromArray');
 
 async function createTestCluster (count, tls) {
   const nodePromises = Array(count)
     .fill(null)
     .map((_, index) => {
-      return canhazdb({ host: 'localhost', port: 7060 + index, queryPort: 8060 + index, tls });
+      return canhazdb({
+        host: 'localhost',
+        logger: () => {},
+        port: 7060 + index,
+        queryPort: 8060 + index,
+        dataDirectory: './canhazdata/' + index,
+        tls
+      });
     });
 
   const nodes = await Promise.all(nodePromises);
