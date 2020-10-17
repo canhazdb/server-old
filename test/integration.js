@@ -2,7 +2,7 @@ const fs = require('fs');
 
 const test = require('tape-catch');
 const httpRequest = require('./helpers/httpRequest');
-
+const clearData = require('./helpers/clearData');
 const createTestCluster = require('./helpers/createTestCluster');
 const canhazdb = require('../lib');
 
@@ -12,14 +12,6 @@ const tls = {
   ca: [fs.readFileSync('./certs/ca.cert.pem')],
   requestCert: true
 };
-
-async function clearData () {
-  try {
-    await fs.promises.rmdir('./canhazdata', { recursive: true });
-  } catch (error) {
-    console.log(error);
-  }
-}
 
 test('post: and get some data', async t => {
   t.plan(3);
@@ -152,7 +144,7 @@ test('find: collection does not exist', async t => {
   cluster.closeAll();
 
   t.deepEqual(getRequest.status, 404);
-  t.deepEqual(getRequest.data, {});
+  t.deepEqual(getRequest.data, []);
 });
 
 test('find: return all three records', async t => {

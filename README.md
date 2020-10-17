@@ -53,6 +53,32 @@ canhazdb --host localhost \
          --join localhost:7061
 ```
 
+### Client
+You can talk to the database using http/https using your favourite http client, or
+you can use the built in client api.
+
+```javascript
+const client = require('canhazdb/client');
+
+const tls = {
+  key: fs.readFileSync('certs/localhost.privkey.pem'),
+  cert: fs.readFileSync('certs/localhost.cert.pem'),
+  ca: [ fs.readFileSync('certs/ca.cert.pem') ],
+  requestCert: true /* this denys any cert not signed with our ca above */
+};
+const client = createClient('https://localhost:8063', { tls });
+
+const document = await client.post('tests', { a: 1 });
+const changed = await client.put('tests', { id: document.id }, { b: 2 });
+const changedDocument = await client.getOne('tests', { id: document.id });
+
+console.log( {
+  document, /* { a: 1 } */
+  changed, /* { changes: 1 } */
+  changedDocument, /* { b: 2 } */
+})
+```
+
 ### Via NodeJS
 ```bash
 npm install --save canhazdb
@@ -61,7 +87,7 @@ npm install --save canhazdb
 ```javascript
 const fs = require('fs');
 const axios = require('axios');
-const canhazdb = require('canhazdb');
+const canhazdb = require('canhazdb/server');
 
 async function main () {
   const tls = {
