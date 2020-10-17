@@ -233,7 +233,7 @@ axios({
 })
 ```
 <table>
-  <tr><td><strong>Method</strong></td><td>POST</td></tr>
+  <tr><td><strong>Method</strong></td><td>PUT</td></tr>
   <tr><td><strong>URL</strong></td><td>/collectionId/documentId</td></tr>
   <tr><td><strong>Data</strong></td><td>JSON</td></tr>
 </table>
@@ -251,7 +251,7 @@ axios({
 })
 ```
 <table>
-  <tr><td><strong>Method</strong></td><td>POST</td></tr>
+  <tr><td><strong>Method</strong></td><td>PUT</td></tr>
   <tr><td><strong>URL</strong></td><td>/collectionId/documentId</td></tr>
   <tr><td><strong>Data</strong></td><td>JSON</td></tr>
 </table>
@@ -264,7 +264,7 @@ axios({
 })
 ```
 <table>
-  <tr><td><strong>Method</strong></td><td>POST</td></tr>
+  <tr><td><strong>Method</strong></td><td>DELETE</td></tr>
   <tr><td><strong>URL</strong></td><td>/collectionId/documentId</td></tr>
 </table>
 
@@ -276,7 +276,7 @@ axios({
 })
 ```
 <table>
-  <tr><td><strong>Method</strong></td><td>POST</td></tr>
+  <tr><td><strong>Method</strong></td><td>DELETE</td></tr>
   <tr><td><strong>URL</strong></td><td>/collectionId/documentId</td></tr>
 </table>
 
