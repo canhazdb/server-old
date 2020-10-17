@@ -2,7 +2,7 @@
   "name": "canhazdb",
   "version": "1.5.4",
   "description": "A shaded and clustered database communicated over http rest.",
-  "main": "./lib/index.js",
+  "main": "./index.js",
   "bin": {
     "canhazdb": "./lib/cli.js"
   },
