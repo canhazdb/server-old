@@ -16,6 +16,7 @@
     "hinton": "^1.0.0",
     "minimist": "^1.2.5",
     "mongo-sql": "^6.2.0",
+    "qs": "^6.9.4",
     "sqlite-fp": "^2.1.2",
     "tcpocket": "^1.1.4",
     "uuid": "^8.3.1",
