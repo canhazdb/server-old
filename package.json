@@ -1,6 +1,6 @@
 {
   "name": "canhazdb",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "description": "A shaded and clustered database communicated over http rest.",
   "main": "./lib/index.js",
   "bin": {
