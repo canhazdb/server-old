@@ -8,6 +8,8 @@
 A sharded and clustered database communicated over http rest.
 
 ## Getting Started
+You must have a minimum version of Node 12 installed.
+
 Create the tls files you need to secure your cluster.
 
 A bash script `./makeCerts.sh` provided will create a folder with test certs you can use.
