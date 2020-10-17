@@ -114,53 +114,148 @@ async function main () {
     <th>Description</th>
   </tr>
   <tr>
-    <td><a href="https://www.github.com/markwylde/canhazdb">1.1</a></td>
+    <td><a href="https://www.github.com/markwylde/canhazdb">1</a></td>
     <td>GET</td>
     <td>/:collectionId</td>
-    <td>List all resources for a collection</td>
+    <td>List all documents for a collection</td>
   </tr>
   <tr>
-    <td><a href="https://www.github.com/markwylde/canhazdb">1.2</a></td>
+    <td><a href="https://www.github.com/markwylde/canhazdb">2</a></td>
     <td>GET</td>
-    <td>/:collectionId?query={"a":1}</td>
-    <td>List all resources matching mongodb query syntax</td>
+    <td>/:collectionId/:documentId?query&limit&order</td>
+    <td>Get a document by id</td>
   </tr>
   <tr>
-    <td><a href="https://www.github.com/markwylde/canhazdb">1.3</a></td>
-    <td>GET</td>
-    <td>/:collectionId/:resourceId</td>
-    <td>Get a resource by id</td>
-  </tr>
-  <tr>
-    <td><a href="https://www.github.com/markwylde/canhazdb">1.4</a></td>
+    <td><a href="https://www.github.com/markwylde/canhazdb">3</a></td>
     <td>POST</td>
     <td>/:collectionId</td>
-    <td>Create a new resource</td>
+    <td>Create a new document</td>
   </tr>
   <tr>
-    <td><a href="https://www.github.com/markwylde/canhazdb">1.5</a></td>
+    <td><a href="https://www.github.com/markwylde/canhazdb">4</a></td>
     <td>PUT</td>
-    <td>/:collectionId/:resourceId</td>
-    <td>Replace a resource by id</td>
+    <td>/:collectionId/:documentId</td>
+    <td>Replace a document by id</td>
   </tr>
   <tr>
-    <td><a href="https://www.github.com/markwylde/canhazdb">1.6</a></td>
+    <td><a href="https://www.github.com/markwylde/canhazdb">5</a></td>
     <td>PUT</td>
-    <td>/:collectionId?query={"a":1}</td>
-    <td>Replace multiple resource matching mongodb query syntax</td>
+    <td>/:collectionId/:documentId?query</td>
+    <td>Replace multiple document matching query</td>
   </tr>
   <tr>
-    <td><a href="https://www.github.com/markwylde/canhazdb">1.7</a></td>
+    <td><a href="https://www.github.com/markwylde/canhazdb">6</a></td>
     <td>DELETE</td>
-    <td>/:collectionId/:resourceId</td>
-    <td>Delete a resource by id</td>
+    <td>/:collectionId/:documentId</td>
+    <td>Delete a document by id</td>
   </tr>
   <tr>
-    <td><a href="https://www.github.com/markwylde/canhazdb">1.8</a></td>
+    <td><a href="https://www.github.com/markwylde/canhazdb">7</a></td>
     <td>DELETE</td>
-    <td>/:collectionId?query={"a":1}</td>
-    <td>Delete multiple resource matching mongodb query syntax</td>
+    <td>/:collectionId/:documentId?query</td>
+    <td>Delete multiple document matching query</td>
   </tr>
+</table>
+
+### 1. Get item by id
+```javascript
+axios({
+  url: 'https://localhost:8061/tests/example-uuid-paramater',
+})
+```
+<table>
+  <tr><td><strong>Method</strong></td><td>GET</td></tr>
+  <tr><td><strong>URL</strong></td><td>/collectionId</td></tr>
+</table>
+
+
+### 2. Get items in a collection
+```javascript
+axios({
+  url: 'https://localhost:8061/tests?query={"firstName":"Joe"}&limit=10&order=desc(firstName)',
+})
+```
+<table>
+  <tr><td><strong>Method</strong></td><td>GET</td></tr>
+  <tr><td><strong>URL</strong></td><td>/collectionId</td></tr>
+  <tr><td><strong>Query</strong></td><td>Mongo Query Syntax</td></tr>
+  <tr><td><strong>Limit</strong></td><td>Number</td></tr>
+  <tr><td><strong>Order</strong></td><td>Direction(fieldName)</td></tr>
+</table>
+
+
+### 3. Create a new document in a collection
+```javascript
+axios({
+  url: 'https://localhost:8061/tests',
+  method: 'POST',
+  data: {
+    firstName: 'Joe'
+  }
+})
+```
+<table>
+  <tr><td><strong>Method</strong></td><td>POST</td></tr>
+  <tr><td><strong>URL</strong></td><td>/collectionId</td></tr>
+  <tr><td><strong>Data</strong></td><td>JSON</td></tr>
+</table>
+
+### 4. Replace a document by id
+```javascript
+axios({
+  url: 'https://localhost:8061/tests/example-uuid-paramater',
+  method: 'PUT',
+  data: {
+    firstName: 'Zoe'
+  }
+})
+```
+<table>
+  <tr><td><strong>Method</strong></td><td>POST</td></tr>
+  <tr><td><strong>URL</strong></td><td>/collectionId/documentId</td></tr>
+  <tr><td><strong>Data</strong></td><td>JSON</td></tr>
+</table>
+
+### 5. Replace multiple documents by query
+```javascript
+axios({
+  url: 'https://localhost:8061/tests?query={"location":"GB"}',
+  method: 'PUT',
+  data: {
+    firstName: 'Zoe',
+    location: 'GB',
+    timezone: 'GMT'
+  }
+})
+```
+<table>
+  <tr><td><strong>Method</strong></td><td>POST</td></tr>
+  <tr><td><strong>URL</strong></td><td>/collectionId/documentId</td></tr>
+  <tr><td><strong>Data</strong></td><td>JSON</td></tr>
+</table>
+
+### 6. Delete a document by id
+```javascript
+axios({
+  url: 'https://localhost:8061/tests/example-uuid-paramater',
+  method: 'DELETE'
+})
+```
+<table>
+  <tr><td><strong>Method</strong></td><td>POST</td></tr>
+  <tr><td><strong>URL</strong></td><td>/collectionId/documentId</td></tr>
+</table>
+
+### 7. Delete multiple documents by query
+```javascript
+axios({
+  url: 'https://localhost:8061/tests?query={"location":"GB"}',
+  method: 'DELETE'
+})
+```
+<table>
+  <tr><td><strong>Method</strong></td><td>POST</td></tr>
+  <tr><td><strong>URL</strong></td><td>/collectionId/documentId</td></tr>
 </table>
 
 ## License

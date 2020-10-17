@@ -335,6 +335,86 @@ test('filter: put two out of three records', async t => {
   t.equal(getRequest.data.filter(item => item.a === 1).length, 4);
 });
 
+test('limit: find three records', async t => {
+  t.plan(2);
+
+  await clearData();
+
+  const cluster = await createTestCluster(3, tls);
+
+  const posts = Array(10).fill('').map((_, index) => {
+    return httpRequest(`${cluster.nodes[1].url}/tests`, {
+      method: 'POST',
+      data: { index }
+    });
+  });
+
+  await Promise.all(posts);
+
+  const getRequest = await httpRequest(`${cluster.nodes[2].url}/tests?limit=3`);
+
+  cluster.closeAll();
+
+  t.equal(getRequest.data.length, 3);
+  t.equal(getRequest.status, 200);
+});
+
+test('order: ascending order three records', async t => {
+  t.plan(5);
+
+  await clearData();
+
+  const cluster = await createTestCluster(3, tls);
+
+  const posts = Array(10).fill('').map((_, index) => {
+    return httpRequest(`${cluster.nodes[1].url}/tests`, {
+      method: 'POST',
+      data: { index }
+    });
+  });
+
+  await Promise.all(posts);
+
+  const getRequest = await httpRequest(`${cluster.nodes[2].url}/tests?order=asc(index)`);
+
+  cluster.closeAll();
+
+  t.equal(getRequest.data.length, 10);
+  t.equal(getRequest.status, 200);
+
+  t.deepEqual(getRequest.data[0].index, 0);
+  t.deepEqual(getRequest.data[1].index, 1);
+  t.deepEqual(getRequest.data[5].index, 5);
+});
+
+test('order: descending order three records', async t => {
+  t.plan(5);
+
+  await clearData();
+
+  const cluster = await createTestCluster(3, tls);
+
+  const posts = Array(10).fill('').map((_, index) => {
+    return httpRequest(`${cluster.nodes[1].url}/tests`, {
+      method: 'POST',
+      data: { index }
+    });
+  });
+
+  await Promise.all(posts);
+
+  const getRequest = await httpRequest(`${cluster.nodes[2].url}/tests?order=desc(index)`);
+
+  cluster.closeAll();
+
+  t.equal(getRequest.data.length, 10);
+  t.equal(getRequest.status, 200);
+
+  t.deepEqual(getRequest.data[0].index, 9);
+  t.deepEqual(getRequest.data[1].index, 8);
+  t.deepEqual(getRequest.data[5].index, 4);
+});
+
 test('autojoin: join learned nodes automatically', async t => {
   t.plan(4);
 
