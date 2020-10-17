@@ -28,6 +28,27 @@ test('get', async t => {
   t.deepEqual(result, []);
 });
 
+test('get with limit', async t => {
+  t.plan(1);
+
+  await clearData();
+
+  const node = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls });
+  const client = createClient(node.url, { tls });
+
+  await Promise.all([
+    await client.post('tests', { a: 1 }),
+    await client.post('tests', { a: 2 }),
+    await client.post('tests', { a: 3 })
+  ]);
+
+  const result = await client.getAll('tests', { limit: 2 });
+
+  await node.close();
+
+  t.deepEqual(result.length, 2);
+});
+
 test('post and get', async t => {
   t.plan(1);
 

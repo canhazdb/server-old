@@ -14,10 +14,6 @@ Create the tls files you need to secure your cluster.
 
 A bash script `./makeCerts.sh` provided will create a folder with test certs you can use.
 
-```bash
-./makeCerts.sh
-```
-
 You can opt out of tls by omitting the tls option from canhazdb.
 
 ### Client
