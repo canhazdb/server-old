@@ -112,12 +112,6 @@ async function main () {
     <th>Description</th>
   </tr>
   <tr>
-    <td colspan=4>
-      <strong>External</strong></br>
-      These requests will collect results from all known nodes.
-    </td>
-  </tr>
-  <tr>
     <td><a href="https://www.github.com/markwylde/canhazdb">1.1</a></td>
     <td>GET</td>
     <td>/:collectionId</td>
@@ -149,15 +143,21 @@ async function main () {
   </tr>
   <tr>
     <td><a href="https://www.github.com/markwylde/canhazdb">1.6</a></td>
-    <td>PATCH</td>
-    <td>/:collectionId/:resourceId</td>
-    <td>Replace specified fields for a resource by id</td>
+    <td>PUT</td>
+    <td>/:collectionId?query={"a":1}</td>
+    <td>Replace multiple resource matching mongodb query syntax</td>
   </tr>
   <tr>
     <td><a href="https://www.github.com/markwylde/canhazdb">1.7</a></td>
     <td>DELETE</td>
     <td>/:collectionId/:resourceId</td>
     <td>Delete a resource by id</td>
+  </tr>
+  <tr>
+    <td><a href="https://www.github.com/markwylde/canhazdb">1.8</a></td>
+    <td>DELETE</td>
+    <td>/:collectionId?query={"a":1}</td>
+    <td>Delete multiple resource matching mongodb query syntax</td>
   </tr>
 </table>
 

@@ -39,7 +39,6 @@ test('post: and get some data', async t => {
   });
 
   const getRequest = await httpRequest(`${node.url}/tests/${postRequest.data.id}`);
-
   cluster.closeAll();
 
   t.deepEqual(getRequest.data, {
@@ -51,32 +50,6 @@ test('post: and get some data', async t => {
 
   t.equal(postRequest.status, 201);
   t.equal(getRequest.status, 200);
-});
-
-test('post: and get some data - 404 on another node', async t => {
-  t.plan(3);
-
-  await clearData();
-
-  const cluster = await createTestCluster(3, tls);
-
-  const postRequest = await httpRequest(`${cluster.nodes[1].url}/tests`, {
-    method: 'POST',
-    data: {
-      a: 1,
-      b: 2,
-      c: 3
-    }
-  });
-
-  const getRequest = await httpRequest(`${cluster.nodes[2].url}/tests/notfound`);
-
-  cluster.closeAll();
-
-  t.deepEqual(getRequest.data, {});
-
-  t.equal(postRequest.status, 201);
-  t.equal(getRequest.status, 404);
 });
 
 test('post: some data with invalid collection name', async t => {
@@ -292,6 +265,74 @@ test('filter: find one out of three records', async t => {
   delete getRequest.data[0].id;
 
   t.deepEqual(getRequest.data[0], { d: 4, e: 5, f: 6 });
+});
+
+test('filter: delete two out of three records', async t => {
+  t.plan(5);
+
+  await clearData();
+
+  const cluster = await createTestCluster(3, tls);
+
+  const posts = Array(10).fill('').map((_, index) => {
+    return httpRequest(`${cluster.nodes[1].url}/tests`, {
+      method: 'POST',
+      data: { index }
+    });
+  });
+
+  await Promise.all(posts);
+
+  const deletions = await httpRequest(`${cluster.nodes[2].url}/tests?query={"index":{"$gt":5}}`, { method: 'DELETE' });
+
+  const getRequest = await httpRequest(`${cluster.nodes[2].url}/tests`);
+
+  cluster.closeAll();
+
+  t.equal(deletions.status, 200);
+  t.equal(deletions.data.changes, 4);
+
+  t.equal(getRequest.status, 200);
+  t.equal(getRequest.data.length, 6);
+
+  t.ok(getRequest.data[0].id);
+  delete getRequest.data[0].id;
+});
+
+test('filter: put two out of three records', async t => {
+  t.plan(5);
+
+  await clearData();
+
+  const cluster = await createTestCluster(3, tls);
+
+  const posts = Array(10).fill('').map((_, index) => {
+    return httpRequest(`${cluster.nodes[1].url}/tests`, {
+      method: 'POST',
+      data: { index }
+    });
+  });
+
+  await Promise.all(posts);
+
+  const deletions = await httpRequest(`${cluster.nodes[2].url}/tests?query={"index":{"$gt":5}}`, {
+    method: 'PUT',
+    data: {
+      a: 1
+    }
+  });
+
+  const getRequest = await httpRequest(`${cluster.nodes[2].url}/tests`);
+
+  cluster.closeAll();
+
+  t.equal(deletions.status, 200);
+  t.equal(deletions.data.changes, 4);
+
+  t.equal(getRequest.status, 200);
+  t.equal(getRequest.data.length, 10);
+
+  t.equal(getRequest.data.filter(item => item.a === 1).length, 4);
 });
 
 test('autojoin: join learned nodes automatically', async t => {
