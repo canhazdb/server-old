@@ -179,24 +179,35 @@ async function main () {
   </tr>
 </table>
 
-### 1. Get item by id
-```javascript
-axios({
-  url: 'https://localhost:8061/tests/example-uuid-paramater',
-})
-```
+### Examples
+<details>
+<summary>1. Get item by id</summary>
+  
 <table>
   <tr><td><strong>Method</strong></td><td>GET</td></tr>
   <tr><td><strong>URL</strong></td><td>/collectionId</td></tr>
 </table>
 
-
-### 2. Get items in a collection
+**HTTP Request:**
 ```javascript
 axios({
-  url: 'https://localhost:8061/tests?query={"firstName":"Joe"}&limit=10&order=desc(firstName)',
+  url: 'https://localhost:8061/tests/example-uuid-paramater',
 })
 ```
+
+**Client:**
+```javascript
+client.get('tests', { 
+  query: {
+    id: 'example-uuid-paramater'
+  }
+});
+```
+</details>
+
+<details>
+<summary>2. Get items in a collection</summary>
+
 <table>
   <tr><td><strong>Method</strong></td><td>GET</td></tr>
   <tr><td><strong>URL</strong></td><td>/collectionId</td></tr>
@@ -205,8 +216,35 @@ axios({
   <tr><td><strong>Order</strong></td><td>Direction(fieldName)</td></tr>
 </table>
 
+**HTTP Request:**
+```javascript
+axios({
+  url: 'https://localhost:8061/tests?query={"firstName":"Joe"}&limit=10&order=desc(firstName)',
+})
+```
 
-### 3. Create a new document in a collection
+**Client:**
+```javascript
+client.get('tests', {
+  query: {
+    firstName: 'Joe'
+  },
+  limit: 10,
+  order: 'desc(firstName)'
+});
+```
+</details>
+
+<details>
+<summary>3. Create a new document in a collection</summary>
+
+<table>
+  <tr><td><strong>Method</strong></td><td>POST</td></tr>
+  <tr><td><strong>URL</strong></td><td>/collectionId</td></tr>
+  <tr><td><strong>Data</strong></td><td>JSON</td></tr>
+</table>
+
+**HTTP Request:**
 ```javascript
 axios({
   url: 'https://localhost:8061/tests',
@@ -216,13 +254,25 @@ axios({
   }
 })
 ```
+
+**Client:**
+```javascript
+client.post('tests', {
+  firstName: 'Joe'
+});
+```
+</details>
+
+<details>
+<summary>4. Replace a document by id</summary>
+
 <table>
-  <tr><td><strong>Method</strong></td><td>POST</td></tr>
-  <tr><td><strong>URL</strong></td><td>/collectionId</td></tr>
+  <tr><td><strong>Method</strong></td><td>PUT</td></tr>
+  <tr><td><strong>URL</strong></td><td>/collectionId/documentId</td></tr>
   <tr><td><strong>Data</strong></td><td>JSON</td></tr>
 </table>
 
-### 4. Replace a document by id
+**HTTP Request:**
 ```javascript
 axios({
   url: 'https://localhost:8061/tests/example-uuid-paramater',
@@ -232,13 +282,25 @@ axios({
   }
 })
 ```
+
+**Client:**
+```javascript
+client.put('tests', {
+  firstName: 'Joe'
+});
+```
+</details>
+
+<details>
+<summary>5. Replace multiple documents by query</summary>
+
 <table>
   <tr><td><strong>Method</strong></td><td>PUT</td></tr>
   <tr><td><strong>URL</strong></td><td>/collectionId/documentId</td></tr>
   <tr><td><strong>Data</strong></td><td>JSON</td></tr>
 </table>
 
-### 5. Replace multiple documents by query
+**HTTP Request:**
 ```javascript
 axios({
   url: 'https://localhost:8061/tests?query={"location":"GB"}',
@@ -250,35 +312,73 @@ axios({
   }
 })
 ```
+
+**Client:**
+```javascript
+client.put('tests', {
+    firstName: 'Zoe',
+    location: 'GB',
+    timezone: 'GMT'
+}, {
+  query: {
+    location: 'GB'
+  }
+});
+```
+</details>
+
+<details>
+<summary>6. Delete a document by id</summary>
+
 <table>
-  <tr><td><strong>Method</strong></td><td>PUT</td></tr>
+  <tr><td><strong>Method</strong></td><td>DELETE</td></tr>
   <tr><td><strong>URL</strong></td><td>/collectionId/documentId</td></tr>
-  <tr><td><strong>Data</strong></td><td>JSON</td></tr>
 </table>
 
-### 6. Delete a document by id
+**HTTP Request:**
 ```javascript
 axios({
   url: 'https://localhost:8061/tests/example-uuid-paramater',
   method: 'DELETE'
 })
 ```
+
+**Client:**
+```javascript
+client.delete('tests', {
+  query: {
+    id: 'example-uuid-paramater'
+  }
+});
+```
+
+</details>
+
+<details>
+<summary>7. Delete multiple documents by query</summary>
+
 <table>
   <tr><td><strong>Method</strong></td><td>DELETE</td></tr>
   <tr><td><strong>URL</strong></td><td>/collectionId/documentId</td></tr>
 </table>
 
-### 7. Delete multiple documents by query
+**HTTP Request:**
 ```javascript
 axios({
   url: 'https://localhost:8061/tests?query={"location":"GB"}',
   method: 'DELETE'
 })
 ```
-<table>
-  <tr><td><strong>Method</strong></td><td>DELETE</td></tr>
-  <tr><td><strong>URL</strong></td><td>/collectionId/documentId</td></tr>
-</table>
+
+**Client:**
+```javascript
+client.delete('tests', {
+  query: {
+    location: 'GB'
+  }
+});
+```
+</details>
 
 ## License
 This project is licensed under the terms of the AGPL-3.0 license.

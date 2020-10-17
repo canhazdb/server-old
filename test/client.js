@@ -74,8 +74,8 @@ test('post, put and get', async t => {
   const client = createClient(node.url, { tls });
 
   const document = await client.post('tests', { a: 1 });
-  const deletion = await client.put('tests', { id: document.id }, { b: 2 });
-  const reget = await client.getOne('tests', { id: document.id });
+  const deletion = await client.put('tests', { b: 2 }, { id: document.id });
+  const reget = await client.getOne('tests', { query: { id: document.id } });
 
   await node.close();
 
@@ -96,7 +96,7 @@ test('post, delete and get', async t => {
 
   const document = await client.post('tests', { a: 1 });
   const deletion = await client.delete('tests', { id: document.id });
-  const reget = await client.getOne('tests', { id: document.id });
+  const reget = await client.getOne('tests', { query: { id: document.id } });
 
   await node.close();
 
