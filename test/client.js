@@ -87,6 +87,29 @@ test('post, put and get', async t => {
   t.deepEqual(reget.b, 3);
 });
 
+test('post, patch and get', async t => {
+  t.plan(6);
+
+  await clearData();
+
+  const node = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls });
+  const client = createClient(node.url, { tls });
+
+  await client.post('tests', { a: 1 });
+  const document = await client.post('tests', { a: 2 });
+  const patched = await client.patch('tests', { b: 3 }, { query: { id: document.id } });
+  const reget = await client.getOne('tests', { query: { id: document.id } });
+
+  await node.close();
+
+  t.deepEqual(document.a, 2);
+  t.deepEqual(patched.changes, 1);
+  t.ok(reget.id);
+  t.ok(reget.b);
+  t.deepEqual(reget.a, 2);
+  t.deepEqual(reget.b, 3);
+});
+
 test('post, delete and get', async t => {
   t.plan(3);
 

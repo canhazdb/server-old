@@ -101,6 +101,41 @@ test('put: some data', async t => {
   t.equal(getRequest.status, 200);
 });
 
+test('patch: some data', async t => {
+  t.plan(3);
+
+  await clearData();
+
+  const cluster = await createTestCluster(3, tls);
+
+  const postRequest = await httpRequest(`${cluster.nodes[1].url}/tests`, {
+    method: 'POST',
+    data: {
+      a: 1
+    }
+  });
+
+  await httpRequest(`${cluster.nodes[1].url}/tests/${postRequest.data.id}`, {
+    method: 'PATCH',
+    data: {
+      b: "a'2"
+    }
+  });
+
+  const getRequest = await httpRequest(`${cluster.nodes[1].url}/tests/${postRequest.data.id}`);
+
+  cluster.closeAll();
+
+  t.deepEqual(getRequest.data, {
+    id: postRequest.data.id,
+    a: 1,
+    b: "a'2"
+  });
+
+  t.equal(postRequest.status, 201);
+  t.equal(getRequest.status, 200);
+});
+
 test('delete: record returns a 404', async t => {
   t.plan(4);
 

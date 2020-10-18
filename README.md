@@ -167,12 +167,24 @@ async function main () {
   </tr>
   <tr>
     <td><a href="https://www.github.com/markwylde/canhazdb">6</a></td>
+    <td>PATCH</td>
+    <td>/:collectionId/:documentId</td>
+    <td>Partially update a document by id</td>
+  </tr>
+  <tr>
+    <td><a href="https://www.github.com/markwylde/canhazdb">7</a></td>
+    <td>PATCH</td>
+    <td>/:collectionId/:documentId?query</td>
+    <td>Partially update multiple document matching query</td>
+  </tr>
+  <tr>
+    <td><a href="https://www.github.com/markwylde/canhazdb">8</a></td>
     <td>DELETE</td>
     <td>/:collectionId/:documentId</td>
     <td>Delete a document by id</td>
   </tr>
   <tr>
-    <td><a href="https://www.github.com/markwylde/canhazdb">7</a></td>
+    <td><a href="https://www.github.com/markwylde/canhazdb">9</a></td>
     <td>DELETE</td>
     <td>/:collectionId/:documentId?query</td>
     <td>Delete multiple document matching query</td>
@@ -328,7 +340,71 @@ client.put('tests', {
 </details>
 
 <details>
-<summary>6. Delete a document by id</summary>
+<summary>6. Partially update multiple documents by id</summary>
+
+<table>
+  <tr><td><strong>Method</strong></td><td>PATCH</td></tr>
+  <tr><td><strong>URL</strong></td><td>/collectionId/documentId</td></tr>
+  <tr><td><strong>Data</strong></td><td>JSON</td></tr>
+</table>
+
+**HTTP Request:**
+```javascript
+axios({
+  url: 'https://localhost:8061/tests/example-uuid-paramater',
+  method: 'PATCH',
+  data: {
+    timezone: 'GMT'
+  }
+})
+```
+
+**Client:**
+```javascript
+client.patch('tests', {
+    timezone: 'GMT'
+}, {
+  query: {
+    location: 'GB'
+  }
+});
+```
+</details>
+
+<details>
+<summary>7. Partially update multiple documents by query</summary>
+
+<table>
+  <tr><td><strong>Method</strong></td><td>PATCH</td></tr>
+  <tr><td><strong>URL</strong></td><td>/collectionId/documentId</td></tr>
+  <tr><td><strong>Data</strong></td><td>JSON</td></tr>
+</table>
+
+**HTTP Request:**
+```javascript
+axios({
+  url: 'https://localhost:8061/tests?query={"location":"GB"}',
+  method: 'PATCH',
+  data: {
+    timezone: 'GMT'
+  }
+})
+```
+
+**Client:**
+```javascript
+client.patch('tests', {
+    timezone: 'GMT'
+}, {
+  query: {
+    location: 'GB'
+  }
+});
+```
+</details>
+
+<details>
+<summary>8. Delete a document by id</summary>
 
 <table>
   <tr><td><strong>Method</strong></td><td>DELETE</td></tr>
@@ -355,7 +431,7 @@ client.delete('tests', {
 </details>
 
 <details>
-<summary>7. Delete multiple documents by query</summary>
+<summary>9. Delete multiple documents by query</summary>
 
 <table>
   <tr><td><strong>Method</strong></td><td>DELETE</td></tr>
