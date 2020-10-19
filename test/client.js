@@ -128,3 +128,39 @@ test('post, delete and get', async t => {
   t.deepEqual(deletion.changes, 1);
   t.notOk(reget);
 });
+
+test('serialise undefined', async t => {
+  t.plan(5);
+
+  const client = await createClient('http://example.com');
+
+  try {
+    await client.getAll('test', { query: { un: undefined } });
+  } catch (error) {
+    t.equal(error.message, 'canhazdb:client can not serialise an object with undefined');
+  }
+
+  try {
+    await client.getOne('test', { query: { un: undefined } });
+  } catch (error) {
+    t.equal(error.message, 'canhazdb:client can not serialise an object with undefined');
+  }
+
+  try {
+    await client.put('test', {}, { query: { un: undefined } });
+  } catch (error) {
+    t.equal(error.message, 'canhazdb:client can not serialise an object with undefined');
+  }
+
+  try {
+    await client.patch('test', {}, { query: { un: undefined } });
+  } catch (error) {
+    t.equal(error.message, 'canhazdb:client can not serialise an object with undefined');
+  }
+
+  try {
+    await client.delete('test', { query: { un: undefined } });
+  } catch (error) {
+    t.equal(error.message, 'canhazdb:client can not serialise an object with undefined');
+  }
+});
