@@ -65,6 +65,25 @@ test('post and get', async t => {
   t.deepEqual(result[0].a, 1);
 });
 
+test('post and get specific fields', async t => {
+  t.plan(1);
+
+  await clearData();
+
+  const node = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls });
+  const client = createClient(node.url, { tls });
+
+  await client.post('tests', { a: 1, b: 2, c: 3 });
+  const result = await client.getAll('tests', { fields: ['b'] });
+
+  await node.close();
+
+  t.deepEqual(result, [{
+    id: result[0].id,
+    b: 2
+  }]);
+});
+
 test('post, put and get', async t => {
   t.plan(5);
 
