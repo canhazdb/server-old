@@ -44,6 +44,64 @@ test('post: and get some data', async t => {
   t.equal(getRequest.status, 200);
 });
 
+test('post: and getAll specific fields only', async t => {
+  t.plan(3);
+
+  await clearData();
+
+  const cluster = await createTestCluster(3, tls);
+  const node = cluster.getRandomNodeUrl();
+
+  const postRequest = await httpRequest(`${node.url}/tests`, {
+    method: 'POST',
+    data: {
+      a: 1,
+      b: 2,
+      c: 3
+    }
+  });
+
+  const getRequest = await httpRequest(`${node.url}/tests?fields=["b"]`);
+  cluster.closeAll();
+
+  t.deepEqual(getRequest.data[0], {
+    id: getRequest.data[0].id ? getRequest.data[0].id : t.fail(),
+    b: 2
+  });
+
+  t.equal(postRequest.status, 201);
+  t.equal(getRequest.status, 200);
+});
+
+test('post: and getOne specific fields only', async t => {
+  t.plan(3);
+
+  await clearData();
+
+  const cluster = await createTestCluster(3, tls);
+  const node = cluster.getRandomNodeUrl();
+
+  const postRequest = await httpRequest(`${node.url}/tests`, {
+    method: 'POST',
+    data: {
+      a: 1,
+      b: 2,
+      c: 3
+    }
+  });
+
+  const getRequest = await httpRequest(`${node.url}/tests/${postRequest.data.id}?fields=["b"]`);
+  cluster.closeAll();
+
+  t.deepEqual(getRequest.data, {
+    id: getRequest.data.id ? getRequest.data.id : t.fail(),
+    b: 2
+  });
+
+  t.equal(postRequest.status, 201);
+  t.equal(getRequest.status, 200);
+});
+
 test('post: some data with invalid collection name', async t => {
   t.plan(2);
 

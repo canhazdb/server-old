@@ -138,13 +138,13 @@ async function main () {
   <tr>
     <td><a href="https://www.github.com/markwylde/canhazdb">1</a></td>
     <td>GET</td>
-    <td>/:collectionId</td>
+    <td>/:collectionId?fields]</td>
     <td>List all documents for a collection</td>
   </tr>
   <tr>
     <td><a href="https://www.github.com/markwylde/canhazdb">2</a></td>
     <td>GET</td>
-    <td>/:collectionId/:documentId?query&limit&order</td>
+    <td>/:collectionId/:documentId?query&fields&limit&order</td>
     <td>Get a document by id</td>
   </tr>
   <tr>
@@ -198,12 +198,13 @@ async function main () {
 <table>
   <tr><td><strong>Method</strong></td><td>GET</td></tr>
   <tr><td><strong>URL</strong></td><td>/collectionId</td></tr>
+  <tr><td><strong>Fields</strong></td><td>JSON Array</td></tr>
 </table>
 
 **HTTP Request:**
 ```javascript
 axios({
-  url: 'https://localhost:8061/tests/example-uuid-paramater',
+  url: 'https://localhost:8061/tests/example-uuid-paramater?fields=["firstName"]',
 })
 ```
 
@@ -224,6 +225,7 @@ client.get('tests', {
   <tr><td><strong>Method</strong></td><td>GET</td></tr>
   <tr><td><strong>URL</strong></td><td>/collectionId</td></tr>
   <tr><td><strong>Query</strong></td><td>Mongo Query Syntax</td></tr>
+  <tr><td><strong>Fields</strong></td><td>JSON Array</td></tr>
   <tr><td><strong>Limit</strong></td><td>Number</td></tr>
   <tr><td><strong>Order</strong></td><td>Direction(fieldName)</td></tr>
 </table>
@@ -231,7 +233,7 @@ client.get('tests', {
 **HTTP Request:**
 ```javascript
 axios({
-  url: 'https://localhost:8061/tests?query={"firstName":"Joe"}&limit=10&order=desc(firstName)',
+  url: 'https://localhost:8061/tests?query={"firstName":"Joe"}&fields=["firstName"]&limit=10&order=desc(firstName)',
 })
 ```
 
