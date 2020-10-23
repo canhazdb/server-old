@@ -13,44 +13,179 @@ const tls = {
   ca: [fs.readFileSync('./certs/ca.cert.pem')]
 };
 
-test('get', async t => {
-  t.plan(1);
+// test('get', async t => {
+//   t.plan(1);
 
-  await clearData();
+//   await clearData();
 
-  const node = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls });
-  const client = createClient(node.url, { tls });
+//   const node = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls });
+//   const client = createClient(node.url, { tls });
 
-  const result = await client.getAll('tests');
+//   const result = await client.getAll('tests');
 
-  await node.close();
+//   await node.close();
 
-  t.deepEqual(result, []);
-});
+//   t.deepEqual(result, []);
+// });
 
-test('get with limit', async t => {
-  t.plan(1);
+// test('get with limit', async t => {
+//   t.plan(1);
 
-  await clearData();
+//   await clearData();
 
-  const node = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls });
-  const client = createClient(node.url, { tls });
+//   const node = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls });
+//   const client = createClient(node.url, { tls });
 
-  await Promise.all([
-    await client.post('tests', { a: 1 }),
-    await client.post('tests', { a: 2 }),
-    await client.post('tests', { a: 3 })
-  ]);
+//   await Promise.all([
+//     await client.post('tests', { a: 1 }),
+//     await client.post('tests', { a: 2 }),
+//     await client.post('tests', { a: 3 })
+//   ]);
 
-  const result = await client.getAll('tests', { limit: 2 });
+//   const result = await client.getAll('tests', { limit: 2 });
 
-  await node.close();
+//   await node.close();
 
-  t.deepEqual(result.length, 2);
-});
+//   t.deepEqual(result.length, 2);
+// });
 
-test('post and get', async t => {
-  t.plan(1);
+// test('post and get', async t => {
+//   t.plan(1);
+
+//   await clearData();
+
+//   const node = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls });
+//   const client = createClient(node.url, { tls });
+
+//   await client.post('tests', { a: 1 });
+//   const result = await client.getAll('tests');
+
+//   await node.close();
+
+//   t.deepEqual(result[0].a, 1);
+// });
+
+// test('post and get specific fields', async t => {
+//   t.plan(1);
+
+//   await clearData();
+
+//   const node = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls });
+//   const client = createClient(node.url, { tls });
+
+//   await client.post('tests', { a: 1, b: 2, c: 3 });
+//   const result = await client.getAll('tests', { fields: ['b'] });
+
+//   await node.close();
+
+//   t.deepEqual(result, [{
+//     id: result[0].id,
+//     b: 2
+//   }]);
+// });
+
+// test('post, put and get', async t => {
+//   t.plan(5);
+
+//   await clearData();
+
+//   const node = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls });
+//   const client = createClient(node.url, { tls });
+
+//   await client.post('tests', { a: 1 });
+//   const document = await client.post('tests', { a: 2 });
+//   const putted = await client.put('tests', { b: 3 }, { query: { id: document.id } });
+//   const reget = await client.getOne('tests', { query: { id: document.id } });
+
+//   await node.close();
+
+//   t.deepEqual(document.a, 2);
+//   t.deepEqual(putted.changes, 1);
+//   t.ok(reget.id);
+//   t.ok(reget.b);
+//   t.deepEqual(reget.b, 3);
+// });
+
+// test('post, patch and get', async t => {
+//   t.plan(6);
+
+//   await clearData();
+
+//   const node = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls });
+//   const client = createClient(node.url, { tls });
+
+//   await client.post('tests', { a: 1 });
+//   const document = await client.post('tests', { a: 2 });
+//   const patched = await client.patch('tests', { b: 3 }, { query: { id: document.id } });
+//   const reget = await client.getOne('tests', { query: { id: document.id } });
+
+//   await node.close();
+
+//   t.deepEqual(document.a, 2);
+//   t.deepEqual(patched.changes, 1);
+//   t.ok(reget.id);
+//   t.ok(reget.b);
+//   t.deepEqual(reget.a, 2);
+//   t.deepEqual(reget.b, 3);
+// });
+
+// test('post, delete and get', async t => {
+//   t.plan(3);
+
+//   await clearData();
+
+//   const node = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls });
+//   const client = createClient(node.url, { tls });
+
+//   const document = await client.post('tests', { a: 1 });
+//   const deletion = await client.delete('tests', { id: document.id });
+//   const reget = await client.getOne('tests', { query: { id: document.id } });
+
+//   await node.close();
+
+//   t.deepEqual(document.a, 1);
+//   t.deepEqual(deletion.changes, 1);
+//   t.notOk(reget);
+// });
+
+// test('serialise undefined', async t => {
+//   t.plan(5);
+
+//   const client = await createClient('http://example.com');
+
+//   try {
+//     await client.getAll('test', { query: { un: undefined } });
+//   } catch (error) {
+//     t.equal(error.message, 'canhazdb:client can not serialise an object with undefined');
+//   }
+
+//   try {
+//     await client.getOne('test', { query: { un: undefined } });
+//   } catch (error) {
+//     t.equal(error.message, 'canhazdb:client can not serialise an object with undefined');
+//   }
+
+//   try {
+//     await client.put('test', {}, { query: { un: undefined } });
+//   } catch (error) {
+//     t.equal(error.message, 'canhazdb:client can not serialise an object with undefined');
+//   }
+
+//   try {
+//     await client.patch('test', {}, { query: { un: undefined } });
+//   } catch (error) {
+//     t.equal(error.message, 'canhazdb:client can not serialise an object with undefined');
+//   }
+
+//   try {
+//     await client.delete('test', { query: { un: undefined } });
+//   } catch (error) {
+//     t.equal(error.message, 'canhazdb:client can not serialise an object with undefined');
+//   }
+// });
+
+test('invalid query - getAll', async t => {
+  t.plan(2);
 
   await clearData();
 
@@ -58,56 +193,31 @@ test('post and get', async t => {
   const client = createClient(node.url, { tls });
 
   await client.post('tests', { a: 1 });
-  const result = await client.getAll('tests');
+
+  try {
+    await client.getAll('tests', {
+      query: {
+        $nin: ['1']
+      }
+    });
+  } catch (error) {
+    t.equal(error.message, 'canhazdb error');
+    t.deepEqual(error.data, {
+      error: 'SQLITE_ERROR: no such column: undefined',
+      type: 'get',
+      collectionId: 'tests',
+      query: { $nin: ['1'] },
+      fields: '',
+      order: null,
+      limit: null
+    });
+  }
 
   await node.close();
-
-  t.deepEqual(result[0].a, 1);
 });
 
-test('post and get specific fields', async t => {
-  t.plan(1);
-
-  await clearData();
-
-  const node = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls });
-  const client = createClient(node.url, { tls });
-
-  await client.post('tests', { a: 1, b: 2, c: 3 });
-  const result = await client.getAll('tests', { fields: ['b'] });
-
-  await node.close();
-
-  t.deepEqual(result, [{
-    id: result[0].id,
-    b: 2
-  }]);
-});
-
-test('post, put and get', async t => {
-  t.plan(5);
-
-  await clearData();
-
-  const node = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls });
-  const client = createClient(node.url, { tls });
-
-  await client.post('tests', { a: 1 });
-  const document = await client.post('tests', { a: 2 });
-  const putted = await client.put('tests', { b: 3 }, { query: { id: document.id } });
-  const reget = await client.getOne('tests', { query: { id: document.id } });
-
-  await node.close();
-
-  t.deepEqual(document.a, 2);
-  t.deepEqual(putted.changes, 1);
-  t.ok(reget.id);
-  t.ok(reget.b);
-  t.deepEqual(reget.b, 3);
-});
-
-test('post, patch and get', async t => {
-  t.plan(6);
+test('invalid query - getOne', async t => {
+  t.plan(2);
 
   await clearData();
 
@@ -115,71 +225,112 @@ test('post, patch and get', async t => {
   const client = createClient(node.url, { tls });
 
   await client.post('tests', { a: 1 });
-  const document = await client.post('tests', { a: 2 });
-  const patched = await client.patch('tests', { b: 3 }, { query: { id: document.id } });
-  const reget = await client.getOne('tests', { query: { id: document.id } });
+
+  try {
+    await client.getOne('tests', {
+      query: {
+        $nin: ['1']
+      }
+    });
+  } catch (error) {
+    t.equal(error.message, 'canhazdb error');
+    t.deepEqual(error.data, {
+      error: 'SQLITE_ERROR: no such column: undefined',
+      type: 'get',
+      collectionId: 'tests',
+      query: { $nin: ['1'] },
+      fields: '',
+      order: null,
+      limit: null
+    });
+  }
 
   await node.close();
-
-  t.deepEqual(document.a, 2);
-  t.deepEqual(patched.changes, 1);
-  t.ok(reget.id);
-  t.ok(reget.b);
-  t.deepEqual(reget.a, 2);
-  t.deepEqual(reget.b, 3);
 });
 
-test('post, delete and get', async t => {
-  t.plan(3);
+test('invalid query - put', async t => {
+  t.plan(2);
 
   await clearData();
 
   const node = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls });
   const client = createClient(node.url, { tls });
 
-  const document = await client.post('tests', { a: 1 });
-  const deletion = await client.delete('tests', { id: document.id });
-  const reget = await client.getOne('tests', { query: { id: document.id } });
+  await client.post('tests', { a: 1 });
+
+  try {
+    await client.put('tests', {}, {
+      query: {
+        $nin: ['1']
+      }
+    });
+  } catch (error) {
+    t.equal(error.message, 'canhazdb error');
+    t.deepEqual(error.data, {
+      error: 'SQLITE_ERROR: no such column: undefined',
+      type: 'put',
+      collectionId: 'tests',
+      query: { $nin: ['1'] }
+    });
+  }
 
   await node.close();
-
-  t.deepEqual(document.a, 1);
-  t.deepEqual(deletion.changes, 1);
-  t.notOk(reget);
 });
 
-test('serialise undefined', async t => {
-  t.plan(5);
+test('invalid query - patch', async t => {
+  t.plan(2);
 
-  const client = await createClient('http://example.com');
+  await clearData();
 
-  try {
-    await client.getAll('test', { query: { un: undefined } });
-  } catch (error) {
-    t.equal(error.message, 'canhazdb:client can not serialise an object with undefined');
-  }
+  const node = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls });
+  const client = createClient(node.url, { tls });
 
-  try {
-    await client.getOne('test', { query: { un: undefined } });
-  } catch (error) {
-    t.equal(error.message, 'canhazdb:client can not serialise an object with undefined');
-  }
+  await client.post('tests', { a: 1 });
 
   try {
-    await client.put('test', {}, { query: { un: undefined } });
+    await client.patch('tests', {}, {
+      query: {
+        $nin: ['1']
+      }
+    });
   } catch (error) {
-    t.equal(error.message, 'canhazdb:client can not serialise an object with undefined');
+    t.equal(error.message, 'canhazdb error');
+    t.deepEqual(error.data, {
+      error: 'SQLITE_ERROR: no such column: undefined',
+      type: 'patch',
+      collectionId: 'tests',
+      query: { $nin: ['1'] }
+    });
   }
 
-  try {
-    await client.patch('test', {}, { query: { un: undefined } });
-  } catch (error) {
-    t.equal(error.message, 'canhazdb:client can not serialise an object with undefined');
-  }
+  await node.close();
+});
+
+test('invalid query - delete', async t => {
+  t.plan(2);
+
+  await clearData();
+
+  const node = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls });
+  const client = createClient(node.url, { tls });
+
+  await client.post('tests', { a: 1 });
 
   try {
-    await client.delete('test', { query: { un: undefined } });
+    await client.delete('tests', {
+      query: {
+        $nin: ['1']
+      }
+    });
   } catch (error) {
-    t.equal(error.message, 'canhazdb:client can not serialise an object with undefined');
+    t.equal(error.message, 'canhazdb error');
+    t.deepEqual(error.data, {
+      error: 'SQLITE_ERROR: no such column: undefined',
+      type: 'delete',
+      collectionId: 'tests',
+      query: { $nin: ['1'] }
+    });
   }
+
+  await node.close();
 });
