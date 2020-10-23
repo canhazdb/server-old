@@ -18,14 +18,15 @@
     "mongo-sql": "^6.2.0",
     "qs": "^6.9.4",
     "sqlite-fp": "^2.1.2",
-    "tcpocket": "^1.2.2",
+    "tcpocket": "^2.0.2",
     "uuid": "^8.3.1",
     "write-response": "^1.2.3"
   },
   "devDependencies": {
     "c8": "^7.3.3",
     "tape": "^5.0.1",
-    "tape-catch": "^1.0.6"
+    "tape-catch": "^1.0.6",
+    "wtfnode": "^0.8.3"
   },
   "scripts": {
     "test": "./makeCerts.sh && c8 -o /tmp node test"

@@ -6,6 +6,8 @@ const clearData = require('./helpers/clearData');
 const createTestCluster = require('./helpers/createTestCluster');
 const canhazdb = require('../lib');
 
+const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+
 const tls = {
   key: fs.readFileSync('./certs/localhost.privkey.pem'),
   cert: fs.readFileSync('./certs/localhost.cert.pem'),
@@ -225,7 +227,7 @@ test('delete: record returns a 404', async t => {
   t.equal(getRequest.status, 404);
 });
 
-test('find: collection does not exist', async t => {
+test('find: collection has no records', async t => {
   t.plan(2);
 
   await clearData();
@@ -236,7 +238,7 @@ test('find: collection does not exist', async t => {
 
   cluster.closeAll();
 
-  t.deepEqual(getRequest.status, 404);
+  t.deepEqual(getRequest.status, 200);
   t.deepEqual(getRequest.data, []);
 });
 
@@ -520,4 +522,54 @@ test('autojoin: join learned nodes automatically', async t => {
   t.deepEqual(getAllPorts(cluster.nodes[0]), [7060, 7061, 7062, 7071]);
   t.deepEqual(getAllPorts(cluster.nodes[1]), [7060, 7061, 7062, 7071]);
   t.deepEqual(getAllPorts(cluster.nodes[2]), [7060, 7061, 7062, 7071]);
+});
+
+test('disaster: one node goes offline', async t => {
+  t.plan(2);
+
+  await clearData();
+
+  const cluster = await createTestCluster(3, tls);
+
+  await cluster.nodes[1].close();
+
+  const getRequest = await httpRequest(`${cluster.nodes[2].url}/tests`);
+
+  cluster.closeAll();
+
+  t.equal(getRequest.status, 503);
+  t.deepEqual(getRequest.data, {
+    errors: [
+      'a node in the cluster is unhealthy, therefore the database is down'
+    ]
+  });
+});
+
+test('disaster: one node goes offline then online', async t => {
+  t.plan(4);
+
+  await clearData();
+
+  const cluster = await createTestCluster(3, tls);
+
+  await cluster.nodes[1].close();
+
+  const getRequestAfterClose = await httpRequest(`${cluster.nodes[2].url}/tests`);
+
+  t.equal(getRequestAfterClose.status, 503);
+  t.deepEqual(getRequestAfterClose.data, {
+    errors: [
+      'a node in the cluster is unhealthy, therefore the database is down'
+    ]
+  });
+
+  await cluster.nodes[1].open();
+
+  await sleep(1000);
+
+  const getRequestAfterReopen = await httpRequest(`${cluster.nodes[2].url}/tests`);
+
+  cluster.closeAll();
+  t.equal(getRequestAfterReopen.status, 200);
+  t.deepEqual(getRequestAfterReopen.data, []);
 });
