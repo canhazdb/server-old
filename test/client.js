@@ -14,7 +14,7 @@ const tls = {
 };
 
 test('unknown keys', async t => {
-  t.plan(6);
+  t.plan(7);
 
   await clearData();
 
@@ -45,7 +45,42 @@ test('unknown keys', async t => {
     t.equal(error.message, 'canhazdb error: unknown keys wrongKey');
   });
 
+  client.lock('not array').catch(error => {
+    t.equal(error.message, 'canhazdb error: keys must be array but got not array');
+  });
+
   await node.close();
+});
+
+test('lock and unlock', async t => {
+  t.plan(5);
+
+  await clearData();
+
+  const node = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls });
+  const client = createClient(node.url, { tls });
+
+  const lock1 = client.lock(['tests']).then(async lockId => {
+    t.pass('lock 1 ran');
+    t.equal(lockId.length, 36, 'lockId was uuid');
+    return client.unlock(lockId);
+  });
+
+  const lock2 = client.lock(['tests']).then(async lockId => {
+    t.pass('lock 2 ran');
+    return client.unlock(lockId);
+  });
+
+  const lock3 = client.lock(['tests']).then(async lockId => {
+    t.pass('lock 3 ran');
+    return client.unlock(lockId);
+  });
+
+  await Promise.all([lock1, lock2, lock3]);
+
+  await node.close();
+
+  t.pass();
 });
 
 test('get', async t => {

@@ -32,8 +32,8 @@ const tls = {
 const client = createClient('https://localhost:8063', { tls });
 
 const document = await client.post('tests', { a: 1 });
-const changed = await client.put('tests', { id: document.id }, { b: 2 });
-const changedDocument = await client.getOne('tests', { id: document.id });
+const changed = await client.put('tests', { id: document.id }, { query: { b: 2 } });
+const changedDocument = await client.getOne('tests', { query: { id: document.id } });
 
 console.log( {
   document, /* { a: 1 } */
@@ -188,6 +188,18 @@ async function main () {
     <td>DELETE</td>
     <td>/:collectionId/:documentId?query</td>
     <td>Delete multiple document matching query</td>
+  </tr>
+  <tr>
+    <td><a href="https://www.github.com/markwylde/canhazdb">10</a></td>
+    <td>POST</td>
+    <td>/_/locks</td>
+    <td>Lock a collection/document/field combination</td>
+  </tr>
+  <tr>
+    <td><a href="https://www.github.com/markwylde/canhazdb">11</a></td>
+    <td>DELETE</td>
+    <td>/_/locks/:lockId</td>
+    <td>Release a lock</td>
   </tr>
 </table>
 
@@ -455,6 +467,61 @@ client.delete('tests', {
     location: 'GB'
   }
 });
+```
+</details>
+
+<details>
+<summary>10. Lock a collection/document/field combination</summary>
+
+<table>
+  <tr><td><strong>Method</strong></td><td>POST</td></tr>
+  <tr><td><strong>URL</strong></td><td>/_/locks</td></tr>
+  <tr><td><strong>Data</strong></td><td>JSON Array</td></tr>
+</table>
+
+**HTTP Request:**
+```javascript
+const lock = await axios({
+  url: 'https://localhost:8061/_/locks',
+  method: 'POST',
+  data: ['users']
+});
+const lockId = lock.data.id;
+```
+
+**Client:**
+```javascript
+const lockId = await client.lock('users');
+```
+</details>
+
+<details>
+<summary>11. Release a lock</summary>
+
+<table>
+  <tr><td><strong>Method</strong></td><td>DELETE</td></tr>
+  <tr><td><strong>URL</strong></td><td>/_/locks/:lockId</td></tr>
+</table>
+
+**HTTP Request:**
+```javascript
+const lock = await axios({
+  url: 'https://localhost:8061/_/locks',
+  method: 'POST',
+  data: ['users']
+});
+const lockId = lock.data.id;
+
+await axios({
+  url: `https://localhost:8061/_/locks/${lockId}`,
+  method: 'DELETE'
+});
+```
+
+**Client:**
+```javascript
+const lockId = await client.lock('users');
+await client.unlock(lockId);
 ```
 </details>
 
