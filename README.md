@@ -138,7 +138,7 @@ async function main () {
   <tr>
     <td><a href="https://www.github.com/markwylde/canhazdb">1</a></td>
     <td>GET</td>
-    <td>/:collectionId?fields]</td>
+    <td>/:collectionId?fields</td>
     <td>List all documents for a collection</td>
   </tr>
   <tr>
@@ -520,7 +520,7 @@ await axios({
 
 **Client:**
 ```javascript
-const lockId = await client.lock('users');
+const lockId = await client.lock(['users']);
 await client.unlock(lockId);
 ```
 </details>
