@@ -213,7 +213,7 @@ test('lock: and post some data (conflict + wait)', async t => {
   t.equal(unlockRequest.status, 200);
 });
 
-test.only('lock: all methods lock', async t => {
+test('lock: all methods lock', async t => {
   t.plan(2);
 
   await clearData();
