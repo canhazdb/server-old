@@ -512,6 +512,15 @@ const lock = await axios({
 });
 const lockId = lock.data.id;
 
+const lock = await axios({
+  url: 'https://localhost:8061/users',
+  method: 'POST',
+  headers: {
+    'x-lock-id': lockId,
+    'x-lock-strategy': 'wait' // optional: can be 'fail' or 'wait'. default is 'wait'.
+  }
+});
+
 await axios({
   url: `https://localhost:8061/_/locks/${lockId}`,
   method: 'DELETE'
@@ -521,6 +530,12 @@ await axios({
 **Client:**
 ```javascript
 const lockId = await client.lock(['users']);
+const newDocument = await client.post('users', {
+  name: 'mark'
+}, {
+  lockId,
+  lockStrategy: 'wait' // optional: can be 'fail' or 'wait'. default is 'wait'.
+});
 await client.unlock(lockId);
 ```
 </details>

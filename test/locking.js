@@ -212,3 +212,51 @@ test('lock: and post some data (conflict + wait)', async t => {
   });
   t.equal(unlockRequest.status, 200);
 });
+
+test('lock: all methods lock', async t => {
+  t.plan(2);
+
+  await clearData();
+
+  const cluster = await createTestCluster(3, tls);
+  const node = cluster.getRandomNodeUrl();
+
+  let unlocked = false;
+
+  const postRequest = await httpRequest(`${node.url}/tests`, {
+    method: 'POST',
+    data: { a: 1 }
+  });
+
+  const lockRequest = await httpRequest(`${node.url}/_/locks`, {
+    method: 'POST',
+    data: ['tessts']
+  });
+
+  const putRequest = httpRequest(`${node.url}/tests/${postRequest.data.id}`, {
+    method: 'PUT',
+    data: { a: 2 }
+  });
+
+  const patchRequest = httpRequest(`${node.url}/tests/${postRequest.data.id}`, {
+    method: 'PATCH',
+    data: { a: 2 }
+  });
+
+  const deleteRequest = httpRequest(`${node.url}/tests/${postRequest.data.id}`, {
+    method: 'DELETE'
+  });
+
+  Promise.all([putRequest, patchRequest, deleteRequest])
+    .then((args) => {
+      t.deepEqual(args.map(arg => arg.status), [200, 200, 200]);
+      t.ok(unlocked, 'requests happened after unlock');
+      cluster.closeAll();
+    });
+
+  await httpRequest(`${node.url}/_/locks/${lockRequest.data.id}`, {
+    method: 'DELETE'
+  });
+
+  unlocked = true;
+});
