@@ -12,7 +12,7 @@
   "dependencies": {
     "axios": "^0.20.0",
     "chalk": "^4.1.0",
-    "final-stream": "^2.0.1",
+    "final-stream": "^2.0.2",
     "hinton": "^1.0.0",
     "lockbase": "^1.0.8",
     "minimist": "^1.2.5",
