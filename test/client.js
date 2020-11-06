@@ -274,7 +274,7 @@ test('invalid query - getAll', async t => {
     t.equal(error.message, 'canhazdb error');
     t.deepEqual(error.data, {
       error: 'SQLITE_ERROR: no such column: undefined',
-      type: 'get',
+      type: 'GET',
       collectionId: 'tests',
       query: { $nin: ['1'] },
       fields: '',
@@ -306,7 +306,7 @@ test('invalid query - getOne', async t => {
     t.equal(error.message, 'canhazdb error');
     t.deepEqual(error.data, {
       error: 'SQLITE_ERROR: no such column: undefined',
-      type: 'get',
+      type: 'GET',
       collectionId: 'tests',
       query: { $nin: ['1'] },
       fields: '',
@@ -338,7 +338,7 @@ test('invalid query - put', async t => {
     t.equal(error.message, 'canhazdb error');
     t.deepEqual(error.data, {
       error: 'SQLITE_ERROR: no such column: undefined',
-      type: 'put',
+      type: 'PUT',
       collectionId: 'tests',
       query: { $nin: ['1'] }
     });
@@ -367,7 +367,7 @@ test('invalid query - patch', async t => {
     t.equal(error.message, 'canhazdb error');
     t.deepEqual(error.data, {
       error: 'SQLITE_ERROR: no such column: undefined',
-      type: 'patch',
+      type: 'PATCH',
       collectionId: 'tests',
       query: { $nin: ['1'] }
     });
@@ -396,7 +396,7 @@ test('invalid query - delete', async t => {
     t.equal(error.message, 'canhazdb error');
     t.deepEqual(error.data, {
       error: 'SQLITE_ERROR: no such column: undefined',
-      type: 'delete',
+      type: 'DELETE',
       collectionId: 'tests',
       query: { $nin: ['1'] }
     });

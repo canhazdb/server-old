@@ -47,6 +47,7 @@ test('lock: and post some data (success)', async t => {
   cluster.closeAll();
 
   t.equal(postRequest.status, 201);
+
   t.deepEqual(getRequest.data, {
     id: getRequest.data.id ? getRequest.data.id : t.fail(),
     a: 1,

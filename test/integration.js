@@ -535,7 +535,7 @@ test('disaster: one node goes offline', async t => {
 
   const getRequest = await httpRequest(`${cluster.nodes[2].url}/tests`);
 
-  cluster.closeAll();
+  await cluster.closeAll();
 
   t.equal(getRequest.status, 503);
   t.deepEqual(getRequest.data, {
@@ -569,7 +569,8 @@ test('disaster: one node goes offline then online', async t => {
 
   const getRequestAfterReopen = await httpRequest(`${cluster.nodes[2].url}/tests`);
 
-  cluster.closeAll();
+  await cluster.closeAll();
+
   t.equal(getRequestAfterReopen.status, 200);
   t.deepEqual(getRequestAfterReopen.data, []);
 });
