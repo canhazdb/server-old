@@ -20,7 +20,7 @@
     "qs": "^6.9.4",
     "sqlite": "^4.0.15",
     "sqlite3": "^5.0.0",
-    "tcpocket": "^2.0.2",
+    "tcpocket": "^3.0.3",
     "uuid": "^8.3.1",
     "write-response": "^1.2.3"
   },
