@@ -1,5 +1,5 @@
 # canhazdb
-![Node.js Test Runner](https://github.com/puzed/puzed-api/workflows/Node.js%20Test%20Runner/badge.svg)
+![Node.js Test Runner](https://github.com/markwylde/canhazdb/workflows/Node.js%20Test%20Runner/badge.svg)
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/markwylde/canhazdb)
 [![GitHub package.json version](https://img.shields.io/github/package-json/v/markwylde/canhazdb)](https://github.com/markwylde/canhazdb/blob/master/package.json)
 [![GitHub](https://img.shields.io/github/license/markwylde/canhazdb)](https://github.com/markwylde/canhazdb/blob/master/LICENSE)
