@@ -4,8 +4,8 @@ const test = require('tape');
 
 const clearData = require('./helpers/clearData');
 
-const canhazdb = require('../lib');
-const createClient = require('../lib/client');
+const canhazdb = require('../server');
+const createClient = require('../client');
 
 const tls = {
   key: fs.readFileSync('./certs/localhost.privkey.pem'),
@@ -403,4 +403,24 @@ test('invalid query - delete', async t => {
   }
 
   await node.close();
+});
+
+test.skip('post and notify', async t => {
+  t.plan(1);
+
+  await clearData();
+
+  const node = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls });
+  const client = createClient(node.url, { tls });
+
+  let postedDocument;
+  client.on('/tests', async (path) => {
+    await node.close();
+
+    t.equal(path, '/tests/' + postedDocument.id);
+  });
+
+  client.post('tests', { a: 1 }).then(document => {
+    postedDocument = document;
+  });
 });
