@@ -20,9 +20,10 @@
     "qs": "^6.9.4",
     "sqlite": "^4.0.15",
     "sqlite3": "^5.0.0",
-    "tcpocket": "^3.0.3",
+    "tcpocket": "^4.0.0",
     "uuid": "^8.3.1",
-    "write-response": "^1.2.3"
+    "write-response": "^1.2.3",
+    "ws": "^7.4.0"
   },
   "devDependencies": {
     "c8": "^7.3.3",

@@ -5,14 +5,14 @@ const tcpocket = require('tcpocket');
 
 const httpHandler = require('./httpHandler');
 const tcpHandler = require('./tcpHandler');
-
-const { flushCache } = require('./utils/cachableSqlite');
+const wsHandler = require('./wsHandler');
 
 const { COMMAND, INFO, DATA } = require('./constants');
 
 async function canhazdb (options) {
   const log = (options.logger || console.log);
 
+  options.driver = options.driver || 'sqlite';
   options.dataDirectory = options.dataDirectory || path.resolve(process.cwd(), './canhazdata');
   options.port = parseInt(options.port);
 
@@ -24,6 +24,8 @@ async function canhazdb (options) {
 
     data: {}
   };
+
+  state.driver = require('./drivers/' + options.driver)(state);
 
   async function makeConnection (host, port, tls, node) {
     if (!state.opened) {
@@ -66,6 +68,10 @@ async function canhazdb (options) {
       state.clients.push(client);
       node.status = 'healthy';
 
+      client.on('message', data => {
+        state.handleMessage && state.handleMessage(data);
+      });
+
       client.on('close', () => {
         handleError(Object.assign(new Error('client closed'), { code: 'CLOSED' }));
       });
@@ -92,6 +98,8 @@ async function canhazdb (options) {
   } else {
     server = require('http').createServer(httpHandler.bind(null, state));
   }
+
+  const wss = wsHandler(server, state, options);
 
   async function join ({ host, port }, alreadyRecursed) {
     port = parseInt(port);
@@ -131,6 +139,8 @@ async function canhazdb (options) {
 
   const serverReturn = {
     url: `${options.tls ? 'https' : 'http'}://` + options.host + ':' + options.queryPort,
+    wsUrl: `${options.tls ? 'wss' : 'ws'}://` + options.host + ':' + options.queryPort,
+
     host: options.host,
     port: options.port,
     queryPort: options.queryPort,
@@ -164,8 +174,9 @@ async function canhazdb (options) {
       }));
 
       server.close();
+      wss.close();
       tcpServer.close();
-      flushCache();
+      state.driver.close();
     }
   };
 

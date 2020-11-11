@@ -55,6 +55,8 @@ The following commands and arguments are available when starting Bitabase
 Arguments:
   --data-dir      optional     The port to bind the https query server on (default: ./canhazdata)
 
+  --driver        optional     The driver to use for data storage (default: sqlite)
+
   --host          optional     The host to bind the internal and query server on (default: localhost)
   --port          optional     The port to bind the internal server on (default: 7060)
   --query-port    optional     The port to bind the https query server on (default: 8060)
@@ -79,6 +81,7 @@ if (argv.help) {
     host: argv.host || 'localhost',
     port: argv.port || 7060,
     queryPort: argv['query-port'] || 8060,
+    driver: argv.driver || 'sqlite',
 
     tlsCa: argv['tls-ca'],
     tlsCert: argv['tls-cert'],

@@ -1,6 +1,6 @@
-const canhazdb = require('../../lib');
+const canhazdb = require('../../server');
 
-const selectRandomItemFromArray = require('../../lib/utils/selectRandomItemFromArray');
+const selectRandomItemFromArray = require('../../utils/selectRandomItemFromArray');
 
 async function createTestCluster (count, tls) {
   const nodePromises = Array(count)

@@ -1,6 +1,6 @@
 const test = require('tape');
 
-const validateAlphaNumericDashDot = require('../../lib/utils/validateAlphaNumericDashDot');
+const validateAlphaNumericDashDot = require('../../utils/validateAlphaNumericDashDot');
 
 test('correct', t => {
   t.plan(1);
