@@ -1,0 +1,13 @@
+version: "3"
+
+services:
+  canhazdb:
+    image: canhazdb
+    command: "node server/cli.js --join-from-dns tasks.canhazdb --data-dir /data"
+    volumes:
+      - "./:/app"
+      - "/app/node_modules"
+    ports:
+      - "8060:8060"
+    deploy:
+      replicas: 3

@@ -3,28 +3,28 @@ const canhazdb = require('../../server');
 const selectRandomItemFromArray = require('../../utils/selectRandomItemFromArray');
 
 async function createTestCluster (count, tls) {
-  const nodePromises = Array(count)
+  const nodeOptions = Array(count)
     .fill(null)
     .map((_, index) => {
-      return canhazdb({
+      const port = 7060 + index;
+
+      return {
         host: 'localhost',
         logger: () => {},
-        port: 7060 + index,
+        port,
         queryPort: 8060 + index,
         dataDirectory: './canhazdata/' + index,
         tls
-      });
+      };
     });
 
-  const nodes = await Promise.all(nodePromises);
+  const nodePromises = nodeOptions
+    .map((options) => canhazdb({
+      ...options,
+      join: nodeOptions.map(options => `localhost:${options.port}`)
+    }));
 
-  await Promise.all(nodes.map(node => {
-    return Array(count)
-      .fill(null)
-      .map((_, index) => {
-        return node.join({ host: 'localhost', port: 7060 + index });
-      });
-  }).flat());
+  const nodes = await Promise.all(nodePromises);
 
   return {
     getRandomNodeUrl: () => {
