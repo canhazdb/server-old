@@ -4,8 +4,8 @@ const test = require('tape');
 
 const clearData = require('./helpers/clearData');
 
-const canhazdb = require('../lib');
-const createClient = require('../lib/client');
+const canhazdb = require('../server');
+const createClient = require('../client');
 
 const tls = {
   key: fs.readFileSync('./certs/localhost.privkey.pem'),
@@ -50,6 +50,7 @@ test('unknown keys', async t => {
   });
 
   await node.close();
+  await client.close();
 });
 
 test('lock and unlock', async t => {
@@ -79,6 +80,7 @@ test('lock and unlock', async t => {
   await Promise.all([lock1, lock2, lock3]);
 
   await node.close();
+  await client.close();
 
   t.pass();
 });
@@ -94,6 +96,7 @@ test('get', async t => {
   const result = await client.getAll('tests');
 
   await node.close();
+  await client.close();
 
   t.deepEqual(result, []);
 });
@@ -115,6 +118,7 @@ test('get with limit', async t => {
   const result = await client.getAll('tests', { limit: 2 });
 
   await node.close();
+  await client.close();
 
   t.deepEqual(result.length, 2);
 });
@@ -131,6 +135,7 @@ test('post and get', async t => {
   const result = await client.getAll('tests');
 
   await node.close();
+  await client.close();
 
   t.deepEqual(result[0].a, 1);
 });
@@ -147,6 +152,7 @@ test('post and get specific fields', async t => {
   const result = await client.getAll('tests', { fields: ['b'] });
 
   await node.close();
+  await client.close();
 
   t.deepEqual(result, [{
     id: result[0].id,
@@ -168,6 +174,7 @@ test('post, put and get', async t => {
   const reget = await client.getOne('tests', { query: { id: document.id } });
 
   await node.close();
+  await client.close();
 
   t.deepEqual(document.a, 2);
   t.deepEqual(putted.changes, 1);
@@ -190,6 +197,7 @@ test('post, patch and get', async t => {
   const reget = await client.getOne('tests', { query: { id: document.id } });
 
   await node.close();
+  await client.close();
 
   t.deepEqual(document.a, 2);
   t.deepEqual(patched.changes, 1);
@@ -212,6 +220,7 @@ test('post, delete and get', async t => {
   const reget = await client.getOne('tests', { query: { id: document.id } });
 
   await node.close();
+  await client.close();
 
   t.deepEqual(document.a, 1);
   t.deepEqual(deletion.changes, 1);
@@ -221,7 +230,7 @@ test('post, delete and get', async t => {
 test('serialise undefined', async t => {
   t.plan(5);
 
-  const client = await createClient('http://example.com');
+  const client = await createClient('http://example.com', { disableNotify: true });
 
   try {
     await client.getAll('test', { query: { un: undefined } });
@@ -252,6 +261,8 @@ test('serialise undefined', async t => {
   } catch (error) {
     t.equal(error.message, 'canhazdb:client can not serialise an object with undefined');
   }
+
+  await client.close();
 });
 
 test('invalid query - getAll', async t => {
@@ -284,6 +295,7 @@ test('invalid query - getAll', async t => {
   }
 
   await node.close();
+  await client.close();
 });
 
 test('invalid query - getOne', async t => {
@@ -316,6 +328,7 @@ test('invalid query - getOne', async t => {
   }
 
   await node.close();
+  await client.close();
 });
 
 test('invalid query - put', async t => {
@@ -345,6 +358,7 @@ test('invalid query - put', async t => {
   }
 
   await node.close();
+  await client.close();
 });
 
 test('invalid query - patch', async t => {
@@ -374,6 +388,7 @@ test('invalid query - patch', async t => {
   }
 
   await node.close();
+  await client.close();
 });
 
 test('invalid query - delete', async t => {
@@ -403,4 +418,44 @@ test('invalid query - delete', async t => {
   }
 
   await node.close();
+  await client.close();
+});
+
+test('post and notify', async t => {
+  await clearData();
+
+  const node = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls });
+  const client = createClient(node.url, { tls });
+
+  let alreadyHandled = false;
+
+  return new Promise((resolve) => {
+    async function handler (path, resource, pattern) {
+      if (alreadyHandled) {
+        t.fail('handler should only be called once');
+      }
+
+      client.off('POST:/tests', handler);
+
+      client.post('tests', { a: 1 }).then(async document => {
+        await node.close();
+        await client.close();
+        resolve();
+      });
+
+      t.equal(pattern, 'POST:/tests');
+
+      t.ok(path.startsWith('POST:/tests/'), 'path starts with /tests/');
+      t.equal(path.length, 48);
+
+      t.ok(resource.startsWith('/tests/'), 'path starts with /tests/');
+      t.equal(resource.length, 43);
+
+      alreadyHandled = true;
+    }
+
+    client.on('POST:/tests', handler);
+
+    client.post('tests', { a: 1 });
+  });
 });

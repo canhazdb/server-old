@@ -2,9 +2,9 @@ const writeResponse = require('write-response');
 const finalStream = require('final-stream');
 const uuid = require('uuid').v4;
 
-const validateAlphaNumericDashDot = require('./utils/validateAlphaNumericDashDot');
-const selectRandomItemFromArray = require('./utils/selectRandomItemFromArray');
-const orderByFields = require('./utils/orderByFields');
+const validateAlphaNumericDashDot = require('../utils/validateAlphaNumericDashDot');
+const selectRandomItemFromArray = require('../utils/selectRandomItemFromArray');
+const orderByFields = require('../utils/orderByFields');
 
 const {
   COMMAND,

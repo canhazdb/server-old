@@ -4,7 +4,7 @@ const test = require('tape-catch');
 const httpRequest = require('./helpers/httpRequest');
 const clearData = require('./helpers/clearData');
 const createTestCluster = require('./helpers/createTestCluster');
-const canhazdb = require('../lib');
+const canhazdb = require('../server');
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 

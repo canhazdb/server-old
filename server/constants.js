@@ -7,6 +7,8 @@ const constants = {
   DOCUMENTS: commandIndex++,
   DATA: commandIndex++,
   INFO: commandIndex++,
+  NOTIFY_ON: commandIndex++,
+  NOTIFY_OFF: commandIndex++,
   LOCK: commandIndex++,
   UNLOCK: commandIndex++,
   GET: commandIndex++,
