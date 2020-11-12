@@ -93,6 +93,16 @@ async function get (state, request, response) {
   response.reply({ [STATUS]: 200, [DOCUMENTS]: documents });
 }
 
+function notify (notifyPath, resource, request) {
+  request.state.notifiers
+    .filter(notifier => {
+      return notifier[1].test(notifyPath);
+    })
+    .forEach(notifier => {
+      request.state.send([notifyPath, resource, notifier[0]]);
+    });
+}
+
 async function post (state, request, response) {
   const data = request.data[DATA];
   const collectionId = data[COLLECTION_ID];
@@ -105,14 +115,7 @@ async function post (state, request, response) {
 
   const document = await state.driver.post(collectionId, data[DOCUMENT]);
 
-  const notifyPath = `/${collectionId}/${document.id}`;
-  request.state.notifiers
-    .filter(notifier => {
-      return notifier[1].test(notifyPath);
-    })
-    .forEach(notifier => {
-      request.state.send([notifier[0], notifyPath]);
-    });
+  notify(`POST:/${collectionId}/${document.id}`, `/${collectionId}/${document.id}`, request);
 
   response.reply({
     [STATUS]: 201,

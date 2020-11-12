@@ -5,7 +5,7 @@
 [![GitHub](https://img.shields.io/github/license/markwylde/canhazdb)](https://github.com/markwylde/canhazdb/blob/master/LICENSE)
 [![js-semistandard-style](https://img.shields.io/badge/code%20style-semistandard-brightgreen.svg)](https://github.com/standard/semistandard)
 
-A sharded and clustered database communicated over http rest.
+A sharded and clustered database communicated over http rest with notifications included.
 
 ## Getting Started
 You must have a minimum version of Node 12 installed.
@@ -34,6 +34,19 @@ const client = createClient('https://localhost:8063', { tls });
 const document = await client.post('tests', { a: 1 });
 const changed = await client.put('tests', { id: document.id }, { query: { b: 2 } });
 const changedDocument = await client.getOne('tests', { query: { id: document.id } });
+
+// Capture an event based on regex
+// client.on('.*:/tests/.*', ...)
+// client.on('.*:/tests/uuid-uuid-uuid-uuid', ...)
+// client.on('POST:/tests', ...)
+// client.on('DELETE:/tests/.*', ...)
+// client.on('(PUT|PATCH):/tests/uuid-uuid-uuid-uuid', ...)
+
+client.on('POST:/tests/.*', (path, resource, pattern) => {
+  console.log(path) // === 'POST:/tests/uuid-uuid-uuid-uuid'
+  console.log(resource) // === '/tests/uuid-uuid-uuid-uuid'
+  console.log(pattern) // === 'POST:/tests/.*'
+})
 
 console.log( {
   document, /* { a: 1 } */

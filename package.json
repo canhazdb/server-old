@@ -18,6 +18,7 @@
     "minimist": "^1.2.5",
     "mongo-sql": "^6.2.0",
     "qs": "^6.9.4",
+    "reconnecting-websocket": "^4.4.0",
     "sqlite": "^4.0.15",
     "sqlite3": "^5.0.0",
     "tcpocket": "^4.0.0",

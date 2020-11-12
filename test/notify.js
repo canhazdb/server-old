@@ -15,7 +15,7 @@ const tls = {
 };
 
 test('notify: post some data', async t => {
-  t.plan(2);
+  t.plan(5);
 
   await clearData();
 
@@ -24,7 +24,7 @@ test('notify: post some data', async t => {
 
   const ws = new WebSocket(node.wsUrl, tls);
   ws.on('open', function open () {
-    ws.send(JSON.stringify({ '/tests/.*': true }));
+    ws.send(JSON.stringify({ 'POST:/tests/.*': true }));
 
     httpRequest(`${node.url}/tests`, {
       method: 'POST',
@@ -35,14 +35,17 @@ test('notify: post some data', async t => {
   ws.on('message', function incoming (data) {
     cluster.closeAll();
 
-    const parsedData = JSON.parse(data);
-    t.equal(parsedData[0], '/tests/.*');
-    t.ok(parsedData[1].startsWith('/tests/'));
+    const [path, resource, pattern] = JSON.parse(data);
+    t.equal(pattern, 'POST:/tests/.*');
+    t.ok(resource.startsWith('/tests/'));
+    t.equal(resource.length, 43);
+    t.ok(path.startsWith('POST:/tests/'));
+    t.equal(path.length, 48);
   });
 });
 
 test('notify: twos posts', async t => {
-  t.plan(4);
+  t.plan(10);
 
   await clearData();
 
@@ -51,8 +54,8 @@ test('notify: twos posts', async t => {
 
   const ws = new WebSocket(node.wsUrl, tls);
   ws.on('open', function open () {
-    ws.send(JSON.stringify({ '/tests1/.*': true }));
-    ws.send(JSON.stringify({ '/tests2/.*': true }));
+    ws.send(JSON.stringify({ 'POST:/tests1/.*': true }));
+    ws.send(JSON.stringify({ 'POST:/tests2/.*': true }));
 
     httpRequest(`${node.url}/tests1`, {
       method: 'POST',
@@ -71,15 +74,27 @@ test('notify: twos posts', async t => {
       return;
     }
 
-    store.sort((a, b) => a[0] > b[0] ? 1 : -1);
+    store.sort((a, b) => a[2] > b[2] ? 1 : -1);
 
     cluster.closeAll();
 
-    t.equal(store[0][0], '/tests1/.*');
-    t.ok(store[0][1].startsWith('/tests1/'));
+    {
+      const [path, resource, pattern] = store[0];
+      t.equal(pattern, 'POST:/tests1/.*');
+      t.ok(resource.startsWith('/tests1/'));
+      t.equal(resource.length, 44);
+      t.ok(path.startsWith('POST:/tests1/'));
+      t.equal(path.length, 49);
+    }
 
-    t.equal(store[1][0], '/tests2/.*');
-    t.ok(store[1][1].startsWith('/tests2/'));
+    {
+      const [path, resource, pattern] = store[1];
+      t.equal(pattern, 'POST:/tests2/.*');
+      t.ok(resource.startsWith('/tests2/'));
+      t.equal(resource.length, 44);
+      t.ok(path.startsWith('POST:/tests2/'));
+      t.equal(path.length, 49);
+    }
   }
 
   ws.on('message', function incoming (data) {
@@ -90,7 +105,7 @@ test('notify: twos posts', async t => {
 });
 
 test('notify: one not the other', async t => {
-  t.plan(2);
+  t.plan(5);
 
   await clearData();
 
@@ -99,7 +114,7 @@ test('notify: one not the other', async t => {
 
   const ws = new WebSocket(node.wsUrl, tls);
   ws.on('open', function open () {
-    ws.send(JSON.stringify({ '/tests2/.*': true }));
+    ws.send(JSON.stringify({ 'POST:/tests2/.*': true }));
 
     httpRequest(`${node.url}/tests1`, {
       method: 'POST',
@@ -118,8 +133,11 @@ test('notify: one not the other', async t => {
   ws.on('message', function incoming (data) {
     cluster.closeAll();
 
-    const parsedData = JSON.parse(data);
-    t.equal(parsedData[0], '/tests2/.*');
-    t.ok(parsedData[1].startsWith('/tests2/'));
+    const [path, resource, pattern] = JSON.parse(data);
+    t.equal(pattern, 'POST:/tests2/.*');
+    t.ok(resource.startsWith('/tests2/'));
+    t.equal(resource.length, 44);
+    t.ok(path.startsWith('POST:/tests2/'));
+    t.equal(path.length, 49);
   });
 });

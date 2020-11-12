@@ -22,7 +22,7 @@ function wsHandler (server, state, options) {
   const listeners = {};
 
   state.handleMessage = function (message) {
-    const triggeredPath = message[0];
+    const triggeredPath = message[2];
     listeners[triggeredPath].forEach(socket => socket.send(JSON.stringify(message)));
   };
 
@@ -85,8 +85,6 @@ function wsHandler (server, state, options) {
         });
       });
     });
-
-    // socket.send('something');
   });
 
   return wss;

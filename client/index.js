@@ -3,8 +3,18 @@ const { promisify } = require('util');
 const https = require('https');
 const querystring = require('querystring');
 const finalStream = require('final-stream');
+const WebSocket = require('ws');
+const ReconnectingWebSocket = require('reconnecting-websocket');
 
 const validateQueryOptions = require('../utils/validateQueryOptions');
+
+function createWebSocketClass (options) {
+  return class extends WebSocket {
+    constructor (url, protocols) {
+      super(url, protocols, options);
+    }
+  };
+}
 
 function checkKeys (allowedKeys, object) {
   return Object
@@ -265,6 +275,54 @@ function client (rootUrl, clientOptions) {
     }).end();
   }
 
+  const handlers = [];
+  let wsUrl;
+  if (rootUrl.startsWith('https://')) {
+    wsUrl = rootUrl.replace('https://', 'wss://');
+  } else {
+    wsUrl = rootUrl.replace('http://', 'ws://');
+  }
+
+  const wsOptions = {
+    WebSocket: createWebSocketClass({
+      ...(clientOptions && clientOptions.tls)
+    }),
+    connectionTimeout: 1000,
+    maxRetries: 10
+  };
+
+  const rws = clientOptions.disableNotify ? null : new ReconnectingWebSocket(wsUrl, [], wsOptions);
+
+  function on (path, handler) {
+    if (!rws) {
+      throw new Error('notify was disable for this client instance');
+    }
+    rws.send(JSON.stringify({ [path]: true }));
+    handlers.push([path, handler]);
+  }
+
+  function off (path, handler) {
+    if (!rws) {
+      throw new Error('notify was disable for this client instance');
+    }
+    rws.send(JSON.stringify({ [path]: false }));
+    const index = handlers.findIndex(item => item[0] === path && item[1] === handler);
+    if (index === -1) {
+      return;
+    }
+    handlers.slice(index, 1);
+  }
+
+  rws && rws.addEventListener('message', (event) => {
+    const data = JSON.parse(event.data);
+    const handler = handlers.find(item => item[0] === data[2]);
+    handler[1](...data);
+  });
+
+  function close () {
+    rws && rws.close();
+  }
+
   return {
     getAll: promisify(getAll),
     getOne: promisify(getOne),
@@ -273,7 +331,12 @@ function client (rootUrl, clientOptions) {
     post: promisify(post),
     delete: promisify(del),
     lock: promisify(lock),
-    unlock: promisify(unlock)
+    unlock: promisify(unlock),
+
+    on,
+    off,
+
+    close
   };
 }
 
