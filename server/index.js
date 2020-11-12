@@ -1,6 +1,8 @@
-const packageJson = require('../package.json');
-
 const path = require('path');
+const fs = require('fs');
+const dns = require('dns').promises;
+
+const chalk = require('chalk');
 const tcpocket = require('tcpocket');
 
 const httpHandler = require('./httpHandler');
@@ -9,135 +11,153 @@ const wsHandler = require('./wsHandler');
 
 const { COMMAND, INFO, DATA } = require('./constants');
 
-async function canhazdb (options) {
-  const log = (options.logger || console.log);
-
-  options.driver = options.driver || 'sqlite';
-  options.dataDirectory = options.dataDirectory || path.resolve(process.cwd(), './canhazdata');
-  options.port = parseInt(options.port);
-
-  const state = {
-    options,
-
-    clients: [],
-    nodes: [],
-
-    data: {}
+async function prepareOptions (rawOptions) {
+  const options = {
+    ...rawOptions,
+    log: (rawOptions.logger || console.log),
+    join: rawOptions.join || [],
+    single: rawOptions.single
   };
 
-  state.driver = require('./drivers/' + options.driver)(state);
+  if (rawOptions.joinFromDns) {
+    const dnsLookupResults = await dns.lookup(rawOptions.joinFromDns, { all: true });
+    options.join = dnsLookupResults.map(item => `${item.address}:${rawOptions.port}`);
+  }
 
-  async function makeConnection (host, port, tls, node) {
-    if (!state.opened) {
-      return;
-    }
+  if (options.join.length > 0 && options.single) {
+    throw new Error('Can not start canhazdb in both single mode and attempt to join other nodes.');
+  }
 
-    if (node.connection) {
-      console.log('Aborting connection to ', host, port, 'as already connected');
-      return;
-    }
-
-    node.status = 'unhealthy';
-
-    node.reconnect = () => {
-      if (!state.opened) {
-        return;
-      }
-
-      clearTimeout(node.reconnectionTimer);
-
-      node.reconnectionTimer = setTimeout(() => {
-        delete node.reconnectionTimer;
-        makeConnection(host, port, tls, node);
-      }, 1000);
-    };
-
-    function handleError (error) {
-      if (['CLOSED', 'ECONNREFUSED', 'ECONNRESET'].includes(error.code)) {
-        node.status = 'unhealthy';
-        delete node.connection;
-        node.reconnect();
-        return;
-      }
-
-      throw error;
-    }
-
-    try {
-      const client = await tcpocket.createClient({ host, port, tls });
-      state.clients.push(client);
-      node.status = 'healthy';
-
-      client.on('message', data => {
-        state.handleMessage && state.handleMessage(data);
-      });
-
-      client.on('close', () => {
-        handleError(Object.assign(new Error('client closed'), { code: 'CLOSED' }));
-      });
-
-      client.on('error', handleError);
-
-      node.connection = client;
-
-      return client;
-    } catch (error) {
-      handleError(error);
+  if (!options.join || options.join.length === 0) {
+    if (options.single) {
+      options.join = [`${rawOptions.host}:${rawOptions.port}`];
+    } else {
+      throw new Error('You must start canhazdb in --single mode or join it to another node and itself');
     }
   }
 
-  const tcpServer = tcpHandler(state, options.port, options.tls);
-  tcpServer.open();
-
-  await makeConnection(options.host, options.port, options.tls, state.nodes[0]);
-
-  let server;
-
-  if (options.tls) {
-    server = require('https').createServer(options.tls, httpHandler.bind(null, state));
-  } else {
-    server = require('http').createServer(httpHandler.bind(null, state));
-  }
-
-  const wss = wsHandler(server, state, options);
-
-  async function join ({ host, port }, alreadyRecursed) {
-    port = parseInt(port);
-
-    if (state.nodes.find(node => node.host === host && node.port === port)) {
+  if (rawOptions.tlsCa || rawOptions.tlsCert || rawOptions.tlsKey) {
+    if (!rawOptions.tlsCa || !rawOptions.tlsCert || !rawOptions.tlsKey) {
+      console.log(chalk.red('You must specifiy either all [tls-key, tls-cert, tls-ca] or none of them'));
       return;
     }
 
-    log(`  joining ${host}:${port}`);
-
-    const newNode = {
-      host,
-      port
+    options.tls = {
+      key: fs.readFileSync(rawOptions.tlsKey),
+      cert: fs.readFileSync(rawOptions.tlsCert),
+      ca: [fs.readFileSync(rawOptions.tlsCa)],
+      requestCert: true
     };
+  }
 
-    state.nodes.push(newNode);
+  options.driver = rawOptions.driver || 'sqlite';
+  options.dataDirectory = rawOptions.dataDirectory || path.resolve(process.cwd(), './canhazdata');
+  options.port = parseInt(rawOptions.port);
 
-    await makeConnection(host, port, options.tls, newNode);
+  return options;
+}
 
-    newNode.info = await newNode.connection.send({
-      [COMMAND]: INFO,
-      [DATA]: {
-        nodes: state.nodes.map(node => ({ host: node.host, port: node.port }))
-      }
+async function makeConnection (scope, host, port, tls, node) {
+  if (scope.closed) {
+    return;
+  }
+
+  if (node.connection) {
+    // console.log('Aborting connection to ', host, port, 'as already connected');
+    return;
+  }
+
+  node.status = 'unhealthy';
+
+  node.reconnect = () => {
+    if (scope.closed) {
+      return;
+    }
+
+    clearTimeout(node.reconnectionTimer);
+
+    node.reconnectionTimer = setTimeout(() => {
+      delete node.reconnectionTimer;
+      makeConnection(scope, host, port, tls, node);
+    }, 1000);
+  };
+
+  function handleError (error) {
+    if (['CLOSED', 'ECONNREFUSED', 'ECONNRESET'].includes(error.code)) {
+      node.status = 'unhealthy';
+      delete node.connection;
+      node.reconnect();
+      return;
+    }
+
+    throw error;
+  }
+
+  try {
+    const client = await tcpocket.createClient({ host, port, tls });
+    scope.clients.push(client);
+    node.status = 'healthy';
+
+    client.on('message', data => {
+      scope.handleMessage && scope.handleMessage(data);
     });
 
-    if (!alreadyRecursed) {
-      const otherJoins = newNode.info[DATA].nodes.map(node => {
-        return join({ ...node }, true);
-      });
+    client.on('close', () => {
+      handleError(Object.assign(new Error('client closed'), { code: 'CLOSED' }));
+    });
 
-      await Promise.all(otherJoins);
-    }
+    client.on('error', handleError);
+
+    node.connection = client;
+
+    return client;
+  } catch (error) {
+    handleError(error);
+  }
+}
+
+async function join (scope, { host, port }, alreadyRecursed) {
+  port = parseInt(port);
+
+  if (scope.nodes.find(node => node.host === host && node.port === port)) {
+    return;
   }
 
-  state.join = join;
+  if (!scope.options.single) {
+    scope.log(`  joining ${host}:${port}`);
+  }
 
-  const serverReturn = {
+  const newNode = {
+    host,
+    port
+  };
+  scope.nodes.push(newNode);
+
+  await makeConnection(scope, host, port, scope.options.tls, newNode);
+
+  newNode.info = await newNode.connection.send({
+    [COMMAND]: INFO,
+    [DATA]: {
+      nodes: scope.nodes.map(node => ({ host: node.host, port: node.port }))
+    }
+  });
+
+  if (!alreadyRecursed) {
+    const otherJoins = newNode.info[DATA].nodes.map(node => {
+      return join(scope, { ...node }, true);
+    });
+
+    await Promise.all(otherJoins);
+  }
+}
+
+async function canhazdb (rawOptions) {
+  const options = await prepareOptions(rawOptions);
+
+  const scope = {
+    options,
+    log: options.log,
+
     url: `${options.tls ? 'https' : 'http'}://` + options.host + ':' + options.queryPort,
     wsUrl: `${options.tls ? 'wss' : 'ws'}://` + options.host + ':' + options.queryPort,
 
@@ -145,16 +165,41 @@ async function canhazdb (options) {
     port: options.port,
     queryPort: options.queryPort,
 
-    state,
+    clients: [],
+    nodes: [],
 
-    join,
+    data: {}
+  };
 
-    open: () => {
+  scope.driver = require('./drivers/' + options.driver)(scope);
+
+  const tcpServer = tcpHandler(scope, options.port, options.tls);
+  tcpServer.open();
+
+  let server;
+  if (options.tls) {
+    server = require('https').createServer(options.tls, httpHandler.bind(null, scope));
+  } else {
+    server = require('http').createServer(httpHandler.bind(null, scope));
+  }
+
+  const wss = wsHandler(server, scope, options);
+
+  options.join.forEach(async item => {
+    const [host, port] = item.split(':');
+    await join(scope, { host, port });
+  });
+
+  scope.join = join.bind(null, scope);
+
+  const serverReturn = {
+    ...scope,
+
+    open: async () => {
+      delete scope.closed;
       const openPromise = new Promise((resolve) => {
-        server.on('listening', async () => {
-          state.opened = true;
-
-          state.nodes.forEach(node => node.reconnect());
+        server.once('listening', async () => {
+          scope.nodes.forEach(node => node.reconnect());
 
           resolve(serverReturn);
         });
@@ -167,30 +212,20 @@ async function canhazdb (options) {
     },
 
     close: async () => {
-      state.opened = false;
+      scope.closed = true;
 
-      await Promise.all(state.clients.map(node => {
+      await Promise.all(scope.clients.map(node => {
         return node.close();
       }));
 
       server.close();
       wss.close();
       tcpServer.close();
-      state.driver.close();
+      scope.driver.close();
     }
   };
 
   await serverReturn.open();
-
-  const newNode = {
-    host: options.host,
-    port: options.port,
-    info: {
-      version: packageJson.version
-    }
-  };
-  state.nodes.push(newNode);
-  await makeConnection(newNode.host, newNode.port, options.tls, newNode);
 
   return serverReturn;
 }

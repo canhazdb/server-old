@@ -18,7 +18,7 @@ test('unknown keys', async t => {
 
   await clearData();
 
-  const node = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls });
+  const node = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls, single: true });
   const client = createClient(node.url, { tls });
 
   client.getOne('tests', { wrongKey: 1 }).catch(error => {
@@ -58,7 +58,7 @@ test('lock and unlock', async t => {
 
   await clearData();
 
-  const node = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls });
+  const node = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls, single: true });
   const client = createClient(node.url, { tls });
 
   const lock1 = client.lock(['tests']).then(async lockId => {
@@ -90,7 +90,7 @@ test('get', async t => {
 
   await clearData();
 
-  const node = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls });
+  const node = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls, single: true });
   const client = createClient(node.url, { tls });
 
   const result = await client.getAll('tests');
@@ -106,7 +106,7 @@ test('get with limit', async t => {
 
   await clearData();
 
-  const node = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls });
+  const node = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls, single: true });
   const client = createClient(node.url, { tls });
 
   await Promise.all([
@@ -128,7 +128,7 @@ test('post and get', async t => {
 
   await clearData();
 
-  const node = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls });
+  const node = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls, single: true });
   const client = createClient(node.url, { tls });
 
   await client.post('tests', { a: 1 });
@@ -145,7 +145,7 @@ test('post and get specific fields', async t => {
 
   await clearData();
 
-  const node = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls });
+  const node = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls, single: true });
   const client = createClient(node.url, { tls });
 
   await client.post('tests', { a: 1, b: 2, c: 3 });
@@ -165,7 +165,7 @@ test('post, put and get', async t => {
 
   await clearData();
 
-  const node = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls });
+  const node = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls, single: true });
   const client = createClient(node.url, { tls });
 
   await client.post('tests', { a: 1 });
@@ -188,7 +188,7 @@ test('post, patch and get', async t => {
 
   await clearData();
 
-  const node = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls });
+  const node = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls, single: true });
   const client = createClient(node.url, { tls });
 
   await client.post('tests', { a: 1 });
@@ -212,7 +212,7 @@ test('post, delete and get', async t => {
 
   await clearData();
 
-  const node = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls });
+  const node = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls, single: true });
   const client = createClient(node.url, { tls });
 
   const document = await client.post('tests', { a: 1 });
@@ -270,7 +270,7 @@ test('invalid query - getAll', async t => {
 
   await clearData();
 
-  const node = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls });
+  const node = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls, single: true });
   const client = createClient(node.url, { tls });
 
   await client.post('tests', { a: 1 });
@@ -303,7 +303,7 @@ test('invalid query - getOne', async t => {
 
   await clearData();
 
-  const node = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls });
+  const node = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls, single: true });
   const client = createClient(node.url, { tls });
 
   await client.post('tests', { a: 1 });
@@ -336,7 +336,7 @@ test('invalid query - put', async t => {
 
   await clearData();
 
-  const node = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls });
+  const node = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls, single: true });
   const client = createClient(node.url, { tls });
 
   await client.post('tests', { a: 1 });
@@ -366,7 +366,7 @@ test('invalid query - patch', async t => {
 
   await clearData();
 
-  const node = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls });
+  const node = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls, single: true });
   const client = createClient(node.url, { tls });
 
   await client.post('tests', { a: 1 });
@@ -396,7 +396,7 @@ test('invalid query - delete', async t => {
 
   await clearData();
 
-  const node = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls });
+  const node = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls, single: true });
   const client = createClient(node.url, { tls });
 
   await client.post('tests', { a: 1 });
@@ -424,7 +424,7 @@ test('invalid query - delete', async t => {
 test('post and notify', async t => {
   await clearData();
 
-  const node = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls });
+  const node = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls, single: true });
   const client = createClient(node.url, { tls });
 
   let alreadyHandled = false;

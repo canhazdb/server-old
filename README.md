@@ -24,9 +24,9 @@ you can use the built in client api.
 const client = require('canhazdb/client');
 
 const tls = {
-  key: fs.readFileSync('certs/localhost.privkey.pem'),
-  cert: fs.readFileSync('certs/localhost.cert.pem'),
-  ca: [ fs.readFileSync('certs/ca.cert.pem') ],
+  key: fs.readFileSync('./certs/localhost.privkey.pem'),
+  cert: fs.readFileSync('./certs/localhost.cert.pem'),
+  ca: [ fs.readFileSync('./certs/ca.cert.pem') ],
   requestCert: true /* this denys any cert not signed with our ca above */
 };
 const client = createClient('https://localhost:8063', { tls });
@@ -100,9 +100,9 @@ const canhazdb = require('canhazdb/server');
 
 async function main () {
   const tls = {
-    key: fs.readFileSync('certs/localhost.privkey.pem'),
-    cert: fs.readFileSync('certs/localhost.cert.pem'),
-    ca: [ fs.readFileSync('certs/ca.cert.pem') ],
+    key: fs.readFileSync('./certs/localhost.privkey.pem'),
+    cert: fs.readFileSync('./certs/localhost.cert.pem'),
+    ca: [ fs.readFileSync('./certs/ca.cert.pem') ],
     requestCert: true /* this denys any cert not signed with our ca above */
   };
 

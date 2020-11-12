@@ -191,6 +191,7 @@ async function del (state, request, response) {
 
 async function info (state, request, response) {
   const data = request.data[DATA];
+
   await Promise.all(data.nodes.map(node => state.join(node, true)));
 
   response.reply({
@@ -284,6 +285,9 @@ function createInternalServer (state, port, tls) {
 
     return mapping(state, request, response)
       .catch(error => {
+        if (error[STATUS] && error[STATUS] >= 500) {
+          console.log(error);
+        }
         handleError(request.data[COMMAND], request, response, error);
       });
   });

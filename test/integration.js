@@ -1,6 +1,6 @@
 const fs = require('fs');
 
-const test = require('tape-catch');
+const test = require('tape');
 const httpRequest = require('./helpers/httpRequest');
 const clearData = require('./helpers/clearData');
 const createTestCluster = require('./helpers/createTestCluster');
@@ -510,18 +510,19 @@ test('autojoin: join learned nodes automatically', async t => {
   const cluster = await createTestCluster(3, tls);
   const node = cluster.getRandomNodeUrl();
 
-  const node4 = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls });
-  await node4.join({ host: node.host, port: node.port });
+  const node4 = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls, join: [`${node.host}:${node.port}`] });
+
+  await sleep(250);
 
   cluster.closeAll();
   node4.close();
 
-  const getAllPorts = node => node.state.nodes.map(node => node.port).sort();
-  t.deepEqual(getAllPorts(node4), [7060, 7061, 7062, 7071]);
+  const getAllPorts = node => node.nodes.map(node => node.port).sort();
+  t.deepEqual(getAllPorts(node4), [7060, 7061, 7062]);
 
-  t.deepEqual(getAllPorts(cluster.nodes[0]), [7060, 7061, 7062, 7071]);
-  t.deepEqual(getAllPorts(cluster.nodes[1]), [7060, 7061, 7062, 7071]);
-  t.deepEqual(getAllPorts(cluster.nodes[2]), [7060, 7061, 7062, 7071]);
+  t.deepEqual(getAllPorts(cluster.nodes[0]), [7060, 7061, 7062]);
+  t.deepEqual(getAllPorts(cluster.nodes[1]), [7060, 7061, 7062]);
+  t.deepEqual(getAllPorts(cluster.nodes[2]), [7060, 7061, 7062]);
 });
 
 test('disaster: one node goes offline', async t => {
@@ -550,7 +551,7 @@ test('disaster: one node goes offline then online', async t => {
 
   await clearData();
 
-  const cluster = await createTestCluster(3, tls);
+  const cluster = await createTestCluster(3);
 
   await cluster.nodes[1].close();
 
