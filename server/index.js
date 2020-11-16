@@ -4,6 +4,7 @@ const dns = require('dns').promises;
 
 const chalk = require('chalk');
 const tcpocket = require('tcpocket');
+const enableDestroy = require('server-destroy');
 
 const httpHandler = require('./httpHandler');
 const tcpHandler = require('./tcpHandler');
@@ -182,6 +183,7 @@ async function canhazdb (rawOptions) {
   } else {
     server = require('http').createServer(httpHandler.bind(null, scope));
   }
+  enableDestroy(server);
 
   const wss = wsHandler(server, scope, options);
 
@@ -214,11 +216,13 @@ async function canhazdb (rawOptions) {
     close: async () => {
       scope.closed = true;
 
+      scope.locks.cancel();
+
       await Promise.all(scope.clients.map(node => {
         return node.close();
       }));
 
-      server.close();
+      server.destroy();
       wss.close();
       tcpServer.close();
       scope.driver.close();
