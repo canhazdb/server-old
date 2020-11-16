@@ -12,11 +12,13 @@
   "dependencies": {
     "axios": "^0.20.0",
     "chalk": "^4.1.0",
+    "ejdb2_node": "^1.0.42",
     "final-stream": "^2.0.2",
     "hinton": "^1.0.0",
     "lockbase": "^1.0.9",
     "minimist": "^1.2.5",
     "mongo-sql": "^6.2.0",
+    "mql-to-jql": "^1.0.2",
     "qs": "^6.9.4",
     "reconnecting-websocket": "^4.4.0",
     "server-destroy": "^1.0.1",
