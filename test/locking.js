@@ -261,3 +261,34 @@ test('lock: all methods lock', async t => {
 
   unlocked = true;
 });
+
+test('lock: and wait but node closes', async t => {
+  t.plan(1);
+
+  await clearData();
+
+  const cluster = await createTestCluster(1, tls);
+  const node = cluster.getRandomNodeUrl();
+
+  const lockRequest = await httpRequest(`${node.url}/_/locks`, {
+    method: 'POST',
+    data: ['tests']
+  });
+
+  console.log('startin request')
+  httpRequest(`${node.url}/tests`, {
+    method: 'POST',
+    headers: {
+      'x-lock-strategy': 'wait'
+    },
+    data: { a: 1 }
+  }).then(postRequest => {
+    t.fail('should not have resolved successfully');
+  }).catch(error => {
+    t.equal(error.message, 'socket hang up');
+  });
+
+  setTimeout(() => {
+    cluster.closeAll();
+  }, 500)
+});

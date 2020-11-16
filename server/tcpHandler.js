@@ -68,7 +68,11 @@ async function isLockedOrWait (locks, keys, lockId, waitForUnlock) {
   }
 
   if (waitForUnlock) {
-    await locks.wait(keys);
+    try {
+      await locks.wait(keys);
+    } catch (error) {
+      throw Object.assign(new Error('canhazdb cancelled all locks'), { status: 409 });
+    }
     return false;
   }
 
