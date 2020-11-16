@@ -1,10 +1,10 @@
 {
   "name": "canhazdb",
-  "version": "1.11.0",
+  "version": "1.11.1",
   "description": "A shaded and clustered database communicated over http rest.",
   "main": "./index.js",
   "bin": {
-    "canhazdb": "lib/cli.js"
+    "canhazdb": "server/cli.js"
   },
   "directories": {
     "test": "test"
