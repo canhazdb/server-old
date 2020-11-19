@@ -14,11 +14,12 @@
     "chalk": "^4.1.0",
     "ejdb2_node": "^1.0.42",
     "final-stream": "^2.0.2",
+    "get-port": "^5.1.1",
     "hinton": "^1.0.0",
     "lockbase": "^1.0.9",
     "minimist": "^1.2.5",
     "mongo-sql": "^6.2.0",
-    "mql-to-jql": "^1.0.2",
+    "mql-to-jql": "^1.1.3",
     "qs": "^6.9.4",
     "reconnecting-websocket": "^4.4.0",
     "server-destroy": "^1.0.1",
@@ -30,6 +31,7 @@
     "ws": "^7.4.0"
   },
   "devDependencies": {
+    "basictap": "^1.1.3",
     "c8": "^7.3.3",
     "tape": "^5.0.1",
     "tape-catch": "^1.0.6",

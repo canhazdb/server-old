@@ -2,9 +2,11 @@ const path = require('path');
 const fs = require('fs');
 const dns = require('dns').promises;
 
+const uuid = require('uuid').v4;
 const chalk = require('chalk');
 const tcpocket = require('tcpocket');
 const enableDestroy = require('server-destroy');
+const getPort = require('get-port');
 
 const httpHandler = require('./httpHandler');
 const tcpHandler = require('./tcpHandler');
@@ -20,9 +22,12 @@ async function prepareOptions (rawOptions) {
     single: rawOptions.single
   };
 
+  options.port = options.port ? parseInt(options.port) : await getPort();
+  options.queryPort = options.queryPort ? parseInt(options.queryPort) : await getPort();
+
   if (rawOptions.joinFromDns) {
     const dnsLookupResults = await dns.lookup(rawOptions.joinFromDns, { all: true });
-    options.join = dnsLookupResults.map(item => `${item.address}:${rawOptions.port}`);
+    options.join = dnsLookupResults.map(item => `${item.address}:${options.port}`);
   }
 
   if (options.join.length > 0 && options.single) {
@@ -31,7 +36,7 @@ async function prepareOptions (rawOptions) {
 
   if (!options.join || options.join.length === 0) {
     if (options.single) {
-      options.join = [`${rawOptions.host}:${rawOptions.port}`];
+      options.join = [`${rawOptions.host}:${options.port}`];
     } else {
       throw new Error('You must start canhazdb in --single mode or join it to another node and itself');
     }
@@ -51,9 +56,8 @@ async function prepareOptions (rawOptions) {
     };
   }
 
-  options.driver = rawOptions.driver || 'sqlite';
-  options.dataDirectory = rawOptions.dataDirectory || path.resolve(process.cwd(), './canhazdata');
-  options.port = parseInt(rawOptions.port);
+  options.driver = rawOptions.driver || 'ejdb';
+  options.dataDirectory = rawOptions.dataDirectory || path.resolve(process.cwd(), './canhazdata/' + uuid());
 
   return options;
 }

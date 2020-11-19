@@ -1,4 +1,4 @@
-const test = require('tape');
+const test = require('basictap');
 
 const validateAlphaNumericDashDot = require('../../utils/validateAlphaNumericDashDot');
 

@@ -82,7 +82,7 @@ async function handleGetOne (state, request, response, { collectionId, resourceI
 
 async function handleGetAll (state, request, response, { collectionId, url }) {
   const limit = url.searchParams.get('limit') && JSON.parse(url.searchParams.get('limit'));
-  const order = url.searchParams.get('order');
+  const orders = url.searchParams.get('order') && JSON.parse(url.searchParams.get('order'));
 
   const responses = await askOnAllNodes(state, {
     [COMMAND]: GET,
@@ -90,8 +90,8 @@ async function handleGetAll (state, request, response, { collectionId, url }) {
       [COLLECTION_ID]: collectionId,
       [QUERY]: url.searchParams.get('query') && JSON.parse(url.searchParams.get('query')),
       [FIELDS]: url.searchParams.get('fields') && JSON.parse(url.searchParams.get('fields')),
-      [ORDER]: url.searchParams.get('order'),
-      [LIMIT]: limit
+      [ORDER]: orders || undefined,
+      [LIMIT]: limit || undefined
     }
   });
 
@@ -114,8 +114,10 @@ async function handleGetAll (state, request, response, { collectionId, url }) {
     results = results.slice(0, limit);
   }
 
-  if (order) {
-    orderByFields(results, order);
+  if (orders) {
+    orders.forEach(order => {
+      orderByFields(results, order);
+    });
   }
 
   writeResponse(200, results, response);
@@ -309,7 +311,6 @@ async function handleUnlock (state, request, response, { resourceId }) {
   });
 
   if (responses.find(response => response[STATUS] === 404)) {
-    console.log('could not find', resourceId);
     writeResponse(404, {}, response);
     return;
   }

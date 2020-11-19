@@ -1,8 +1,6 @@
 const fs = require('fs');
 
-const test = require('tape');
-
-const clearData = require('./helpers/clearData');
+const test = require('basictap');
 
 const canhazdb = require('../server');
 const createClient = require('../client');
@@ -16,9 +14,7 @@ const tls = {
 test('unknown keys', async t => {
   t.plan(7);
 
-  await clearData();
-
-  const node = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls, single: true });
+  const node = await canhazdb({ host: 'localhost', tls, single: true });
   const client = createClient(node.url, { tls });
 
   client.getOne('tests', { wrongKey: 1 }).catch(error => {
@@ -56,9 +52,7 @@ test('unknown keys', async t => {
 test('lock and unlock', async t => {
   t.plan(5);
 
-  await clearData();
-
-  const node = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls, single: true });
+  const node = await canhazdb({ host: 'localhost', tls, single: true });
   const client = createClient(node.url, { tls });
 
   const lock1 = client.lock(['tests']).then(async lockId => {
@@ -88,9 +82,7 @@ test('lock and unlock', async t => {
 test('get', async t => {
   t.plan(1);
 
-  await clearData();
-
-  const node = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls, single: true });
+  const node = await canhazdb({ host: 'localhost', tls, single: true });
   const client = createClient(node.url, { tls });
 
   const result = await client.getAll('tests');
@@ -104,9 +96,7 @@ test('get', async t => {
 test('get with limit', async t => {
   t.plan(1);
 
-  await clearData();
-
-  const node = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls, single: true });
+  const node = await canhazdb({ host: 'localhost', tls, single: true });
   const client = createClient(node.url, { tls });
 
   await Promise.all([
@@ -126,9 +116,7 @@ test('get with limit', async t => {
 test('post and get', async t => {
   t.plan(1);
 
-  await clearData();
-
-  const node = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls, single: true });
+  const node = await canhazdb({ host: 'localhost', tls, single: true });
   const client = createClient(node.url, { tls });
 
   await client.post('tests', { a: 1 });
@@ -143,9 +131,7 @@ test('post and get', async t => {
 test('post and get specific fields', async t => {
   t.plan(1);
 
-  await clearData();
-
-  const node = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls, single: true });
+  const node = await canhazdb({ host: 'localhost', tls, single: true });
   const client = createClient(node.url, { tls });
 
   await client.post('tests', { a: 1, b: 2, c: 3 });
@@ -163,9 +149,7 @@ test('post and get specific fields', async t => {
 test('post, put and get', async t => {
   t.plan(5);
 
-  await clearData();
-
-  const node = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls, single: true });
+  const node = await canhazdb({ host: 'localhost', tls, single: true });
   const client = createClient(node.url, { tls });
 
   await client.post('tests', { a: 1 });
@@ -186,9 +170,7 @@ test('post, put and get', async t => {
 test('post, patch and get', async t => {
   t.plan(6);
 
-  await clearData();
-
-  const node = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls, single: true });
+  const node = await canhazdb({ host: 'localhost', tls, single: true });
   const client = createClient(node.url, { tls });
 
   await client.post('tests', { a: 1 });
@@ -210,9 +192,7 @@ test('post, patch and get', async t => {
 test('post, delete and get', async t => {
   t.plan(3);
 
-  await clearData();
-
-  const node = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls, single: true });
+  const node = await canhazdb({ host: 'localhost', tls, single: true });
   const client = createClient(node.url, { tls });
 
   const document = await client.post('tests', { a: 1 });
@@ -268,9 +248,7 @@ test('serialise undefined', async t => {
 test('invalid query - getAll', async t => {
   t.plan(2);
 
-  await clearData();
-
-  const node = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls, single: true });
+  const node = await canhazdb({ host: 'localhost', tls, single: true });
   const client = createClient(node.url, { tls });
 
   await client.post('tests', { a: 1 });
@@ -284,13 +262,11 @@ test('invalid query - getAll', async t => {
   } catch (error) {
     t.equal(error.message, 'canhazdb error');
     t.deepEqual(error.data, {
-      error: 'SQLITE_ERROR: no such column: undefined',
+      error: error.data.error,
       type: 'GET',
       collectionId: 'tests',
       query: { $nin: ['1'] },
-      fields: '',
-      order: null,
-      limit: null
+      fields: ''
     });
   }
 
@@ -301,9 +277,7 @@ test('invalid query - getAll', async t => {
 test('invalid query - getOne', async t => {
   t.plan(2);
 
-  await clearData();
-
-  const node = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls, single: true });
+  const node = await canhazdb({ host: 'localhost', tls, single: true });
   const client = createClient(node.url, { tls });
 
   await client.post('tests', { a: 1 });
@@ -317,13 +291,11 @@ test('invalid query - getOne', async t => {
   } catch (error) {
     t.equal(error.message, 'canhazdb error');
     t.deepEqual(error.data, {
-      error: 'SQLITE_ERROR: no such column: undefined',
+      error: error.data.error,
       type: 'GET',
       collectionId: 'tests',
       query: { $nin: ['1'] },
-      fields: '',
-      order: null,
-      limit: null
+      fields: ''
     });
   }
 
@@ -334,9 +306,7 @@ test('invalid query - getOne', async t => {
 test('invalid query - put', async t => {
   t.plan(2);
 
-  await clearData();
-
-  const node = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls, single: true });
+  const node = await canhazdb({ host: 'localhost', tls, single: true });
   const client = createClient(node.url, { tls });
 
   await client.post('tests', { a: 1 });
@@ -350,7 +320,7 @@ test('invalid query - put', async t => {
   } catch (error) {
     t.equal(error.message, 'canhazdb error');
     t.deepEqual(error.data, {
-      error: 'SQLITE_ERROR: no such column: undefined',
+      error: error.data.error,
       type: 'PUT',
       collectionId: 'tests',
       query: { $nin: ['1'] }
@@ -364,9 +334,7 @@ test('invalid query - put', async t => {
 test('invalid query - patch', async t => {
   t.plan(2);
 
-  await clearData();
-
-  const node = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls, single: true });
+  const node = await canhazdb({ host: 'localhost', tls, single: true });
   const client = createClient(node.url, { tls });
 
   await client.post('tests', { a: 1 });
@@ -380,7 +348,7 @@ test('invalid query - patch', async t => {
   } catch (error) {
     t.equal(error.message, 'canhazdb error');
     t.deepEqual(error.data, {
-      error: 'SQLITE_ERROR: no such column: undefined',
+      error: error.data.error,
       type: 'PATCH',
       collectionId: 'tests',
       query: { $nin: ['1'] }
@@ -394,9 +362,7 @@ test('invalid query - patch', async t => {
 test('invalid query - delete', async t => {
   t.plan(2);
 
-  await clearData();
-
-  const node = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls, single: true });
+  const node = await canhazdb({ host: 'localhost', tls, single: true });
   const client = createClient(node.url, { tls });
 
   await client.post('tests', { a: 1 });
@@ -410,7 +376,7 @@ test('invalid query - delete', async t => {
   } catch (error) {
     t.equal(error.message, 'canhazdb error');
     t.deepEqual(error.data, {
-      error: 'SQLITE_ERROR: no such column: undefined',
+      error: error.data.error,
       type: 'DELETE',
       collectionId: 'tests',
       query: { $nin: ['1'] }
@@ -422,9 +388,9 @@ test('invalid query - delete', async t => {
 });
 
 test('post and notify', async t => {
-  await clearData();
+  t.plan(5);
 
-  const node = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls, single: true });
+  const node = await canhazdb({ host: 'localhost', port: 11505, queryPort: 11506, tls, single: true });
   const client = createClient(node.url, { tls });
 
   let alreadyHandled = false;
@@ -454,8 +420,8 @@ test('post and notify', async t => {
       alreadyHandled = true;
     }
 
-    client.on('POST:/tests', handler);
-
-    client.post('tests', { a: 1 });
+    client.on('POST:/tests', handler).then(() => {
+      client.post('tests', { a: 1 });
+    });
   });
 });
