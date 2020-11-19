@@ -1,8 +1,7 @@
 const fs = require('fs');
 
-const test = require('tape');
+const test = require('basictap');
 const httpRequest = require('./helpers/httpRequest');
-const clearData = require('./helpers/clearData');
 const createTestCluster = require('./helpers/createTestCluster');
 const canhazdb = require('../server');
 
@@ -17,8 +16,6 @@ const tls = {
 
 test('post: and get some data', async t => {
   t.plan(3);
-
-  await clearData();
 
   const cluster = await createTestCluster(3, tls);
   const node = cluster.getRandomNodeUrl();
@@ -49,8 +46,6 @@ test('post: and get some data', async t => {
 test('post: and getAll specific fields only', async t => {
   t.plan(3);
 
-  await clearData();
-
   const cluster = await createTestCluster(3, tls);
   const node = cluster.getRandomNodeUrl();
 
@@ -77,8 +72,6 @@ test('post: and getAll specific fields only', async t => {
 
 test('post: and getOne specific fields only', async t => {
   t.plan(3);
-
-  await clearData();
 
   const cluster = await createTestCluster(3, tls);
   const node = cluster.getRandomNodeUrl();
@@ -107,8 +100,6 @@ test('post: and getOne specific fields only', async t => {
 test('post: some data with invalid collection name', async t => {
   t.plan(2);
 
-  await clearData();
-
   const cluster = await createTestCluster(3, tls);
 
   const postRequest = await httpRequest(`${cluster.nodes[1].url}/not$allowed/notfound`, {
@@ -129,8 +120,6 @@ test('post: some data with invalid collection name', async t => {
 
 test('put: some data', async t => {
   t.plan(3);
-
-  await clearData();
 
   const cluster = await createTestCluster(3, tls);
 
@@ -163,8 +152,6 @@ test('put: some data', async t => {
 
 test('patch: some data', async t => {
   t.plan(3);
-
-  await clearData();
 
   const cluster = await createTestCluster(3, tls);
 
@@ -199,8 +186,6 @@ test('patch: some data', async t => {
 test('delete: record returns a 404', async t => {
   t.plan(4);
 
-  await clearData();
-
   const cluster = await createTestCluster(3, tls);
 
   const postRequest = await httpRequest(`${cluster.nodes[1].url}/tests`, {
@@ -230,8 +215,6 @@ test('delete: record returns a 404', async t => {
 test('find: collection has no records', async t => {
   t.plan(2);
 
-  await clearData();
-
   const cluster = await createTestCluster(3, tls);
 
   const getRequest = await httpRequest(`${cluster.nodes[2].url}/tests`);
@@ -244,8 +227,6 @@ test('find: collection has no records', async t => {
 
 test('find: return all three records', async t => {
   t.plan(8);
-
-  await clearData();
 
   const cluster = await createTestCluster(3, tls);
 
@@ -287,8 +268,6 @@ test('find: return all three records', async t => {
 test('find: filter by querystring', async t => {
   t.plan(4);
 
-  await clearData();
-
   const cluster = await createTestCluster(3, tls);
 
   await Promise.all([
@@ -321,8 +300,6 @@ test('find: filter by querystring', async t => {
 
 test('filter: find one out of three records', async t => {
   t.plan(4);
-
-  await clearData();
 
   const cluster = await createTestCluster(3, tls);
 
@@ -357,8 +334,6 @@ test('filter: find one out of three records', async t => {
 test('filter: delete two out of three records', async t => {
   t.plan(5);
 
-  await clearData();
-
   const cluster = await createTestCluster(3, tls);
 
   const posts = Array(10).fill('').map((_, index) => {
@@ -388,8 +363,6 @@ test('filter: delete two out of three records', async t => {
 
 test('filter: put two out of three records', async t => {
   t.plan(5);
-
-  await clearData();
 
   const cluster = await createTestCluster(3, tls);
 
@@ -425,8 +398,6 @@ test('filter: put two out of three records', async t => {
 test('limit: find three records', async t => {
   t.plan(2);
 
-  await clearData();
-
   const cluster = await createTestCluster(3, tls);
 
   const posts = Array(10).fill('').map((_, index) => {
@@ -449,8 +420,6 @@ test('limit: find three records', async t => {
 test('order: ascending order three records', async t => {
   t.plan(5);
 
-  await clearData();
-
   const cluster = await createTestCluster(3, tls);
 
   const posts = Array(10).fill('').map((_, index) => {
@@ -462,7 +431,7 @@ test('order: ascending order three records', async t => {
 
   await Promise.all(posts);
 
-  const getRequest = await httpRequest(`${cluster.nodes[2].url}/tests?order=asc(index)`);
+  const getRequest = await httpRequest(`${cluster.nodes[2].url}/tests?order=["asc(index)"]`);
 
   cluster.closeAll();
 
@@ -477,8 +446,6 @@ test('order: ascending order three records', async t => {
 test('order: descending order three records', async t => {
   t.plan(5);
 
-  await clearData();
-
   const cluster = await createTestCluster(3, tls);
 
   const posts = Array(10).fill('').map((_, index) => {
@@ -490,7 +457,33 @@ test('order: descending order three records', async t => {
 
   await Promise.all(posts);
 
-  const getRequest = await httpRequest(`${cluster.nodes[2].url}/tests?order=desc(index)`);
+  const getRequest = await httpRequest(`${cluster.nodes[2].url}/tests?order=["desc(index)"]`);
+
+  cluster.closeAll();
+
+  t.equal(getRequest.data.length, 10);
+  t.equal(getRequest.status, 200);
+
+  t.deepEqual(getRequest.data[0].index, 9);
+  t.deepEqual(getRequest.data[1].index, 8);
+  t.deepEqual(getRequest.data[5].index, 4);
+});
+
+test('order: multiple descending order three records', async t => {
+  t.plan(5);
+
+  const cluster = await createTestCluster(3, tls);
+
+  const posts = Array(10).fill('').map((_, index) => {
+    return httpRequest(`${cluster.nodes[1].url}/tests`, {
+      method: 'POST',
+      data: { index, otherIndex: index }
+    });
+  });
+
+  await Promise.all(posts);
+
+  const getRequest = await httpRequest(`${cluster.nodes[2].url}/tests?order=["desc(index)","desc(otherIndex)"]`);
 
   cluster.closeAll();
 
@@ -505,30 +498,26 @@ test('order: descending order three records', async t => {
 test('autojoin: join learned nodes automatically', async t => {
   t.plan(4);
 
-  await clearData();
-
   const cluster = await createTestCluster(3, tls);
   const node = cluster.getRandomNodeUrl();
 
   const node4 = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls, join: [`${node.host}:${node.port}`] });
 
-  await sleep(250);
+  await sleep(2500);
 
   cluster.closeAll();
   node4.close();
 
   const getAllPorts = node => node.nodes.map(node => node.port).sort();
-  t.deepEqual(getAllPorts(node4), [7060, 7061, 7062]);
+  t.deepEqual(getAllPorts(node4), [cluster.nodes[0].port, cluster.nodes[1].port, cluster.nodes[2].port]);
 
-  t.deepEqual(getAllPorts(cluster.nodes[0]), [7060, 7061, 7062]);
-  t.deepEqual(getAllPorts(cluster.nodes[1]), [7060, 7061, 7062]);
-  t.deepEqual(getAllPorts(cluster.nodes[2]), [7060, 7061, 7062]);
+  t.deepEqual(getAllPorts(cluster.nodes[0]), [cluster.nodes[0].port, cluster.nodes[1].port, cluster.nodes[2].port]);
+  t.deepEqual(getAllPorts(cluster.nodes[1]), [cluster.nodes[0].port, cluster.nodes[1].port, cluster.nodes[2].port]);
+  t.deepEqual(getAllPorts(cluster.nodes[2]), [cluster.nodes[0].port, cluster.nodes[1].port, cluster.nodes[2].port]);
 });
 
 test('disaster: one node goes offline', async t => {
   t.plan(2);
-
-  await clearData();
 
   const cluster = await createTestCluster(3, tls);
 
@@ -548,8 +537,6 @@ test('disaster: one node goes offline', async t => {
 
 test('disaster: one node goes offline then online', async t => {
   t.plan(4);
-
-  await clearData();
 
   const cluster = await createTestCluster(3);
 

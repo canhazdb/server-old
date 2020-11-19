@@ -1,19 +1,33 @@
+const fs = require('fs');
+const uuid = require('uuid').v4;
 const canhazdb = require('../../server');
 
 const selectRandomItemFromArray = require('../../utils/selectRandomItemFromArray');
+
+try {
+  fs.rmdirSync('./canhazdata', { recursive: true });
+} catch (error) {
+  console.log(error);
+}
+
+let lastUsedPort = 11000;
+const getNewPort = () => {
+  lastUsedPort = lastUsedPort + 1;
+  return lastUsedPort;
+};
 
 async function createTestCluster (count, tls) {
   const nodeOptions = Array(count)
     .fill(null)
     .map((_, index) => {
-      const port = 7060 + index;
+      const port = getNewPort();
 
       return {
         host: 'localhost',
         logger: () => {},
         port,
-        queryPort: 8060 + index,
-        dataDirectory: './canhazdata/' + index,
+        queryPort: getNewPort(),
+        dataDirectory: './canhazdata/' + uuid(),
         tls
       };
     });

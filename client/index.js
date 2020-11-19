@@ -23,6 +23,8 @@ function checkKeys (allowedKeys, object) {
 }
 
 function client (rootUrl, clientOptions) {
+  let lastAcceptId = 0;
+
   const httpsAgent = clientOptions && clientOptions.tls && new https.Agent(clientOptions.tls);
 
   function getAll (collectionId, options, callback) {
@@ -44,13 +46,13 @@ function client (rootUrl, clientOptions) {
     const query = querystring.encode({
       ...options,
       query: options.query && JSON.stringify(options.query),
-      fields: options.fields && JSON.stringify(options.fields)
+      fields: options.fields && JSON.stringify(options.fields),
+      order: options.order && JSON.stringify(options.order)
     });
 
     const url = `${rootUrl}/${collectionId}?${query}`;
     https.request(url, { agent: httpsAgent }, async function (response) {
       const data = await finalStream(response).then(JSON.parse);
-
       if (response.statusCode >= 500) {
         callback(Object.assign(new Error('canhazdb error'), { data }));
         return;
@@ -79,7 +81,8 @@ function client (rootUrl, clientOptions) {
     const query = querystring.encode({
       ...options,
       query: options.query && JSON.stringify(options.query),
-      fields: options.fields && JSON.stringify(options.fields)
+      fields: options.fields && JSON.stringify(options.fields),
+      order: options.order && JSON.stringify(options.order)
     });
 
     const url = `${rootUrl}/${collectionId}?${query}`;
@@ -292,29 +295,52 @@ function client (rootUrl, clientOptions) {
   };
 
   const rws = clientOptions.disableNotify ? null : new ReconnectingWebSocket(wsUrl, [], wsOptions);
+  const onOffAccepts = [];
 
   function on (path, handler) {
     if (!rws) {
       throw new Error('notify was disable for this client instance');
     }
-    rws.send(JSON.stringify({ [path]: true }));
+
+    lastAcceptId = lastAcceptId + 1;
+    const promise = new Promise(resolve => {
+      onOffAccepts.push([lastAcceptId, resolve]);
+    });
+
+    rws.send(JSON.stringify([lastAcceptId, { [path]: true }]));
     handlers.push([path, handler]);
+
+    return promise;
   }
 
   function off (path, handler) {
     if (!rws) {
       throw new Error('notify was disable for this client instance');
     }
-    rws.send(JSON.stringify({ [path]: false }));
+
+    lastAcceptId = lastAcceptId + 1;
+    const promise = new Promise(resolve => {
+      onOffAccepts.push([lastAcceptId, resolve]);
+    });
+
+    rws.send(JSON.stringify([lastAcceptId, { [path]: false }]));
     const index = handlers.findIndex(item => item[0] === path && item[1] === handler);
     if (index === -1) {
       return;
     }
     handlers.slice(index, 1);
+
+    return promise;
   }
 
   rws && rws.addEventListener('message', (event) => {
-    const data = JSON.parse(event.data);
+    const rawData = JSON.parse(event.data);
+    const [type, data] = rawData;
+    if (type === 'A') {
+      const accepter = onOffAccepts.find(item => item[0] === data);
+      accepter && accepter[1] && accepter[1]();
+      return;
+    }
     const handler = handlers.find(item => item[0] === data[2]);
     handler[1](...data);
   });

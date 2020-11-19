@@ -1,8 +1,7 @@
 const fs = require('fs');
 
-const test = require('tape-catch');
+const test = require('basictap');
 const httpRequest = require('./helpers/httpRequest');
-const clearData = require('./helpers/clearData');
 const createTestCluster = require('./helpers/createTestCluster');
 
 const tls = {
@@ -14,8 +13,6 @@ const tls = {
 
 test('lock: and post some data (success)', async t => {
   t.plan(5);
-
-  await clearData();
 
   const cluster = await createTestCluster(3, tls);
   const node = cluster.getRandomNodeUrl();
@@ -61,8 +58,6 @@ test('lock: and post some data (success)', async t => {
 
 test('lock: delete lock with incorrect id', async t => {
   t.plan(1);
-
-  await clearData();
   const cluster = await createTestCluster(3, tls);
   const node = cluster.getRandomNodeUrl();
 
@@ -76,8 +71,6 @@ test('lock: delete lock with incorrect id', async t => {
 
 test('lock: multiple happen in order', async t => {
   t.plan(6);
-
-  await clearData();
 
   const cluster = await createTestCluster(3, tls);
   const node = cluster.getRandomNodeUrl();
@@ -139,8 +132,6 @@ test('lock: multiple happen in order', async t => {
 test('lock: and post some data (conflict + fail)', async t => {
   t.plan(2);
 
-  await clearData();
-
   const cluster = await createTestCluster(3, tls);
   const node = cluster.getRandomNodeUrl();
 
@@ -171,8 +162,6 @@ test('lock: and post some data (conflict + fail)', async t => {
 
 test('lock: and post some data (conflict + wait)', async t => {
   t.plan(5);
-
-  await clearData();
 
   const cluster = await createTestCluster(3, tls);
   const node = cluster.getRandomNodeUrl();
@@ -215,9 +204,7 @@ test('lock: and post some data (conflict + wait)', async t => {
 });
 
 test('lock: all methods lock', async t => {
-  t.plan(2);
-
-  await clearData();
+  t.plan(3);
 
   const cluster = await createTestCluster(3, tls);
   const node = cluster.getRandomNodeUrl();
@@ -244,15 +231,15 @@ test('lock: all methods lock', async t => {
     data: { a: 2 }
   });
 
-  const deleteRequest = httpRequest(`${node.url}/tests/${postRequest.data.id}`, {
-    method: 'DELETE'
-  });
-
-  Promise.all([putRequest, patchRequest, deleteRequest])
-    .then((args) => {
-      t.deepEqual(args.map(arg => arg.status), [200, 200, 200]);
-      t.ok(unlocked, 'requests happened after unlock');
+  Promise.all([putRequest, patchRequest])
+    .then(async (args) => {
+      const deleteRequest = await httpRequest(`${node.url}/tests/${postRequest.data.id}`, {
+        method: 'DELETE'
+      });
       cluster.closeAll();
+      t.deepEqual(args.map(arg => arg.status), [200, 200]);
+      t.equal(deleteRequest.status, 200);
+      t.ok(unlocked, 'requests happened after unlock');
     });
 
   await httpRequest(`${node.url}/_/locks/${lockRequest.data.id}`, {
@@ -265,17 +252,14 @@ test('lock: all methods lock', async t => {
 test('lock: and wait but node closes', async t => {
   t.plan(1);
 
-  await clearData();
-
   const cluster = await createTestCluster(1, tls);
   const node = cluster.getRandomNodeUrl();
 
-  const lockRequest = await httpRequest(`${node.url}/_/locks`, {
+  await httpRequest(`${node.url}/_/locks`, {
     method: 'POST',
     data: ['tests']
   });
 
-  console.log('startin request')
   httpRequest(`${node.url}/tests`, {
     method: 'POST',
     headers: {
@@ -290,5 +274,5 @@ test('lock: and wait but node closes', async t => {
 
   setTimeout(() => {
     cluster.closeAll();
-  }, 500)
+  }, 500);
 });

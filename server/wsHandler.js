@@ -23,10 +23,10 @@ function wsHandler (server, state, options) {
 
   state.handleMessage = function (message) {
     const triggeredPath = message[2];
-    listeners[triggeredPath].forEach(socket => socket.send(JSON.stringify(message)));
+    listeners[triggeredPath].forEach(socket => socket.send(JSON.stringify(['T', message])));
   };
 
-  async function addListener (socket, path) {
+  async function addListener (acceptId, socket, path) {
     listeners[path] = listeners[path] || [];
 
     if (listeners[path].length === 0) {
@@ -42,9 +42,11 @@ function wsHandler (server, state, options) {
     }
 
     listeners[path].push(socket);
+
+    socket.send(JSON.stringify(['A', acceptId]));
   }
 
-  async function removeListener (socket, path) {
+  async function removeListener (acceptId, socket, path) {
     if (!listeners[path]) {
       return;
     }
@@ -62,16 +64,20 @@ function wsHandler (server, state, options) {
 
       delete listeners[path];
     }
+
+    socket.send(JSON.stringify(['A', acceptId]));
   }
 
   wss.on('connection', function connection (socket) {
-    socket.on('message', function incoming (message) {
-      const data = JSON.parse(message);
+    socket.on('message', function incoming (rawMessage) {
+      const message = JSON.parse(rawMessage);
+      const [acceptId, data] = message;
+
       Object.keys(data).forEach(key => {
         if (data[key]) {
-          addListener(socket, key);
+          addListener(acceptId, socket, key);
         } else {
-          removeListener(socket, key);
+          removeListener(acceptId, socket, key);
         }
       });
 
