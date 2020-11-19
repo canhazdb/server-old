@@ -56,7 +56,7 @@ async function prepareOptions (rawOptions) {
     };
   }
 
-  options.driver = rawOptions.driver || 'ejdb';
+  options.driver = process.env.CANHAZDB_DRIVER || rawOptions.driver || 'ejdb';
   options.dataDirectory = rawOptions.dataDirectory || path.resolve(process.cwd(), './canhazdata/' + uuid());
 
   return options;

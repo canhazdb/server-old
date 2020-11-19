@@ -35,7 +35,9 @@
     "c8": "^7.3.3"
   },
   "scripts": {
-    "test": "./makeCerts.sh && c8 -o /tmp node test"
+    "test": "./makeCerts.sh && npm run test:ejdb && npm run test:sqlite",
+    "test:ejdb": "CANHAZDB_DRIVER=ejdb c8 -o /tmp node --unhandled-rejections=strict test",
+    "test:sqlite": "CANHAZDB_DRIVER=sqlite c8 -o /tmp node --unhandled-rejections=strict test"
   },
   "repository": {
     "type": "git",

@@ -1,21 +1,21 @@
 const builder = require('mongo-sql');
 const createMatchFieldNames = collectionName => new RegExp(`"_${collectionName}"\\."(.*?)"`, 'g');
 
-function orderToMongo (collectionName, order) {
-  if (!order) {
+function orderToMongo (collectionName, orders) {
+  if (!orders) {
     return null;
   }
 
-  const matcher = /(desc|asc)\((.*?)\)/g;
-  const orders = [...order.matchAll(matcher)]
-    .map(field => {
-      const fieldName = field[2];
-      const fieldDirection = field[1];
+  const ordersx = orders
+    .map(order => {
+      const field = order.split('(');
+      const fieldName = field[1].slice(-1);
+      const fieldDirection = field[0];
 
       return `"_${collectionName}"."${fieldName}" ${fieldDirection}`;
     });
 
-  return orders;
+  return ordersx;
 }
 
 function jsonifySqlQuery (sql, matchFieldNames) {
