@@ -110,7 +110,9 @@ function createEjdbDriver (state) {
   }
 
   async function close () {
-    // flushCache();
+    for (const connection in connections) {
+      (await connections[connection]).close();
+    }
   }
 
   return {
