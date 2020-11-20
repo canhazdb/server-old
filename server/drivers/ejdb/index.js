@@ -33,7 +33,8 @@ function createEjdbDriver (state) {
     const db = await getDatabaseConnection(collectionId);
     const q = createQuery(db, collectionId, ejdbQuery);
     const list = await q.list();
-    return list.map(item => JSON.parse(item._raw));
+
+    return list.map(item => item.json);
   }
 
   async function post (collectionId, document) {
@@ -44,7 +45,7 @@ function createEjdbDriver (state) {
       id: uuid()
     };
 
-    await db.put(collectionId, insertableRecord);
+    await db.put(collectionId, JSON.stringify(insertableRecord));
 
     return insertableRecord;
   }
@@ -59,7 +60,7 @@ function createEjdbDriver (state) {
     const promises = records.map(async record => {
       const insertableRecord = {
         ...document,
-        id: JSON.parse(record._raw).id
+        id: record.json.id
       };
 
       return db.patch(collectionId, JSON.stringify(insertableRecord), record.id);
@@ -78,7 +79,7 @@ function createEjdbDriver (state) {
     const records = await q.list();
 
     const promises = records.map(async record => {
-      const parsed = JSON.parse(record._raw);
+      const parsed = record.json;
 
       const insertableRecord = {
         ...parsed,
