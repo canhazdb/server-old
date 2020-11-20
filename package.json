@@ -19,7 +19,7 @@
     "lockbase": "^1.0.9",
     "minimist": "^1.2.5",
     "mongo-sql": "^6.2.0",
-    "mql-to-jql": "^1.1.6",
+    "mql-to-jql": "^1.1.7",
     "qs": "^6.9.4",
     "reconnecting-websocket": "^4.4.0",
     "server-destroy": "^1.0.1",
