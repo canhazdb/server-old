@@ -1,6 +1,6 @@
 const path = require('path');
 const fs = require('fs').promises;
-const { EJDB2 } = require('ejdb2_node');
+const { EJDB2 } = require('node-ejdb-lite');
 const convert = require('mql-to-jql/convert');
 const createQuery = require('mql-to-jql/createQuery');
 const uuid = require('uuid').v4;
