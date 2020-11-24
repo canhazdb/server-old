@@ -97,13 +97,13 @@ async function get (state, request, response) {
   response.reply({ [STATUS]: 200, [DOCUMENTS]: documents });
 }
 
-function notify (notifyPath, resource, request) {
+function notify (notifyPath, collectionId, resourceId, request) {
   request.state.notifiers
     .filter(notifier => {
       return notifier[1].test(notifyPath);
     })
     .forEach(notifier => {
-      request.state.send([notifyPath, resource, notifier[0]]);
+      request.state.send([notifyPath, collectionId, resourceId, notifier[0]]);
     });
 }
 
@@ -119,7 +119,7 @@ async function post (state, request, response) {
 
   const document = await state.driver.post(collectionId, data[DOCUMENT]);
 
-  notify(`POST:/${collectionId}/${document.id}`, `/${collectionId}/${document.id}`, request);
+  notify(`POST:/${collectionId}/${document.id}`, collectionId, document.id, request);
 
   response.reply({
     [STATUS]: 201,
@@ -146,6 +146,8 @@ async function put (state, request, response) {
 
   const result = await state.driver.put(collectionId, data[DOCUMENT], query);
 
+  notify(`PUT:/${collectionId}/${resourceId}`, collectionId, resourceId, request);
+
   response.reply({ [STATUS]: 200, [DATA]: { changes: result.changes } });
 }
 
@@ -168,6 +170,8 @@ async function patch (state, request, response) {
 
   const result = await state.driver.patch(collectionId, data[DOCUMENT], query);
 
+  notify(`PATCH:/${collectionId}/${resourceId}`, collectionId, resourceId, request);
+
   response.reply({ [STATUS]: 200, [DATA]: { changes: result.changes } });
 }
 
@@ -189,6 +193,8 @@ async function del (state, request, response) {
   }
 
   const result = await state.driver.del(collectionId, query);
+
+  notify(`DELETE:/${collectionId}/${resourceId}`, collectionId, resourceId, request);
 
   response.reply({ [STATUS]: 200, [DATA]: { changes: result.changes } });
 }

@@ -14,7 +14,7 @@ const tls = {
 };
 
 test('notify: post some data', async t => {
-  t.plan(6);
+  t.plan(5);
 
   const cluster = await createTestCluster(3, tls);
   const node = cluster.getRandomNodeUrl();
@@ -39,17 +39,17 @@ test('notify: post some data', async t => {
       return;
     }
 
-    const [path, resource, pattern] = data;
-    t.equal(pattern, 'POST:/tests/.*');
-    t.ok(resource.startsWith('/tests/'));
-    t.equal(resource.length, 43);
+    const [path, collectionId, resourceId, pattern] = data;
+
     t.ok(path.startsWith('POST:/tests/'));
-    t.equal(path.length, 48);
+    t.equal(collectionId, 'tests');
+    t.equal(resourceId.length, 36);
+    t.equal(pattern, 'POST:/tests/.*');
   });
 });
 
 test('notify: twos posts', async t => {
-  t.plan(10);
+  t.plan(8);
 
   const cluster = await createTestCluster(3, tls);
   const node = cluster.getRandomNodeUrl();
@@ -79,24 +79,24 @@ test('notify: twos posts', async t => {
       return;
     }
 
-    store.sort((a, b) => a[2] > b[2] ? 1 : -1);
+    store.sort((a, b) => a[3] > b[3] ? 1 : -1);
 
     {
-      const [path, resource, pattern] = store[0];
-      t.equal(pattern, 'POST:/tests1/.*');
-      t.ok(resource.startsWith('/tests1/'));
-      t.equal(resource.length, 44);
+      const [path, collectionId, resourceId, pattern] = store[0];
+
       t.ok(path.startsWith('POST:/tests1/'));
-      t.equal(path.length, 49);
+      t.equal(collectionId, 'tests1');
+      t.equal(resourceId.length, 36);
+      t.equal(pattern, 'POST:/tests1/.*');
     }
 
     {
-      const [path, resource, pattern] = store[1];
-      t.equal(pattern, 'POST:/tests2/.*');
-      t.ok(resource.startsWith('/tests2/'));
-      t.equal(resource.length, 44);
+      const [path, collectionId, resourceId, pattern] = store[1];
+
       t.ok(path.startsWith('POST:/tests2/'));
-      t.equal(path.length, 49);
+      t.equal(collectionId, 'tests2');
+      t.equal(resourceId.length, 36);
+      t.equal(pattern, 'POST:/tests2/.*');
     }
   }
 
@@ -112,7 +112,7 @@ test('notify: twos posts', async t => {
 });
 
 test('notify: one not the other', async t => {
-  t.plan(6);
+  t.plan(5);
 
   const cluster = await createTestCluster(3, tls);
   const node = cluster.getRandomNodeUrl();
@@ -147,11 +147,11 @@ test('notify: one not the other', async t => {
       return;
     }
 
-    const [path, resource, pattern] = data;
-    t.equal(pattern, 'POST:/tests2/.*');
-    t.ok(resource.startsWith('/tests2/'));
-    t.equal(resource.length, 44);
+    const [path, collectionId, resourceId, pattern] = data;
+
     t.ok(path.startsWith('POST:/tests2/'));
-    t.equal(path.length, 49);
+    t.equal(collectionId, 'tests2');
+    t.equal(resourceId.length, 36);
+    t.equal(pattern, 'POST:/tests2/.*');
   });
 });
