@@ -423,3 +423,46 @@ test('post and notify', async t => {
     });
   });
 });
+
+test('post and notify to multiple', async t => {
+  t.plan(5);
+
+  const node = await canhazdb({ host: 'localhost', tls, single: true });
+  const client = createClient(node.url, { tls });
+
+  let alreadyHandled = false;
+
+  async function handler (path, collectionId, resourceId, pattern) {
+    if (alreadyHandled) {
+      t.fail('handler should only be called once');
+    }
+
+    client.off('POST:/tests', handler);
+
+    client.post('tests', { a: 1 }).then(async document => {
+      gotCalled();
+    });
+
+    t.equal(pattern, 'POST:/tests');
+    t.ok(path.startsWith('POST:/tests/'), 'path starts with /tests/');
+    t.equal(path.length, 48);
+    t.equal(collectionId, 'tests');
+    t.equal(resourceId.length, 36);
+
+    alreadyHandled = true;
+  }
+
+  let calls = 0;
+  async function gotCalled () {
+    calls = calls + 1;
+    if (calls === 2) {
+      await node.close();
+      await client.close();
+      t.pass('got called twice');
+    }
+  }
+  client.on('POST:/tests', handler).then(() => {
+    client.post('tests', { a: 1 });
+  });
+  client.on('POST:/tests', gotCalled);
+});

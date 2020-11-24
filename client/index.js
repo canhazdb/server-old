@@ -325,10 +325,11 @@ function client (rootUrl, clientOptions) {
 
     rws.send(JSON.stringify([lastAcceptId, { [path]: false }]));
     const index = handlers.findIndex(item => item[0] === path && item[1] === handler);
+
     if (index === -1) {
       return;
     }
-    handlers.slice(index, 1);
+    handlers.splice(index, 1);
 
     return promise;
   }
@@ -341,8 +342,11 @@ function client (rootUrl, clientOptions) {
       accepter && accepter[1] && accepter[1]();
       return;
     }
-    const handler = handlers.find(item => item[0] === data[3]);
-    handler[1](...data);
+    handlers.forEach(item => {
+      if (item[0] === data[3]) {
+        item[1](...data);
+      }
+    });
   });
 
   function close () {
