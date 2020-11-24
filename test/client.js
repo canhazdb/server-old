@@ -396,7 +396,7 @@ test('post and notify', async t => {
   let alreadyHandled = false;
 
   return new Promise((resolve) => {
-    async function handler (path, resource, pattern) {
+    async function handler (path, collectionId, resourceId, pattern) {
       if (alreadyHandled) {
         t.fail('handler should only be called once');
       }
@@ -410,12 +410,10 @@ test('post and notify', async t => {
       });
 
       t.equal(pattern, 'POST:/tests');
-
       t.ok(path.startsWith('POST:/tests/'), 'path starts with /tests/');
       t.equal(path.length, 48);
-
-      t.ok(resource.startsWith('/tests/'), 'path starts with /tests/');
-      t.equal(resource.length, 43);
+      t.equal(collectionId, 'tests');
+      t.equal(resourceId.length, 36);
 
       alreadyHandled = true;
     }

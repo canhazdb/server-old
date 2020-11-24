@@ -53,8 +53,8 @@ function client (rootUrl, clientOptions) {
     const url = `${rootUrl}/${collectionId}?${query}`;
     https.request(url, { agent: httpsAgent }, async function (response) {
       const data = await finalStream(response).then(JSON.parse);
-      if (response.statusCode >= 500) {
-        callback(Object.assign(new Error('canhazdb error'), { data }));
+      if (response.statusCode >= 400) {
+        callback(Object.assign(new Error('canhazdb error'), { data, statusCode: response.statusCode }));
         return;
       }
 
@@ -89,8 +89,8 @@ function client (rootUrl, clientOptions) {
     https.request(url, { agent: httpsAgent }, async function (response) {
       const data = await finalStream(response).then(JSON.parse);
 
-      if (response.statusCode >= 500) {
-        callback(Object.assign(new Error('canhazdb error'), { data }));
+      if (response.statusCode >= 400) {
+        callback(Object.assign(new Error('canhazdb error'), { data, statusCode: response.statusCode }));
         return;
       }
 
@@ -117,8 +117,8 @@ function client (rootUrl, clientOptions) {
     }, async function (response) {
       const data = await finalStream(response).then(JSON.parse);
 
-      if (response.statusCode >= 500) {
-        callback(Object.assign(new Error('canhazdb error'), { data }));
+      if (response.statusCode >= 400) {
+        callback(Object.assign(new Error('canhazdb error'), { data, statusCode: response.statusCode }));
         return;
       }
 
@@ -155,8 +155,8 @@ function client (rootUrl, clientOptions) {
     }, async function (response) {
       const data = await finalStream(response).then(JSON.parse);
 
-      if (response.statusCode >= 500) {
-        callback(Object.assign(new Error('canhazdb error'), { data }));
+      if (response.statusCode >= 400) {
+        callback(Object.assign(new Error('canhazdb error'), { data, statusCode: response.statusCode }));
         return;
       }
 
@@ -193,8 +193,8 @@ function client (rootUrl, clientOptions) {
     }, async function (response) {
       const data = await finalStream(response).then(JSON.parse);
 
-      if (response.statusCode >= 500) {
-        callback(Object.assign(new Error('canhazdb error'), { data }));
+      if (response.statusCode >= 400) {
+        callback(Object.assign(new Error('canhazdb error'), { data, statusCode: response.statusCode }));
         return;
       }
 
@@ -230,8 +230,8 @@ function client (rootUrl, clientOptions) {
     }, async function (response) {
       const data = await finalStream(response).then(JSON.parse);
 
-      if (response.statusCode >= 500) {
-        callback(Object.assign(new Error('canhazdb error'), { data }));
+      if (response.statusCode >= 400) {
+        callback(Object.assign(new Error('canhazdb error'), { data, statusCode: response.statusCode }));
         return;
       }
 
@@ -252,8 +252,8 @@ function client (rootUrl, clientOptions) {
     }, async function (response) {
       const data = await finalStream(response).then(JSON.parse);
 
-      if (response.statusCode >= 500) {
-        callback(Object.assign(new Error('canhazdb error'), { data }));
+      if (response.statusCode >= 400) {
+        callback(Object.assign(new Error('canhazdb error'), { data, statusCode: response.statusCode }));
         return;
       }
 
@@ -269,8 +269,8 @@ function client (rootUrl, clientOptions) {
     }, async function (response) {
       const data = await finalStream(response).then(JSON.parse);
 
-      if (response.statusCode >= 500) {
-        callback(Object.assign(new Error('canhazdb error'), { data }));
+      if (response.statusCode >= 400) {
+        callback(Object.assign(new Error('canhazdb error'), { data, statusCode: response.statusCode }));
         return;
       }
 
@@ -341,7 +341,7 @@ function client (rootUrl, clientOptions) {
       accepter && accepter[1] && accepter[1]();
       return;
     }
-    const handler = handlers.find(item => item[0] === data[2]);
+    const handler = handlers.find(item => item[0] === data[3]);
     handler[1](...data);
   });
 

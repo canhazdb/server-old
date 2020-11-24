@@ -22,7 +22,7 @@ function wsHandler (server, state, options) {
   const listeners = {};
 
   state.handleMessage = function (message) {
-    const triggeredPath = message[2];
+    const triggeredPath = message[3];
     listeners[triggeredPath].forEach(socket => socket.send(JSON.stringify(['T', message])));
   };
 
