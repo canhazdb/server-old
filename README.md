@@ -256,7 +256,7 @@ client.get('tests', {
 **HTTP Request:**
 ```javascript
 axios({
-  url: 'https://localhost:8061/tests?count=true&query={"firstName":"Joe"}&fields=["firstName"]&limit=10&order=desc(firstName)',
+  url: 'https://localhost:8061/tests?count=true&query={"firstName":"Joe"}',
 })
 ```
 
