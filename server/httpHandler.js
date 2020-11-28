@@ -14,6 +14,7 @@ const {
   DOCUMENTS,
   LOCK,
   UNLOCK,
+  COUNT,
   GET,
   POST,
   PUT,
@@ -121,6 +122,37 @@ async function handleGetAll (state, request, response, { collectionId, url }) {
   }
 
   writeResponse(200, results, response);
+}
+
+async function handleCount (state, request, response, { collectionId, url }) {
+  const responses = await askOnAllNodes(state, {
+    [COMMAND]: COUNT,
+    [DATA]: {
+      [COLLECTION_ID]: collectionId,
+      [QUERY]: url.searchParams.get('query') && JSON.parse(url.searchParams.get('query'))
+    }
+  });
+
+  if (responses.find(response => response[STATUS] >= 500)) {
+    writeResponse(500, responses[0][DATA], response);
+    return;
+  }
+
+  if (!responses.find(response => response[STATUS] === 200)) {
+    writeResponse(200, { documentCount: 0 }, response);
+    return;
+  }
+
+  const documentCount = responses
+    .reduce((total, response) => {
+      if (response[STATUS] !== 200) {
+        return total;
+      }
+
+      return total + response[DATA].documentCount;
+    }, 0);
+
+  writeResponse(200, { documentCount }, response);
 }
 
 async function handlePost (state, request, response, { collectionId }) {
@@ -367,6 +399,11 @@ function handleExternal (state, request, response) {
 
   if (request.method === 'GET' && resourceId) {
     handleGetOne(state, request, response, { collectionId, resourceId, url });
+    return;
+  }
+
+  if (request.method === 'GET' && url.searchParams.get('count') && !resourceId) {
+    handleCount(state, request, response, { collectionId, url });
     return;
   }
 
