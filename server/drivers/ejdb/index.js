@@ -23,6 +23,22 @@ function createEjdbDriver (state) {
     return connections[collectionId];
   }
 
+  async function count (collectionId, query) {
+    const ejdbQuery = convert({ query });
+
+    const queryWithCount = {
+      mql: ejdbQuery.mql + ' | count',
+      values: ejdbQuery.values
+    };
+
+    const db = await getDatabaseConnection(collectionId);
+    const q = createQuery(db, collectionId, queryWithCount);
+
+    const count = await q.scalarInt();
+
+    return count;
+  }
+
   async function get (collectionId, query, fields, order, limit) {
     if (fields && !fields.includes('id')) {
       fields.push('id');
@@ -117,6 +133,7 @@ function createEjdbDriver (state) {
   }
 
   return {
+    count,
     get,
     put,
     post,

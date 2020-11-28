@@ -14,6 +14,7 @@ const {
   LOCK_STRATEGY,
   LOCK_STRATEGY_FAIL,
   UNLOCK,
+  COUNT,
   GET,
   POST,
   PUT,
@@ -95,6 +96,19 @@ async function get (state, request, response) {
   const documents = await state.driver.get(collectionId, query, fields, order, limit);
 
   response.reply({ [STATUS]: 200, [DOCUMENTS]: documents });
+}
+
+async function count (state, request, response) {
+  const data = request.data[DATA];
+  const collectionId = data[COLLECTION_ID];
+  const query = data[QUERY];
+  const fields = data[FIELDS];
+  const order = data[ORDER];
+  const limit = data[LIMIT];
+
+  const documentCount = await state.driver.count(collectionId, query, fields, order, limit);
+
+  response.reply({ [STATUS]: 200, [DATA]: { documentCount } });
 }
 
 function notify (notifyPath, collectionId, resourceId, request) {
@@ -264,6 +278,7 @@ const mappings = {
   [INFO]: info,
   [LOCK]: lock,
   [UNLOCK]: unlock,
+  [COUNT]: count,
   [GET]: get,
   [POST]: post,
   [PUT]: put,
