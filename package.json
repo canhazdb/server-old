@@ -33,7 +33,7 @@
     "ws": "^7.4.0"
   },
   "devDependencies": {
-    "basictap": "^1.1.8",
+    "basictap": "^1.1.11",
     "c8": "^7.3.3"
   },
   "scripts": {

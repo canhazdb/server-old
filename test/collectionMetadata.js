@@ -51,7 +51,7 @@ test('collectionMetadata - create a record', async t => {
 });
 
 test('collectionMetadata - delete a record before debarrel', async t => {
-  t.plan(4);
+  t.plan(5);
 
   const cluster = await createTestCluster(3, tls);
 
