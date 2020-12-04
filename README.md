@@ -175,7 +175,7 @@ http.request('/system.collections') === [{
   <tr>
     <td><a href="https://www.github.com/markwylde/canhazdb">2</a></td>
     <td>GET</td>
-    <td>/:collectionId/:documentId?query&fields&limit&order</td>
+    <td>/:collectionId/:documentId?query&count&fields&limit&order</td>
     <td>Get a document by id</td>
   </tr>
   <tr>
@@ -262,7 +262,33 @@ client.get('tests', {
 </details>
 
 <details>
-<summary>2. Get items in a collection</summary>
+<summary>2. Get document count in a collection</summary>
+
+<table>
+  <tr><td><strong>Method</strong></td><td>GET</td></tr>
+  <tr><td><strong>URL</strong></td><td>/collectionId?count=true</td></tr>
+  <tr><td><strong>Query</strong></td><td>Mongo Query Syntax</td></tr>
+</table>
+
+**HTTP Request:**
+```javascript
+axios({
+  url: 'https://localhost:8061/tests?count=true&query={"firstName":"Joe"}',
+})
+```
+
+**Client:**
+```javascript
+client.count('tests', {
+  query: {
+    firstName: 'Joe'
+  }
+});
+```
+</details>
+
+<details>
+<summary>3. Get items in a collection</summary>
 
 <table>
   <tr><td><strong>Method</strong></td><td>GET</td></tr>
@@ -293,7 +319,7 @@ client.get('tests', {
 </details>
 
 <details>
-<summary>3. Create a new document in a collection</summary>
+<summary>4. Create a new document in a collection</summary>
 
 <table>
   <tr><td><strong>Method</strong></td><td>POST</td></tr>
@@ -321,7 +347,7 @@ client.post('tests', {
 </details>
 
 <details>
-<summary>4. Replace a document by id</summary>
+<summary>5. Replace a document by id</summary>
 
 <table>
   <tr><td><strong>Method</strong></td><td>PUT</td></tr>
@@ -349,7 +375,7 @@ client.put('tests', {
 </details>
 
 <details>
-<summary>5. Replace multiple documents by query</summary>
+<summary>6. Replace multiple documents by query</summary>
 
 <table>
   <tr><td><strong>Method</strong></td><td>PUT</td></tr>
@@ -385,7 +411,7 @@ client.put('tests', {
 </details>
 
 <details>
-<summary>6. Partially update multiple documents by id</summary>
+<summary>7. Partially update multiple documents by id</summary>
 
 <table>
   <tr><td><strong>Method</strong></td><td>PATCH</td></tr>
@@ -417,7 +443,7 @@ client.patch('tests', {
 </details>
 
 <details>
-<summary>7. Partially update multiple documents by query</summary>
+<summary>8. Partially update multiple documents by query</summary>
 
 <table>
   <tr><td><strong>Method</strong></td><td>PATCH</td></tr>
@@ -449,7 +475,7 @@ client.patch('tests', {
 </details>
 
 <details>
-<summary>8. Delete a document by id</summary>
+<summary>9. Delete a document by id</summary>
 
 <table>
   <tr><td><strong>Method</strong></td><td>DELETE</td></tr>
@@ -476,7 +502,7 @@ client.delete('tests', {
 </details>
 
 <details>
-<summary>9. Delete multiple documents by query</summary>
+<summary>10. Delete multiple documents by query</summary>
 
 <table>
   <tr><td><strong>Method</strong></td><td>DELETE</td></tr>
@@ -502,7 +528,7 @@ client.delete('tests', {
 </details>
 
 <details>
-<summary>10. Lock a collection/document/field combination</summary>
+<summary>11. Lock a collection/document/field combination</summary>
 
 <table>
   <tr><td><strong>Method</strong></td><td>POST</td></tr>
@@ -527,7 +553,7 @@ const lockId = await client.lock('users');
 </details>
 
 <details>
-<summary>11. Release a lock</summary>
+<summary>12. Release a lock</summary>
 
 <table>
   <tr><td><strong>Method</strong></td><td>DELETE</td></tr>

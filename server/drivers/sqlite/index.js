@@ -30,6 +30,23 @@ function createTableFromSchema (db, collectionName) {
 }
 
 function createSqliteDriver (state) {
+  async function count (collectionId, query) {
+    const dbFile = path.join(state.options.dataDirectory, './' + collectionId + '.db');
+
+    if (!await fileExists(dbFile)) {
+      throw Object.assign(new Error('collection not found'), { status: 404 });
+    }
+
+    const db = await getConnection(10000, dbFile);
+
+    const statement = queryStringToSql.records(collectionId, query);
+    const result = await db.all(`SELECT count(*) FROM (${statement.query});`, statement.values);
+
+    const count = result[0]['count(*)'];
+
+    return count;
+  }
+
   async function get (collectionId, query, fields, order, limit) {
     const dbFile = path.join(state.options.dataDirectory, './' + collectionId + '.db');
 
@@ -117,6 +134,7 @@ function createSqliteDriver (state) {
   }
 
   return {
+    count,
     get,
     put,
     post,

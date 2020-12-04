@@ -27,6 +27,40 @@ function client (rootUrl, clientOptions) {
 
   const httpsAgent = clientOptions && clientOptions.tls && new https.Agent(clientOptions.tls);
 
+  function count (collectionId, options, callback) {
+    if (!callback) {
+      callback = options;
+      options = {};
+    }
+
+    const unknownKeys = checkKeys(['query'], options);
+    if (unknownKeys.length > 0) {
+      callback(Object.assign(new Error('canhazdb error: unknown keys ' + unknownKeys.join(','))));
+      return;
+    }
+
+    if (options.query) {
+      validateQueryOptions(options.query);
+    }
+
+    const query = querystring.encode({
+      ...options,
+      count: true,
+      query: options.query && JSON.stringify(options.query)
+    });
+
+    const url = `${rootUrl}/${collectionId}?${query}`;
+    https.request(url, { agent: httpsAgent }, async function (response) {
+      const data = await finalStream(response).then(JSON.parse);
+      if (response.statusCode >= 400) {
+        callback(Object.assign(new Error('canhazdb error'), { data, statusCode: response.statusCode }));
+        return;
+      }
+
+      callback(null, data);
+    }).end();
+  }
+
   function getAll (collectionId, options, callback) {
     if (!callback) {
       callback = options;
@@ -354,6 +388,7 @@ function client (rootUrl, clientOptions) {
   }
 
   return {
+    count: promisify(count),
     getAll: promisify(getAll),
     getOne: promisify(getOne),
     put: promisify(put),

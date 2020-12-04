@@ -79,6 +79,20 @@ test('lock and unlock', async t => {
   t.pass();
 });
 
+test('count', async t => {
+  t.plan(1);
+
+  const node = await canhazdb({ host: 'localhost', tls, single: true });
+  const client = createClient(node.url, { tls });
+
+  const result = await client.count('tests');
+
+  await node.close();
+  await client.close();
+
+  t.deepEqual(result, { documentCount: 0 });
+});
+
 test('get', async t => {
   t.plan(1);
 

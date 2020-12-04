@@ -43,6 +43,34 @@ test('post: and get some data', async t => {
   t.equal(getRequest.status, 200);
 });
 
+test('post: and count some data', async t => {
+  t.plan(2);
+
+  const cluster = await createTestCluster(3, tls);
+  const node = cluster.getRandomNodeUrl();
+
+  await Promise.all([
+    httpRequest(`${node.url}/tests`, {
+      method: 'POST',
+      data: { a: 1 }
+    }),
+
+    httpRequest(`${node.url}/tests`, {
+      method: 'POST',
+      data: { a: 2 }
+    })
+  ]);
+
+  const getRequest = await httpRequest(`${node.url}/tests?count=true`);
+  cluster.closeAll();
+
+  t.deepEqual(getRequest.data, {
+    documentCount: 2
+  });
+
+  t.equal(getRequest.status, 200);
+});
+
 test('post: and getAll specific fields only', async t => {
   t.plan(3);
 

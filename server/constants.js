@@ -11,6 +11,7 @@ const constants = {
   NOTIFY_OFF: commandIndex++,
   LOCK: commandIndex++,
   UNLOCK: commandIndex++,
+  COUNT: commandIndex++,
   GET: commandIndex++,
   POST: commandIndex++,
   PUT: commandIndex++,
