@@ -138,7 +138,7 @@ async function handlePost (state, request, response, { collectionId }) {
     }
   });
 
-  writeResponse(result[STATUS], result[DOCUMENT], response);
+  writeResponse(result[STATUS], result[DOCUMENT] || result[DATA], response);
 }
 
 async function handlePutOne (state, request, response, { collectionId, resourceId }) {
