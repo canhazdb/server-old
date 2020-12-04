@@ -140,6 +140,23 @@ async function main () {
 }
 ```
 
+## System Tables
+The `system` namespace is used for storing the following metadata related to the database.
+
+You can query them like any normal collection.
+
+### collections
+The `system.collections` collection contains a document for each collection, along with the
+amount of documents that stores.
+
+```javascript
+http.request('/system.collections') === [{
+ id: 'uuid-uuid-uuid-uuid',
+ collectionId: 'tests',
+ documentCount: 1
+}]
+```
+
 ## Endpoints
 
 <table>

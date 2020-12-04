@@ -31,6 +31,7 @@ function createTableFromSchema (db, collectionName) {
 
 function createSqliteDriver (state) {
   async function count (collectionId, query) {
+    collectionId = collectionId.replace(/\./g, '#');
     const dbFile = path.join(state.options.dataDirectory, './' + collectionId + '.db');
 
     if (!await fileExists(dbFile)) {
@@ -48,15 +49,17 @@ function createSqliteDriver (state) {
   }
 
   async function get (collectionId, query, fields, order, limit) {
+    collectionId = collectionId.replace(/\./g, '#');
     const dbFile = path.join(state.options.dataDirectory, './' + collectionId + '.db');
 
     if (!await fileExists(dbFile)) {
-      throw Object.assign(new Error('collection not found'), { status: 404 });
+      return [];
     }
 
     const db = await getConnection(10000, dbFile);
 
     const statement = queryStringToSql.records(collectionId, query, fields, order, limit);
+    console.log(statement);
     const resources = await db.all(statement.query, statement.values);
 
     return resources.map(resource => ({
@@ -66,6 +69,7 @@ function createSqliteDriver (state) {
   }
 
   async function post (collectionId, document) {
+    collectionId = collectionId.replace(/\./g, '#');
     const insertableRecord = {
       ...document,
       id: uuid()
@@ -84,6 +88,7 @@ function createSqliteDriver (state) {
   }
 
   async function put (collectionId, document, query) {
+    collectionId = collectionId.replace(/\./g, '#');
     const dbFile = path.join(state.options.dataDirectory, './' + collectionId + '.db');
 
     if (!await fileExists(dbFile)) {
@@ -101,6 +106,7 @@ function createSqliteDriver (state) {
   }
 
   async function patch (collectionId, document, query) {
+    collectionId = collectionId.replace(/\./g, '#');
     const dbFile = path.join(state.options.dataDirectory, './' + collectionId + '.db');
 
     if (!await fileExists(dbFile)) {
@@ -118,6 +124,7 @@ function createSqliteDriver (state) {
   }
 
   async function del (collectionId, query) {
+    collectionId = collectionId.replace(/\./g, '#');
     const dbFile = path.join(state.options.dataDirectory, './' + collectionId + '.db');
     if (!await fileExists(dbFile)) {
       throw Object.assign(new Error('collection not found'), { status: 404 });

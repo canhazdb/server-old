@@ -1,6 +1,6 @@
 {
   "name": "canhazdb",
-  "version": "3.1.0",
+  "version": "3.2.0",
   "description": "A shaded and clustered database communicated over http rest.",
   "main": "./index.js",
   "bin": {
@@ -12,6 +12,7 @@
   "dependencies": {
     "axios": "^0.20.0",
     "chalk": "^4.1.0",
+    "debarrel": "^1.0.1",
     "final-stream": "^2.0.2",
     "get-port": "^5.1.1",
     "hinton": "^1.0.0",
@@ -32,7 +33,7 @@
     "ws": "^7.4.0"
   },
   "devDependencies": {
-    "basictap": "^1.1.8",
+    "basictap": "^1.1.11",
     "c8": "^7.3.3"
   },
   "scripts": {

@@ -1,6 +1,8 @@
 const tcpocket = require('tcpocket');
 const lockbase = require('lockbase');
 
+const createCollectionMetadataUpdater = require('./createCollectionMetadataUpdater');
+
 const {
   COMMAND,
   STATUS,
@@ -133,6 +135,8 @@ async function post (state, request, response) {
 
   const document = await state.driver.post(collectionId, data[DOCUMENT]);
 
+  state.updateCollectionMetadata(collectionId, { documentCountAdd: 1 });
+
   notify(`POST:/${collectionId}/${document.id}`, collectionId, document.id, request);
 
   response.reply({
@@ -207,6 +211,10 @@ async function del (state, request, response) {
   }
 
   const result = await state.driver.del(collectionId, query);
+
+  if (result.changes > 0) {
+    state.updateCollectionMetadata(collectionId, { documentCountAdd: -result.changes });
+  }
 
   notify(`DELETE:/${collectionId}/${resourceId}`, collectionId, resourceId, request);
 
@@ -291,6 +299,8 @@ const mappings = {
 function createInternalServer (state, port, tls) {
   state.locks = lockbase();
 
+  state.updateCollectionMetadata = createCollectionMetadataUpdater(state);
+
   return tcpocket.createServer({ port, tls }, function (request, response) {
     request.socket.state = request.socket.state || {
       send: response.send,
@@ -310,6 +320,7 @@ function createInternalServer (state, port, tls) {
 
     return mapping(state, request, response)
       .catch(error => {
+        console.log(error);
         if (error[STATUS] && error[STATUS] >= 500) {
           console.log(error);
         }
