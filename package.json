@@ -1,6 +1,6 @@
 {
   "name": "canhazdb",
-  "version": "3.2.0",
+  "version": "3.2.1",
   "description": "A shaded and clustered database communicated over http rest.",
   "main": "./index.js",
   "bin": {
@@ -10,10 +10,10 @@
     "test": "test"
   },
   "dependencies": {
-    "axios": "^0.20.0",
+    "axios": "^0.21.1",
     "chalk": "^4.1.0",
     "debarrel": "^1.0.1",
-    "final-stream": "^2.0.2",
+    "final-stream": "^2.0.3",
     "get-port": "^5.1.1",
     "hinton": "^1.0.0",
     "lockbase": "^1.0.9",
@@ -21,20 +21,20 @@
     "mongo-sql": "^6.2.0",
     "mql-to-jql": "^1.1.8",
     "ndjson-fe": "^1.2.6",
-    "node-ejdb-lite": "^3.1.7",
+    "node-ejdb-lite": "^3.2.0",
     "qs": "^6.9.4",
     "reconnecting-websocket": "^4.4.0",
     "server-destroy": "^1.0.1",
-    "sqlite": "^4.0.15",
+    "sqlite": "^4.0.18",
     "sqlite3": "^5.0.0",
     "tcpocket": "^4.0.0",
-    "uuid": "^8.3.1",
+    "uuid": "^8.3.2",
     "write-response": "^1.2.3",
-    "ws": "^7.4.0"
+    "ws": "^7.4.1"
   },
   "devDependencies": {
     "basictap": "^1.1.11",
-    "c8": "^7.3.3"
+    "c8": "^7.3.5"
   },
   "scripts": {
     "test": "./makeCerts.sh && npm run test:ejdb && npm run test:sqlite",
