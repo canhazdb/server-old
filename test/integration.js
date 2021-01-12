@@ -3,7 +3,7 @@ const fs = require('fs');
 const test = require('basictap');
 const httpRequest = require('./helpers/httpRequest');
 const createTestCluster = require('./helpers/createTestCluster');
-const canhazdb = require('../server');
+const canhazdb = require('../lib');
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 

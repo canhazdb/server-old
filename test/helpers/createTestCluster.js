@@ -1,6 +1,6 @@
 const fs = require('fs');
 const uuid = require('uuid').v4;
-const canhazdb = require('../../server');
+const canhazdb = require('../../lib');
 
 const selectRandomItemFromArray = require('../../utils/selectRandomItemFromArray');
 

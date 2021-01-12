@@ -1,8 +1,7 @@
-# canhazdb
-![Node.js Test Runner](https://github.com/markwylde/canhazdb/workflows/Node.js%20Test%20Runner/badge.svg)
-![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/markwylde/canhazdb)
-[![GitHub package.json version](https://img.shields.io/github/package-json/v/markwylde/canhazdb)](https://github.com/markwylde/canhazdb/blob/master/package.json)
-[![GitHub](https://img.shields.io/github/license/markwylde/canhazdb)](https://github.com/markwylde/canhazdb/blob/master/LICENSE)
+# canhazdb-server
+![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/canhazdb/server)
+[![GitHub package.json version](https://img.shields.io/github/package-json/v/canhazdb/server)](https://github.com/canhazdb/server/blob/master/package.json)
+[![GitHub](https://img.shields.io/github/license/canhazdb/server)](https://github.com/canhazdb/server/blob/master/LICENSE)
 [![js-semistandard-style](https://img.shields.io/badge/code%20style-semistandard-brightgreen.svg)](https://github.com/standard/semistandard)
 
 A sharded and clustered database communicated over http rest with notifications included.
@@ -17,60 +16,28 @@ A bash script `./makeCerts.sh` provided will create a folder with test certs you
 You can opt out of tls by omitting the tls option from canhazdb.
 
 ### Client
-You can talk to the database using http/https using your favourite http client, or
-you can use the built in client api.
-
-```javascript
-const client = require('canhazdb/client');
-
-const tls = {
-  key: fs.readFileSync('./certs/localhost.privkey.pem'),
-  cert: fs.readFileSync('./certs/localhost.cert.pem'),
-  ca: [ fs.readFileSync('./certs/ca.cert.pem') ],
-  requestCert: true /* this denys any cert not signed with our ca above */
-};
-const client = createClient('https://localhost:8063', { tls });
-
-const document = await client.post('tests', { a: 1 });
-const changed = await client.put('tests', { id: document.id }, { query: { b: 2 } });
-const changedDocument = await client.getOne('tests', { query: { id: document.id } });
-
-// Capture an event based on regex
-// client.on('.*:/tests/.*', ...)
-// client.on('.*:/tests/uuid-uuid-uuid-uuid', ...)
-// client.on('POST:/tests', ...)
-// client.on('DELETE:/tests/.*', ...)
-// client.on('(PUT|PATCH):/tests/uuid-uuid-uuid-uuid', ...)
-
-client.on('POST:/tests/.*', (path, collectionId, resourceId, pattern) => {
-  console.log(path) // === 'POST:/tests/uuid-uuid-uuid-uuid'
-  console.log(collectionId) // === 'tests'
-  console.log(resourceId) // === 'uuid-uuid-uuid-uuid'
-  console.log(pattern) // === 'POST:/tests/.*'
-})
-
-console.log( {
-  document, /* { a: 1 } */
-  changed, /* { changes: 1 } */
-  changedDocument, /* { b: 2 } */
-})
-```
+You can talk to the database via http/https using your favourite http client, or
+you can use the [official client](https://github.com/canhazdb/client).
 
 ### Server Via the CLI
 ```bash
-npm install --global canhazdb
+npm install --global canhazdb-server
 ```
 
+#### Create a single node server
 ```bash
-canhazdb --host localhost \
+canhazdb-server --host localhost \
          --port 7061 \
          --query-port 8061 \
          --data-dir ./canhazdb/one \
          --tls-ca ./certs/ca.cert.pem \
          --tls-cert ./certs/localhost.cert.pem \
          --tls-key ./certs/localhost.privkey.pem
+```
 
-canhazdb --host localhost \
+#### Add some more to the cluster
+```bash
+canhazdb-server --host localhost \
          --port 7062 \
          --query-port 8062 \
          --data-dir ./canhazdb/two \
@@ -79,7 +46,7 @@ canhazdb --host localhost \
          --tls-key ./certs/localhost.privkey.pem \
          --join localhost:7061
 
-canhazdb --host localhost \
+canhazdb-server --host localhost \
          --port 7063 \
          --query-port 8063 \
          --data-dir ./canhazdb/three \
@@ -91,13 +58,14 @@ canhazdb --host localhost \
 
 ### Server Via NodeJS
 ```bash
-npm install --save canhazdb
+npm install --save canhazdb-server
 ```
 
 ```javascript
 const fs = require('fs');
+const https = require('https');
 const axios = require('axios');
-const canhazdb = require('canhazdb/server');
+const canhazdb = require('canhazdb-server');
 
 async function main () {
   const tls = {
@@ -117,6 +85,7 @@ async function main () {
   await node2.join({ host: 'localhost', port: 7061 })
 
   const postRequest = await axios(`${node1.url}/tests`, {
+    httpsAgent: new https.Agent(tls),
     method: 'POST',
     data: {
       a: 1,
@@ -126,7 +95,9 @@ async function main () {
   });
 
   // node2.url === 'https://localhost:8061'
-  const result = await axios(`${node2.url}/tests/${postRequest.data.id}`);
+  const result = await axios(`${node2.url}/tests/${postRequest.data.id}`, {
+    httpsAgent: new https.Agent(tls)
+  });
 
   console.log(result.data);
 
@@ -150,7 +121,9 @@ The `system.collections` collection contains a document for each collection, alo
 amount of documents that stores.
 
 ```javascript
-http.request('/system.collections') === [{
+axios('/system.collections', {
+  httpsAgent: new https.Agent(tls)
+}) === [{
  id: 'uuid-uuid-uuid-uuid',
  collectionId: 'tests',
  documentCount: 1
@@ -167,67 +140,67 @@ http.request('/system.collections') === [{
     <th>Description</th>
   </tr>
   <tr>
-    <td><a href="https://www.github.com/markwylde/canhazdb">1</a></td>
+    <td><a href="https://www.github.com/canhazdb/server">1</a></td>
     <td>GET</td>
     <td>/:collectionId?fields</td>
     <td>List all documents for a collection</td>
   </tr>
   <tr>
-    <td><a href="https://www.github.com/markwylde/canhazdb">2</a></td>
+    <td><a href="https://www.github.com/canhazdb/server">2</a></td>
     <td>GET</td>
     <td>/:collectionId/:documentId?query&count&fields&limit&order</td>
     <td>Get a document by id</td>
   </tr>
   <tr>
-    <td><a href="https://www.github.com/markwylde/canhazdb">3</a></td>
+    <td><a href="https://www.github.com/canhazdb/server">3</a></td>
     <td>POST</td>
     <td>/:collectionId</td>
     <td>Create a new document</td>
   </tr>
   <tr>
-    <td><a href="https://www.github.com/markwylde/canhazdb">4</a></td>
+    <td><a href="https://www.github.com/canhazdb/server">4</a></td>
     <td>PUT</td>
     <td>/:collectionId/:documentId</td>
     <td>Replace a document by id</td>
   </tr>
   <tr>
-    <td><a href="https://www.github.com/markwylde/canhazdb">5</a></td>
+    <td><a href="https://www.github.com/canhazdb/server">5</a></td>
     <td>PUT</td>
     <td>/:collectionId/:documentId?query</td>
     <td>Replace multiple document matching query</td>
   </tr>
   <tr>
-    <td><a href="https://www.github.com/markwylde/canhazdb">6</a></td>
+    <td><a href="https://www.github.com/canhazdb/server">6</a></td>
     <td>PATCH</td>
     <td>/:collectionId/:documentId</td>
     <td>Partially update a document by id</td>
   </tr>
   <tr>
-    <td><a href="https://www.github.com/markwylde/canhazdb">7</a></td>
+    <td><a href="https://www.github.com/canhazdb/server">7</a></td>
     <td>PATCH</td>
     <td>/:collectionId/:documentId?query</td>
     <td>Partially update multiple document matching query</td>
   </tr>
   <tr>
-    <td><a href="https://www.github.com/markwylde/canhazdb">8</a></td>
+    <td><a href="https://www.github.com/canhazdb/server">8</a></td>
     <td>DELETE</td>
     <td>/:collectionId/:documentId</td>
     <td>Delete a document by id</td>
   </tr>
   <tr>
-    <td><a href="https://www.github.com/markwylde/canhazdb">9</a></td>
+    <td><a href="https://www.github.com/canhazdb/server">9</a></td>
     <td>DELETE</td>
     <td>/:collectionId/:documentId?query</td>
     <td>Delete multiple document matching query</td>
   </tr>
   <tr>
-    <td><a href="https://www.github.com/markwylde/canhazdb">10</a></td>
+    <td><a href="https://www.github.com/canhazdb/server">10</a></td>
     <td>POST</td>
     <td>/_/locks</td>
     <td>Lock a collection/document/field combination</td>
   </tr>
   <tr>
-    <td><a href="https://www.github.com/markwylde/canhazdb">11</a></td>
+    <td><a href="https://www.github.com/canhazdb/server">11</a></td>
     <td>DELETE</td>
     <td>/_/locks/:lockId</td>
     <td>Release a lock</td>
