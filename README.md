@@ -76,11 +76,18 @@ async function main () {
   };
 
   const node1 = await canhazdb({
-    host: 'localhost', port: 7061, queryPort: 8061, dataDirectory: './canhazdata/one', tls
-  })
+    host: 'localhost',
+    port: 7061, queryPort: 8061,
+    dataDirectory: './canhazdata/one',
+    tls, single: true
+  });
   const node2 = await canhazdb({
-    host: 'localhost', port: 7062, queryPort: 8062, dataDirectory: './canhazdata/two', tls
-  })
+    host: 'localhost',
+    port: 7062, queryPort: 8062,
+    dataDirectory: './canhazdata/two',
+    tls, join: ['localhost:7061']
+  });
+
 
   await node2.join({ host: 'localhost', port: 7061 })
 
