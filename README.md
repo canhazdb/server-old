@@ -26,7 +26,7 @@ npm install --global canhazdb-server canhazdb-ejdb
 
 #### Create a single node server
 ```bash
-canhazdb-server --driver canhazdb-ejdb \
+canhazdb-server \
          --host localhost \
          --port 7061 \
          --query-port 8061 \
@@ -38,7 +38,7 @@ canhazdb-server --driver canhazdb-ejdb \
 
 #### Add some more to the cluster
 ```bash
-canhazdb-server --driver canhazdb-ejdb
+canhazdb-server \
          --host localhost \
          --port 7062 \
          --query-port 8062 \
@@ -48,7 +48,7 @@ canhazdb-server --driver canhazdb-ejdb
          --tls-key ./certs/localhost.privkey.pem \
          --join localhost:7061
 
-canhazdb-server --driver canhazdb-ejdb
+canhazdb-server \
          --host localhost \
          --port 7063 \
          --query-port 8063 \
@@ -79,14 +79,12 @@ async function main () {
   };
 
   const node1 = await canhazdb({
-    driver: require('canhazdb-ejdb'),
     host: 'localhost',
     port: 7061, queryPort: 8061,
     dataDirectory: './canhazdata/one',
     tls, single: true
   });
   const node2 = await canhazdb({
-    driver: require('canhazdb-ejdb'),
     host: 'localhost',
     port: 7062, queryPort: 8062,
     dataDirectory: './canhazdata/two',
