@@ -1,4 +1,1 @@
-module.exports = {
-  server: require('./server'),
-  client: require('./client')
-};
+module.exports = require('./lib');

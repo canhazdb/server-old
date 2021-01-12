@@ -1,12 +1,13 @@
 {
-  "name": "canhazdb",
-  "version": "3.2.1",
+  "name": "canhazdb-server",
+  "version": "4.0.0",
   "description": "A shaded and clustered database communicated over http rest.",
-  "main": "./index.js",
+  "main": "./lib/index.js",
   "bin": {
-    "canhazdb": "server/cli.js"
+    "canhazdb-server": "lib/cli.js"
   },
   "directories": {
+    "lib": "lib",
     "test": "test"
   },
   "dependencies": {
@@ -43,13 +44,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/markwylde/canhazdb.git"
+    "url": "git+https://github.com/canhazdb/server.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/markwylde/canhazdb/issues"
+    "url": "https://github.com/canhazdb/server/issues"
   },
-  "homepage": "https://github.com/markwylde/canhazdb#readme"
+  "homepage": "https://github.com/canhazdb/server#readme"
 }
