@@ -21,7 +21,7 @@ you can use the [official client](https://github.com/canhazdb/client).
 
 ### Server Via the CLI
 ```bash
-npm install --global canhazdb-server canhazdb-ejdb
+npm install --global canhazdb-server
 ```
 
 #### Create a single node server
