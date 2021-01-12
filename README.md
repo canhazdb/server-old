@@ -26,7 +26,8 @@ npm install --global canhazdb-server
 
 #### Create a single node server
 ```bash
-canhazdb-server --host localhost \
+canhazdb-server \
+         --host localhost \
          --port 7061 \
          --query-port 8061 \
          --data-dir ./canhazdb/one \
@@ -37,7 +38,8 @@ canhazdb-server --host localhost \
 
 #### Add some more to the cluster
 ```bash
-canhazdb-server --host localhost \
+canhazdb-server \
+         --host localhost \
          --port 7062 \
          --query-port 8062 \
          --data-dir ./canhazdb/two \
@@ -46,7 +48,8 @@ canhazdb-server --host localhost \
          --tls-key ./certs/localhost.privkey.pem \
          --join localhost:7061
 
-canhazdb-server --host localhost \
+canhazdb-server \
+         --host localhost \
          --port 7063 \
          --query-port 8063 \
          --data-dir ./canhazdb/three \
@@ -76,13 +79,20 @@ async function main () {
   };
 
   const node1 = await canhazdb({
-    host: 'localhost', port: 7061, queryPort: 8061, dataDirectory: './canhazdata/one', tls
-  })
+    host: 'localhost',
+    port: 7061, queryPort: 8061,
+    dataDirectory: './canhazdata/one',
+    tls, single: true
+  });
   const node2 = await canhazdb({
-    host: 'localhost', port: 7062, queryPort: 8062, dataDirectory: './canhazdata/two', tls
-  })
+    host: 'localhost',
+    port: 7062, queryPort: 8062,
+    dataDirectory: './canhazdata/two',
+    tls, join: ['localhost:7061']
+  });
 
-  await node2.join({ host: 'localhost', port: 7061 })
+  // You can join to other nodes after starting:
+  // await node2.join({ host: 'otherhost', port: 7063 })
 
   const postRequest = await axios(`${node1.url}/tests`, {
     httpsAgent: new https.Agent(tls),
