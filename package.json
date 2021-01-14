@@ -1,6 +1,6 @@
 {
   "name": "canhazdb-server",
-  "version": "5.0.0",
+  "version": "5.0.1",
   "description": "A shaded and clustered database communicated over http rest.",
   "main": "./lib/index.js",
   "bin": {
@@ -19,19 +19,19 @@
     "hinton": "^1.0.0",
     "lockbase": "^1.0.9",
     "minimist": "^1.2.5",
-    "ndjson-fe": "^1.2.6",
+    "ndjson-fe": "^1.2.7",
     "npm": "^6.14.11",
-    "qs": "^6.9.4",
+    "qs": "^6.9.6",
     "reconnecting-websocket": "^4.4.0",
     "server-destroy": "^1.0.1",
     "tcpocket": "^4.0.0",
     "uuid": "^8.3.2",
     "write-response": "^1.2.3",
-    "ws": "^7.4.1"
+    "ws": "^7.4.2"
   },
   "devDependencies": {
     "basictap": "^1.1.11",
-    "c8": "^7.3.5",
+    "c8": "^7.4.0",
     "canhazdb-driver-ejdb": "^1.0.0"
   },
   "scripts": {
