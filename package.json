@@ -1,6 +1,6 @@
 {
   "name": "canhazdb-server",
-  "version": "4.0.2",
+  "version": "5.0.0",
   "description": "A shaded and clustered database communicated over http rest.",
   "main": "./lib/index.js",
   "bin": {
@@ -19,15 +19,11 @@
     "hinton": "^1.0.0",
     "lockbase": "^1.0.9",
     "minimist": "^1.2.5",
-    "mongo-sql": "^6.2.0",
-    "mql-to-jql": "^1.1.8",
     "ndjson-fe": "^1.2.6",
-    "node-ejdb-lite": "^3.2.0",
+    "npm": "^6.14.11",
     "qs": "^6.9.4",
     "reconnecting-websocket": "^4.4.0",
     "server-destroy": "^1.0.1",
-    "sqlite": "^4.0.18",
-    "sqlite3": "^5.0.0",
     "tcpocket": "^4.0.0",
     "uuid": "^8.3.2",
     "write-response": "^1.2.3",
@@ -35,12 +31,11 @@
   },
   "devDependencies": {
     "basictap": "^1.1.11",
-    "c8": "^7.3.5"
+    "c8": "^7.3.5",
+    "canhazdb-driver-ejdb": "^1.0.0"
   },
   "scripts": {
-    "test": "./makeCerts.sh && npm run test:ejdb && npm run test:sqlite",
-    "test:ejdb": "CANHAZDB_DRIVER=ejdb c8 -o /tmp node --unhandled-rejections=strict test",
-    "test:sqlite": "CANHAZDB_DRIVER=sqlite c8 -o /tmp node --unhandled-rejections=strict test"
+    "test": "./makeCerts.sh && c8 -o /tmp node --unhandled-rejections=strict test"
   },
   "repository": {
     "type": "git",
@@ -48,7 +43,7 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "AGPL-3.0",
   "bugs": {
     "url": "https://github.com/canhazdb/server/issues"
   },
