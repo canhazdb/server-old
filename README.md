@@ -19,6 +19,18 @@ You can opt out of tls by omitting the tls option from canhazdb.
 You can talk to the database via http/https using your favourite http client, or
 you can use the [official client](https://github.com/canhazdb/client).
 
+### Drivers
+As of version 5.0.0, drivers have been abstracted out and installed separately.
+
+The current official drivers are:
+- [canhazdb-driver-ejdb](https://github.com/canhazdb/driver-ejdb)
+- [canhazdb-driver-sqlite](https://github.com/canhazdb/driver-sqlite)
+
+It should be fairly trivial to implement a driver for other databases. If
+you would like to create a custom driver, take a look at the
+[ejdb driver index file](https://github.com/canhazdb/driver-ejdb/blob/master/lib/index.js)
+for an example.
+
 ### Server Via the CLI
 ```bash
 npm install --global canhazdb-server
@@ -27,6 +39,7 @@ npm install --global canhazdb-server
 #### Create a single node server
 ```bash
 canhazdb-server \
+         --driver canhazdb-driver-ejdb \
          --host localhost \
          --port 7061 \
          --query-port 8061 \
@@ -39,6 +52,7 @@ canhazdb-server \
 #### Add some more to the cluster
 ```bash
 canhazdb-server \
+         --driver canhazdb-driver-ejdb \
          --host localhost \
          --port 7062 \
          --query-port 8062 \
@@ -49,6 +63,7 @@ canhazdb-server \
          --join localhost:7061
 
 canhazdb-server \
+         --driver canhazdb-driver-ejdb \
          --host localhost \
          --port 7063 \
          --query-port 8063 \
@@ -61,7 +76,7 @@ canhazdb-server \
 
 ### Server Via NodeJS
 ```bash
-npm install --save canhazdb-server
+npm install --save canhazdb-server canhazdb-driver-ejdb
 ```
 
 ```javascript
@@ -79,12 +94,14 @@ async function main () {
   };
 
   const node1 = await canhazdb({
+    driver: 'canhazdb-driver-ejdb',
     host: 'localhost',
     port: 7061, queryPort: 8061,
     dataDirectory: './canhazdata/one',
     tls, single: true
   });
   const node2 = await canhazdb({
+    driver: 'canhazdb-driver-ejdb',
     host: 'localhost',
     port: 7062, queryPort: 8062,
     dataDirectory: './canhazdata/two',
