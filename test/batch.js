@@ -11,7 +11,7 @@ const tls = {
   requestCert: true
 };
 
-test.only('batch: post two records', async t => {
+test('batch: post two records', async t => {
   t.plan(7);
 
   const cluster = await createTestCluster(3, tls);
