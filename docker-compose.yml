@@ -2,12 +2,19 @@ version: "3"
 
 services:
   canhazdb:
-    image: canhazdb
-    command: "node server/cli.js --join-from-dns tasks.canhazdb --data-dir /data"
-    volumes:
-      - "./:/app"
-      - "/app/node_modules"
+    image: canhazdb/server
+    command:
+      - "node"
+      - "lib/cli.js"
+      - "--join-from-dns=canhazdb"
+      - "--tls-ca=/certs/ca.cert.pem"
+      - "--tls-cert=/certs/canhazdb.cert.pem"
+      - "--tls-key=/certs/canhazdb.privkey.pem"
+      - "--host=canhazdb"
+      - "--data-dir=/data"
     ports:
       - "8060:8060"
+    volumes:
+      - "./data:/data"
     deploy:
       replicas: 3
