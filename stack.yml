@@ -11,10 +11,8 @@ services:
       - "--tls-cert=/certs/canhazdb.cert.pem"
       - "--tls-key=/certs/canhazdb.privkey.pem"
       - "--host=canhazdb"
-      - "--data-dir=/data"
+      - "--data-dir=/data/{{.Task.Slot}}"
     ports:
       - "8060:8060"
-    volumes:
-      - "./data:/data"
     deploy:
       replicas: 3
