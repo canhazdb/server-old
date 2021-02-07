@@ -24,7 +24,7 @@
     "qs": "^6.9.6",
     "reconnecting-websocket": "^4.4.0",
     "server-destroy": "^1.0.1",
-    "tcpocket": "^5.0.4",
+    "tcpocket": "^5.0.5",
     "uuid": "^8.3.2",
     "write-response": "^1.2.3",
     "ws": "^7.4.3"
