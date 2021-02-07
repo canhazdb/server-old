@@ -46,9 +46,9 @@ async function createTestCluster (count, tls) {
     },
 
     closeAll: () => {
-      return Promise.all(
-        nodes.map(node => node.close())
-      );
+      return Promise.all([
+        ...nodes.map(node => node.close())
+      ]);
     },
 
     nodes

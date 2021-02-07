@@ -5,6 +5,7 @@ const httpRequest = require('./helpers/httpRequest');
 const createTestCluster = require('./helpers/createTestCluster');
 const canhazdb = require('../lib');
 
+const mapTimes = (times, fn) => Array(times).fill().map((_, index) => fn(index));
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 const tls = {
@@ -30,7 +31,7 @@ test('post: and get some data', async t => {
   });
 
   const getRequest = await httpRequest(`${node.url}/tests/${postRequest.data.id}`);
-  cluster.closeAll();
+  await cluster.closeAll();
 
   t.deepEqual(getRequest.data, {
     id: getRequest.data.id ? getRequest.data.id : t.fail(),
@@ -62,7 +63,7 @@ test('post: and count some data', async t => {
   ]);
 
   const getRequest = await httpRequest(`${node.url}/tests?count=true`);
-  cluster.closeAll();
+  await cluster.closeAll();
 
   t.deepEqual(getRequest.data, {
     documentCount: 2
@@ -87,7 +88,7 @@ test('post: and getAll specific fields only', async t => {
   });
 
   const getRequest = await httpRequest(`${node.url}/tests?fields=["b"]`);
-  cluster.closeAll();
+  await cluster.closeAll();
 
   t.deepEqual(getRequest.data[0], {
     id: getRequest.data[0].id ? getRequest.data[0].id : t.fail(),
@@ -114,7 +115,7 @@ test('post: and getOne specific fields only', async t => {
   });
 
   const getRequest = await httpRequest(`${node.url}/tests/${postRequest.data.id}?fields=["b"]`);
-  cluster.closeAll();
+  await cluster.closeAll();
 
   t.deepEqual(getRequest.data, {
     id: getRequest.data.id ? getRequest.data.id : t.fail(),
@@ -137,7 +138,7 @@ test('post: some data with invalid collection name', async t => {
     }
   });
 
-  cluster.closeAll();
+  await cluster.closeAll();
 
   t.deepEqual(postRequest.data, {
     errors: ['collectionId can only contain a-z, A-Z, 0-9, dashs or dots']
@@ -167,7 +168,7 @@ test('put: some data', async t => {
 
   const getRequest = await httpRequest(`${cluster.nodes[1].url}/tests/${postRequest.data.id}`);
 
-  cluster.closeAll();
+  await cluster.closeAll();
 
   t.deepEqual(getRequest.data, {
     id: postRequest.data.id,
@@ -199,7 +200,7 @@ test('patch: some data', async t => {
 
   const getRequest = await httpRequest(`${cluster.nodes[1].url}/tests/${postRequest.data.id}`);
 
-  cluster.closeAll();
+  await cluster.closeAll();
 
   t.deepEqual(getRequest.data, {
     id: postRequest.data.id,
@@ -231,7 +232,7 @@ test('delete: record returns a 404', async t => {
 
   const getRequest = await httpRequest(`${cluster.nodes[2].url}/tests/${postRequest.data.id}`);
 
-  cluster.closeAll();
+  await cluster.closeAll();
 
   t.deepEqual(getRequest.data, {});
 
@@ -247,7 +248,7 @@ test('find: collection has no records', async t => {
 
   const getRequest = await httpRequest(`${cluster.nodes[2].url}/tests`);
 
-  cluster.closeAll();
+  await cluster.closeAll();
 
   t.deepEqual(getRequest.status, 200);
   t.deepEqual(getRequest.data, []);
@@ -275,7 +276,7 @@ test('find: return all three records', async t => {
 
   const getRequest = await httpRequest(`${cluster.nodes[2].url}/tests`);
 
-  cluster.closeAll();
+  await cluster.closeAll();
 
   t.equal(getRequest.data.length, 3);
   t.equal(getRequest.status, 200);
@@ -315,7 +316,7 @@ test('find: filter by querystring', async t => {
 
   const getRequest = await httpRequest(`${cluster.nodes[2].url}/tests?query={"d":4}`);
 
-  cluster.closeAll();
+  await cluster.closeAll();
 
   t.equal(getRequest.data.length, 1);
   t.equal(getRequest.status, 200);
@@ -348,7 +349,7 @@ test('filter: find one out of three records', async t => {
 
   const getRequest = await httpRequest(`${cluster.nodes[2].url}/tests?query={"d":4}`);
 
-  cluster.closeAll();
+  await cluster.closeAll();
 
   t.equal(getRequest.data.length, 1);
   t.equal(getRequest.status, 200);
@@ -377,7 +378,7 @@ test('filter: delete two out of three records', async t => {
 
   const getRequest = await httpRequest(`${cluster.nodes[2].url}/tests`);
 
-  cluster.closeAll();
+  await cluster.closeAll();
 
   t.equal(deletions.status, 200);
   t.equal(deletions.data.changes, 4);
@@ -412,7 +413,7 @@ test('filter: put two out of three records', async t => {
 
   const getRequest = await httpRequest(`${cluster.nodes[2].url}/tests`);
 
-  cluster.closeAll();
+  await cluster.closeAll();
 
   t.equal(deletions.status, 200);
   t.equal(deletions.data.changes, 4);
@@ -439,7 +440,7 @@ test('limit: find three records', async t => {
 
   const getRequest = await httpRequest(`${cluster.nodes[2].url}/tests?limit=3`);
 
-  cluster.closeAll();
+  await cluster.closeAll();
 
   t.equal(getRequest.data.length, 3);
   t.equal(getRequest.status, 200);
@@ -461,7 +462,7 @@ test('order: ascending order three records', async t => {
 
   const getRequest = await httpRequest(`${cluster.nodes[2].url}/tests?order=["asc(index)"]`);
 
-  cluster.closeAll();
+  await cluster.closeAll();
 
   t.equal(getRequest.data.length, 10);
   t.equal(getRequest.status, 200);
@@ -487,7 +488,7 @@ test('order: descending order three records', async t => {
 
   const getRequest = await httpRequest(`${cluster.nodes[2].url}/tests?order=["desc(index)"]`);
 
-  cluster.closeAll();
+  await cluster.closeAll();
 
   t.equal(getRequest.data.length, 10);
   t.equal(getRequest.status, 200);
@@ -513,7 +514,7 @@ test('order: multiple descending order three records', async t => {
 
   const getRequest = await httpRequest(`${cluster.nodes[2].url}/tests?order=["desc(index)","desc(otherIndex)"]`);
 
-  cluster.closeAll();
+  await cluster.closeAll();
 
   t.equal(getRequest.data.length, 10);
   t.equal(getRequest.status, 200);
@@ -533,8 +534,8 @@ test('autojoin: join learned nodes automatically', async t => {
 
   await sleep(2500);
 
-  cluster.closeAll();
-  node4.close();
+  await cluster.closeAll();
+  await node4.close();
 
   const getAllPorts = node => node.nodes.map(node => node.port).sort();
   t.deepEqual(getAllPorts(node4), [cluster.nodes[0].port, cluster.nodes[1].port, cluster.nodes[2].port]);
@@ -550,7 +551,6 @@ test('disaster: one node goes offline', async t => {
   const cluster = await createTestCluster(3, tls);
 
   await cluster.nodes[1].close();
-
   const getRequest = await httpRequest(`${cluster.nodes[2].url}/tests`);
 
   await cluster.closeAll();
@@ -589,4 +589,55 @@ test('disaster: one node goes offline then online', async t => {
 
   t.equal(getRequestAfterReopen.status, 200);
   t.deepEqual(getRequestAfterReopen.data, []);
+});
+
+test('disaster: recover and still works', async t => {
+  t.plan(6);
+
+  const cluster = await createTestCluster(10);
+
+  await Promise.all([
+    cluster.nodes[1].close(),
+    cluster.nodes[3].close(),
+    cluster.nodes[7].close()
+  ]);
+
+  const getRequestAfterClose = await httpRequest(`${cluster.nodes[2].url}/tests`);
+
+  t.equal(getRequestAfterClose.status, 503);
+  t.deepEqual(getRequestAfterClose.data, {
+    errors: [
+      'a node in the cluster is unhealthy, therefore the database is down'
+    ]
+  });
+
+  await Promise.all([
+    cluster.nodes[1].open(),
+    cluster.nodes[3].open(),
+    cluster.nodes[7].open()
+  ]);
+
+  await sleep(1000);
+
+  const getRequestAfterReopen = await httpRequest(`${cluster.nodes[2].url}/tests`);
+
+  t.equal(getRequestAfterReopen.status, 200);
+  t.deepEqual(getRequestAfterReopen.data, []);
+
+  await Promise.all(mapTimes(100, index => {
+    return httpRequest(`${cluster.nodes[index % 10].url}/tests`, {
+      method: 'POST',
+      data: { a: index }
+    });
+  }));
+
+  const getRequests = await Promise.all(mapTimes(10, index => {
+    return httpRequest(`${cluster.nodes[index].url}/tests`).then(response => response.data);
+  }));
+
+  t.deepEqual(getRequests.flatMap(data => data.length), [100, 100, 100, 100, 100, 100, 100, 100, 100, 100]);
+
+  await cluster.closeAll();
+
+  t.ok('finished');
 });

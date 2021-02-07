@@ -1,0 +1,18 @@
+version: "3"
+
+services:
+  canhazdb:
+    image: canhazdb/server
+    command:
+      - "node"
+      - "lib/cli.js"
+      - "--join-from-dns=canhazdb"
+      - "--tls-ca=/certs/ca.cert.pem"
+      - "--tls-cert=/certs/canhazdb.cert.pem"
+      - "--tls-key=/certs/canhazdb.privkey.pem"
+      - "--host=canhazdb"
+      - "--data-dir=/data/{{.Task.Slot}}"
+    ports:
+      - "8060:8060"
+    deploy:
+      replicas: 3

@@ -236,7 +236,7 @@ test('lock: all methods lock', async t => {
       const deleteRequest = await httpRequest(`${node.url}/tests/${postRequest.data.id}`, {
         method: 'DELETE'
       });
-      cluster.closeAll();
+      await cluster.closeAll();
       t.deepEqual(args.map(arg => arg.status), [200, 200]);
       t.equal(deleteRequest.status, 200);
       t.ok(unlocked, 'requests happened after unlock');
