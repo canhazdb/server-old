@@ -31,6 +31,15 @@ you would like to create a custom driver, take a look at the
 [ejdb driver index file](https://github.com/canhazdb/driver-ejdb/blob/master/lib/index.js)
 for an example.
 
+### Server Via Docker
+The quickest way to setup a test server is via:
+```bash
+docker run -p 8060 canhazdb/server --single
+```
+
+But you can create a production ready and scalable stack by
+using the [stack.yml](stack.yml) file as en example.
+
 ### Server Via the CLI
 ```bash
 npm install --global canhazdb-server
