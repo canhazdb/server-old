@@ -1,5 +1,7 @@
 const fs = require('fs');
 
+const packageJson = require('../package.json');
+
 const test = require('basictap');
 const httpRequest = require('./helpers/httpRequest');
 const createTestCluster = require('./helpers/createTestCluster');
@@ -14,6 +16,21 @@ const tls = {
   ca: [fs.readFileSync('./certs/ca.cert.pem')],
   requestCert: true
 };
+
+test('get: root pathname', async t => {
+  t.plan(1);
+
+  const node = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls, single: true });
+
+  const request = await httpRequest(`${node.url}/`);
+
+  t.deepEqual(request.data, {
+    info: 'https://canhazdb.com',
+    name: packageJson.name,
+    status: 200,
+    version: packageJson.version
+  });
+});
 
 test('post: and get some data', async t => {
   t.plan(3);
