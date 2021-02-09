@@ -24,6 +24,8 @@ test('get: root pathname', async t => {
 
   const request = await httpRequest(`${node.url}/`);
 
+  await node.close();
+
   t.deepEqual(request.data, {
     info: 'https://canhazdb.com',
     name: packageJson.name,
