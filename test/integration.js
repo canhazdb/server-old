@@ -423,7 +423,7 @@ test('filter: put two out of three records', async t => {
 
   await Promise.all(posts);
 
-  const deletions = await httpRequest(`${cluster.nodes[2].url}/tests?query={"index":{"$gt":5}}`, {
+  const putResponse = await httpRequest(`${cluster.nodes[2].url}/tests?query={"index":{"$gt":5}}`, {
     method: 'PUT',
     data: {
       a: 1
@@ -434,8 +434,8 @@ test('filter: put two out of three records', async t => {
 
   await cluster.closeAll();
 
-  t.equal(deletions.status, 200);
-  t.equal(deletions.data.changes, 4);
+  t.equal(putResponse.status, 200);
+  t.equal(putResponse.data.changes, 4);
 
   t.equal(getRequest.status, 200);
   t.equal(getRequest.data.length, 10);
