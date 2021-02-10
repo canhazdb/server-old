@@ -1,5 +1,7 @@
 const fs = require('fs');
 
+const packageJson = require('../package.json');
+
 const test = require('basictap');
 const httpRequest = require('./helpers/httpRequest');
 const createTestCluster = require('./helpers/createTestCluster');
@@ -14,6 +16,23 @@ const tls = {
   ca: [fs.readFileSync('./certs/ca.cert.pem')],
   requestCert: true
 };
+
+test('get: root pathname', async t => {
+  t.plan(1);
+
+  const node = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls, single: true });
+
+  const request = await httpRequest(`${node.url}/`);
+
+  await node.close();
+
+  t.deepEqual(request.data, {
+    info: 'https://canhazdb.com',
+    name: packageJson.name,
+    status: 200,
+    version: packageJson.version
+  });
+});
 
 test('post: and get some data', async t => {
   t.plan(3);
@@ -404,7 +423,7 @@ test('filter: put two out of three records', async t => {
 
   await Promise.all(posts);
 
-  const deletions = await httpRequest(`${cluster.nodes[2].url}/tests?query={"index":{"$gt":5}}`, {
+  const putResponse = await httpRequest(`${cluster.nodes[2].url}/tests?query={"index":{"$gt":5}}`, {
     method: 'PUT',
     data: {
       a: 1
@@ -415,8 +434,8 @@ test('filter: put two out of three records', async t => {
 
   await cluster.closeAll();
 
-  t.equal(deletions.status, 200);
-  t.equal(deletions.data.changes, 4);
+  t.equal(putResponse.status, 200);
+  t.equal(putResponse.data.changes, 4);
 
   t.equal(getRequest.status, 200);
   t.equal(getRequest.data.length, 10);

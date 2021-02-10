@@ -24,21 +24,27 @@ As of version 5.0.0, drivers have been abstracted out and installed separately.
 
 The current official drivers are:
 - [canhazdb-driver-ejdb](https://github.com/canhazdb/driver-ejdb)
+- [canhazdb-driver-nedb](https://github.com/canhazdb/driver-nedb)
 - [canhazdb-driver-sqlite](https://github.com/canhazdb/driver-sqlite)
 
 It should be fairly trivial to implement a driver for other databases. If
 you would like to create a custom driver, take a look at the
-[ejdb driver index file](https://github.com/canhazdb/driver-ejdb/blob/master/lib/index.js)
+[nedb driver index file](https://github.com/canhazdb/driver-nedb/blob/master/lib/index.js)
 for an example.
 
 ### Server Via Docker
 The quickest way to setup a test server is via:
 ```bash
-docker run -p 8060 canhazdb/server --single
+docker run -itp 8060:8060 canhazdb/server --single
 ```
 
+Then visit http://localhost:8060
+
 But you can create a production ready and scalable stack by
-using the [stack.yml](stack.yml) file as en example.
+using the [stack.yml](stack.yml) file as an example.
+
+This will give you TLS authenication and encryption along with
+persistent storage.
 
 ### Server Via the CLI
 ```bash
