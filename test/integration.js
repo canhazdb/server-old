@@ -34,6 +34,26 @@ test('get: root pathname', async t => {
   });
 });
 
+function rootMethodNotAllowed (method) {
+  return async t => {
+    t.plan(2);
+
+    const node = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls, single: true });
+
+    const request = await httpRequest(`${node.url}/`, { method });
+
+    await node.close();
+
+    t.deepEqual(request.data, { error: 'method not allowed' });
+    t.equal(request.status, 405);
+  };
+}
+
+test('post: root pathname', rootMethodNotAllowed('post'));
+test('put: root pathname', rootMethodNotAllowed('put'));
+test('patch: root pathname', rootMethodNotAllowed('patch'));
+test('delete: root pathname', rootMethodNotAllowed('delete'));
+
 test('post: and get some data', async t => {
   t.plan(3);
 
