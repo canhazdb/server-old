@@ -1,4 +1,4 @@
-<img align="left" width="200px" src="./canhazdbLogo.svg">
+<img align="left" width="130px" src="./canhazdbLogo.svg">
 
 # canhazdb-server
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/canhazdb/server)
