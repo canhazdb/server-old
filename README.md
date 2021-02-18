@@ -1,3 +1,5 @@
+<img align="left" width="200px" src="./canhazdbLogo.svg">
+
 # canhazdb-server
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/canhazdb/server)
 [![GitHub package.json version](https://img.shields.io/github/package-json/v/canhazdb/server)](https://github.com/canhazdb/server/blob/master/package.json)
