@@ -1,6 +1,6 @@
 {
   "name": "canhazdb-server",
-  "version": "5.1.7",
+  "version": "6.0.0",
   "description": "A shaded and clustered database communicated over http rest.",
   "main": "./lib/index.js",
   "bin": {
@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "axios": "^0.21.1",
-    "chalk": "^4.1.0",
+    "chalk": "^4.1.1",
     "debarrel": "^1.0.1",
     "final-stream": "^2.0.3",
     "get-port": "^5.1.1",
@@ -20,19 +20,20 @@
     "lockbase": "^1.0.9",
     "minimist": "^1.2.5",
     "ndjson-fe": "^1.2.7",
-    "npm": "^7.5.2",
-    "qs": "^6.9.6",
+    "npm": "^7.11.1",
+    "qs": "^6.10.1",
     "reconnecting-websocket": "^4.4.0",
     "server-destroy": "^1.0.1",
-    "tcpocket": "^5.0.5",
+    "tcpocket": "^5.0.6",
     "uuid": "^8.3.2",
     "write-response": "^1.2.3",
-    "ws": "^7.4.3"
+    "ws": "^7.4.5",
+    "wtfnode": "^0.8.4"
   },
   "devDependencies": {
-    "basictap": "^1.1.11",
-    "c8": "^7.5.0",
-    "canhazdb-driver-ejdb": "^1.0.1"
+    "basictap": "^1.1.12",
+    "c8": "^7.7.1",
+    "canhazdb-driver-nedb": "^1.0.1"
   },
   "scripts": {
     "test": "./makeCerts.sh && c8 -o /tmp node --unhandled-rejections=strict test"
