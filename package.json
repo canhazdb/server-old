@@ -33,7 +33,7 @@
   "devDependencies": {
     "basictap": "^1.1.12",
     "c8": "^7.7.2",
-    "canhazdb-driver-ejdb": "^1.1.1"
+    "canhazdb-driver-ejdb": "^1.1.2"
   },
   "scripts": {
     "test": "./makeCerts.sh && c8 -o /tmp node --unhandled-rejections=strict test"
