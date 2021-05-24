@@ -49,10 +49,48 @@ function rootMethodNotAllowed (method) {
   };
 }
 
+function validateBodyExists (method) {
+  return async t => {
+    t.plan(2);
+
+    const node = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls, single: true });
+
+    const request = await httpRequest(`${node.url}/exampleCollection`, { method });
+
+    await node.close();
+
+    t.deepEqual(request.data, { error: 'empty request body not allowed' });
+    t.equal(request.status, 400);
+  };
+}
+
+function validateBodyJson (method) {
+  return async t => {
+    t.plan(2);
+
+    const node = await canhazdb({ host: 'localhost', port: 7071, queryPort: 8071, tls, single: true });
+
+    const request = await httpRequest(`${node.url}/exampleCollection`, { method, data: 'not json' });
+
+    await node.close();
+
+    t.deepEqual(request.data, { error: 'request body not valid json' });
+    t.equal(request.status, 400);
+  };
+}
+
 test('post: root pathname', rootMethodNotAllowed('post'));
 test('put: root pathname', rootMethodNotAllowed('put'));
 test('patch: root pathname', rootMethodNotAllowed('patch'));
 test('delete: root pathname', rootMethodNotAllowed('delete'));
+
+test('post: body exists', validateBodyExists('post'));
+test('put: body exists', validateBodyExists('put'));
+test('patch: body exists', validateBodyExists('patch'));
+
+test('post: body is json', validateBodyJson('post'));
+test('put: body is json', validateBodyJson('put'));
+test('patch: body is json', validateBodyJson('patch'));
 
 test('post: and get some data', async t => {
   t.plan(3);
