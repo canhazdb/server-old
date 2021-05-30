@@ -20,14 +20,14 @@
     "lockbase": "^1.0.9",
     "minimist": "^1.2.5",
     "ndjson-fe": "^1.2.7",
-    "npm": "^7.14.0",
+    "npm": "^7.15.0",
     "qs": "^6.10.1",
     "reconnecting-websocket": "^4.4.0",
     "server-destroy": "^1.0.1",
     "tcpocket": "^5.0.6",
     "uuid": "^8.3.2",
     "write-response": "^1.2.3",
-    "ws": "^7.4.5",
+    "ws": "^7.4.6",
     "wtfnode": "^0.8.4"
   },
   "devDependencies": {
