@@ -4,3 +4,4 @@ require('./locking');
 require('./integration');
 require('./batch');
 require('./collectionMetadata');
+require('./ws');

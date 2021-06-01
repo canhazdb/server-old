@@ -1,6 +1,6 @@
 {
   "name": "canhazdb-server",
-  "version": "6.0.3",
+  "version": "7.0.0",
   "description": "A shaded and clustered database communicated over http rest.",
   "main": "./lib/index.js",
   "bin": {
@@ -20,7 +20,7 @@
     "lockbase": "^1.0.9",
     "minimist": "^1.2.5",
     "ndjson-fe": "^1.2.7",
-    "npm": "^7.15.0",
+    "npm": "^7.15.1",
     "qs": "^6.10.1",
     "reconnecting-websocket": "^4.4.0",
     "server-destroy": "^1.0.1",
@@ -33,9 +33,12 @@
   "devDependencies": {
     "basictap": "^1.1.13",
     "c8": "^7.7.2",
-    "canhazdb-driver-ejdb": "^1.1.3"
+    "canhazdb-driver-ejdb": "^1.1.3",
+    "eslint": "^7.27.0",
+    "semistandard": "^16.0.0"
   },
   "scripts": {
+    "lint": "eslint .",
     "test": "./makeCerts.sh && c8 -o /tmp node --unhandled-rejections=strict test"
   },
   "repository": {

@@ -13,6 +13,8 @@ const tls = {
   requestCert: true
 };
 
+const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+
 test('notify: post some data', async t => {
   t.plan(5);
 
@@ -21,7 +23,7 @@ test('notify: post some data', async t => {
 
   const ws = new WebSocket(node.wsUrl, tls);
   ws.on('open', function open () {
-    ws.send(JSON.stringify([1, { 'POST:/tests/.*': true }]));
+    ws.send(JSON.stringify([1, 'NOTIFY', 'POST:/tests/.*']));
 
     httpRequest(`${node.url}/tests`, {
       method: 'POST',
@@ -48,6 +50,39 @@ test('notify: post some data', async t => {
   });
 });
 
+test('unnotify', async t => {
+  t.plan(2);
+
+  const cluster = await createTestCluster(3, tls);
+  const node = cluster.getRandomNodeUrl();
+
+  const ws = new WebSocket(node.wsUrl, tls);
+  ws.on('open', async function open () {
+    ws.send(JSON.stringify([1, 'NOTIFY', 'POST:/tests/.*']));
+    await sleep(50);
+    ws.send(JSON.stringify([1, 'UNNOTIFY', 'POST:/tests/.*']));
+    await sleep(50);
+
+    httpRequest(`${node.url}/tests`, {
+      method: 'POST',
+      data: { a: 1 }
+    }).then(() => {
+      cluster.closeAll();
+    });
+  });
+
+  ws.on('message', function incoming (rawData) {
+    const [type, data] = JSON.parse(rawData);
+
+    if (type === 'A') {
+      t.equal(data, 1);
+      return;
+    }
+
+    t.fail('should not have been called');
+  });
+});
+
 test('notify: twos posts', async t => {
   t.plan(8);
 
@@ -56,8 +91,8 @@ test('notify: twos posts', async t => {
 
   const ws = new WebSocket(node.wsUrl, tls);
   ws.on('open', function open () {
-    ws.send(JSON.stringify([1, { 'POST:/tests1/.*': true }]));
-    ws.send(JSON.stringify([2, { 'POST:/tests2/.*': true }]));
+    ws.send(JSON.stringify([1, 'NOTIFY', 'POST:/tests1/.*']));
+    ws.send(JSON.stringify([2, 'NOTIFY', 'POST:/tests2/.*']));
 
     const promises = [];
     promises[0] = httpRequest(`${node.url}/tests1`, {
@@ -119,7 +154,7 @@ test('notify: one not the other', async t => {
 
   const ws = new WebSocket(node.wsUrl, tls);
   ws.on('open', function open () {
-    ws.send(JSON.stringify([1, { 'POST:/tests2/.*': true }]));
+    ws.send(JSON.stringify([1, 'NOTIFY', 'POST:/tests2/.*']));
 
     const promises = [];
     promises[0] = httpRequest(`${node.url}/tests1`, {
@@ -153,5 +188,27 @@ test('notify: one not the other', async t => {
     t.equal(collectionId, 'tests2');
     t.equal(resourceId.length, 36);
     t.equal(pattern, 'POST:/tests2/.*');
+  });
+});
+
+test('ws - unknown command', async t => {
+  t.plan(3);
+
+  const cluster = await createTestCluster(3, tls);
+  const node = cluster.getRandomNodeUrl();
+
+  const ws = new WebSocket(node.wsUrl, tls);
+  ws.on('open', async function open () {
+    ws.send(JSON.stringify([1, 'UNKNOWN']));
+  });
+
+  ws.on('message', function incoming (rawData) {
+    const [type, acceptId, data] = JSON.parse(rawData);
+
+    t.equal(type, 'R');
+    t.equal(acceptId, 1);
+    t.equal(data, 'COMMAND_NOT_FOUND');
+
+    cluster.closeAll();
   });
 });
