@@ -9,6 +9,7 @@ const createTestCluster = require('./helpers/createTestCluster');
 const {
   STATUS,
   DOCUMENT,
+  DOCUMENTS,
   QUERY,
   COLLECTION_ID
 } = require('../lib/constants');
@@ -21,7 +22,7 @@ const tls = {
 };
 
 test('get: getAll some data', async t => {
-  t.plan(4);
+  t.plan(5);
 
   const cluster = await createTestCluster(3, tls);
   const node = cluster.getRandomNodeUrl();
@@ -51,12 +52,11 @@ test('get: getAll some data', async t => {
   ws.on('message', async function incoming (rawData) {
     const [type, acceptId, data] = JSON.parse(rawData);
 
-    console.log(rawData);
-
     t.equal(type, 'A', 'should have correct type');
     t.equal(acceptId, 1, 'should have correct acceptId');
-    t.equal(data[0].id, insertResponses[0].data.id, 'had correct document id');
-    t.equal(data[0].a, 1, 'should return document field');
+    t.equal(data[STATUS], 200, 'should have correct status');
+    t.equal(data[DOCUMENTS][0].id, insertResponses[0].data.id, 'had correct document id');
+    t.equal(data[DOCUMENTS][0].a, 1, 'should return document field');
 
     cluster.closeAll();
   });
