@@ -2,6 +2,9 @@ import fs from 'fs';
 import { v4 as uuid } from 'uuid';
 import canhazdb from '../../lib/index.js';
 
+fs.rmdirSync('./canhazdata', { recursive: true });
+fs.mkdirSync('./canhazdata');
+
 const tls = {
   key: fs.readFileSync('./certs/localhost.privkey.pem'),
   cert: fs.readFileSync('./certs/localhost.cert.pem'),
