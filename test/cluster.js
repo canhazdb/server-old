@@ -4,13 +4,13 @@ import createTestServer from './helpers/createTestServer.js';
 import c from '../lib/constants.js';
 import tcpocket from 'tcpocket';
 
-const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
-
 test('cluster - post', async t => {
   t.plan(11);
 
   const servers = await createTestServer(5);
+
   const client = tcpocket.createClient(servers[0].clientConfig);
+  await client.waitUntilConnected();
 
   const postResponses = await Promise.all([
     client.send({
@@ -69,6 +69,7 @@ test('cluster - post - two goes down', async t => {
 
   const servers = await createTestServer(3);
   const client = tcpocket.createClient(servers[0].clientConfig);
+  await client.waitUntilConnected();
 
   const postResponses = await Promise.all([
     client.send({
@@ -105,13 +106,11 @@ test('cluster - post - two goes down', async t => {
     servers[2].close()
   ]);
 
-  await sleep(100);
-
   const getResponse = await client.send({
     [c.COMMAND]: c.GET,
     [c.COLLECTION_ID]: 'tests'
   });
-  console.log('here');
+
   t.equal(getResponse[c.STATUS], 200, 'has status');
   t.equal(getResponse[c.DATA].length, 3, 'returned 1 document');
 

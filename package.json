@@ -19,7 +19,7 @@
     "mql-to-jql": "^1.1.9",
     "node-ejdb-lite": "^3.4.2",
     "server-destroy": "^1.0.1",
-    "tcpocket": "^5.1.1",
+    "tcpocket": "^6.0.0",
     "wtfnode": "^0.8.4"
   },
   "devDependencies": {

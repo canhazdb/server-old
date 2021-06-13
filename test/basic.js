@@ -4,14 +4,13 @@ import createTestServer from './helpers/createTestServer.js';
 import c from '../lib/constants.js';
 import tcpocket from 'tcpocket';
 
-// wtfnode.init();
-
 test('info - single server', async t => {
   t.plan(5);
 
   const servers = await createTestServer(1);
   const client = tcpocket.createClient(servers[0].clientConfig);
 
+  await client.waitUntilConnected();
   const result = await client.send({
     [c.COMMAND]: c.INFO,
     [c.INTERNAL]: true
@@ -34,6 +33,7 @@ test('post - single server', async t => {
 
   const servers = await createTestServer(1);
   const client = tcpocket.createClient(servers[0].clientConfig);
+  await client.waitUntilConnected();
 
   const postResponses = await Promise.all([
     client.send({
