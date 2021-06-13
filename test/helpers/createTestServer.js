@@ -2,7 +2,9 @@ import fs from 'fs';
 import { v4 as uuid } from 'uuid';
 import canhazdb from '../../lib/index.js';
 
-fs.rmdirSync('./canhazdata', { recursive: true });
+try {
+  fs.rmdirSync('./canhazdata', { recursive: true });
+} catch (error) {}
 fs.mkdirSync('./canhazdata');
 
 const tls = {
