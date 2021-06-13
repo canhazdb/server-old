@@ -12,8 +12,8 @@
   "license": "ISC",
   "dependencies": {
     "basictap": "^1.1.13",
-    "canhazdb-driver-ejdb": "^1.1.4",
     "chalk": "^4.1.1",
+    "lockbase": "^1.0.9",
     "logslot": "^2.1.0",
     "minimist": "^1.2.5",
     "mql-to-jql": "^1.1.9",
