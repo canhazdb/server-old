@@ -4,7 +4,23 @@ import createTestServer from './helpers/createTestServer.js';
 import c from '../lib/constants.js';
 import tcpocket from 'tcpocket';
 
-test('info - single server', async t => {
+function createExampleDocuments (client, count) {
+  const counts = Array(count).fill('').map((_, index) => index);
+
+  return Promise.all(
+    counts.map(count => {
+      return client.send({
+        [c.COMMAND]: c.POST,
+        [c.COLLECTION_ID]: 'tests',
+        [c.DATA]: {
+          foo: 'bar' + (count + 1)
+        }
+      });
+    })
+  );
+}
+
+test('info', async t => {
   t.plan(5);
 
   const servers = await createTestServer(1);
@@ -28,38 +44,14 @@ test('info - single server', async t => {
   ]);
 });
 
-test('post - single server', async t => {
+test('post', async t => {
   t.plan(11);
 
   const servers = await createTestServer(1);
   const client = tcpocket.createClient(servers[0].clientConfig);
   await client.waitUntilConnected();
 
-  const postResponses = await Promise.all([
-    client.send({
-      [c.COMMAND]: c.POST,
-      [c.COLLECTION_ID]: 'tests',
-      [c.DATA]: {
-        foo: 'bar1'
-      }
-    }),
-
-    client.send({
-      [c.COMMAND]: c.POST,
-      [c.COLLECTION_ID]: 'tests',
-      [c.DATA]: {
-        foo: 'bar2'
-      }
-    }),
-
-    client.send({
-      [c.COMMAND]: c.POST,
-      [c.COLLECTION_ID]: 'tests',
-      [c.DATA]: {
-        foo: 'bar3'
-      }
-    })
-  ]);
+  const postResponses = await createExampleDocuments(client, 3);
 
   t.equal(postResponses[0][c.STATUS], 201, 'has status');
   t.ok(postResponses[0][c.DATA].id, 'has id');
@@ -82,6 +74,80 @@ test('post - single server', async t => {
   t.equal(sortedDocuments[1].foo, 'bar2', 'has foo property');
   t.ok(sortedDocuments[2].id, 'has id property');
   t.equal(sortedDocuments[2].foo, 'bar3', 'has foo property');
+
+  await client.close();
+  await servers.close();
+});
+
+test('get - with order (ascending)', async t => {
+  t.plan(5);
+
+  const servers = await createTestServer(1);
+  const client = tcpocket.createClient(servers[0].clientConfig);
+  await client.waitUntilConnected();
+
+  await createExampleDocuments(client, 3);
+
+  const getResponse = await client.send({
+    [c.COMMAND]: c.GET,
+    [c.COLLECTION_ID]: 'tests',
+    [c.ORDER]: ['asc(foo)']
+  });
+
+  t.equal(getResponse[c.STATUS], 200, 'has status');
+  t.equal(getResponse[c.DATA].length, 3, 'returned 1 document');
+
+  t.equal(getResponse[c.DATA][0].foo, 'bar1', 'has foo property');
+  t.equal(getResponse[c.DATA][1].foo, 'bar2', 'has foo property');
+  t.equal(getResponse[c.DATA][2].foo, 'bar3', 'has foo property');
+
+  await client.close();
+  await servers.close();
+});
+
+test('get - with order (descending)', async t => {
+  t.plan(5);
+
+  const servers = await createTestServer(1);
+  const client = tcpocket.createClient(servers[0].clientConfig);
+  await client.waitUntilConnected();
+
+  await createExampleDocuments(client, 3);
+
+  const getResponse = await client.send({
+    [c.COMMAND]: c.GET,
+    [c.COLLECTION_ID]: 'tests',
+    [c.ORDER]: ['desc(foo)']
+  });
+
+  t.equal(getResponse[c.STATUS], 200, 'has status');
+  t.equal(getResponse[c.DATA].length, 3, 'returned 1 document');
+
+  t.equal(getResponse[c.DATA][0].foo, 'bar3', 'has foo property');
+  t.equal(getResponse[c.DATA][1].foo, 'bar2', 'has foo property');
+  t.equal(getResponse[c.DATA][2].foo, 'bar1', 'has foo property');
+
+  await client.close();
+  await servers.close();
+});
+
+test('get - with limit', async t => {
+  t.plan(2);
+
+  const servers = await createTestServer(1);
+  const client = tcpocket.createClient(servers[0].clientConfig);
+  await client.waitUntilConnected();
+
+  await createExampleDocuments(client, 5);
+
+  const getResponse = await client.send({
+    [c.COMMAND]: c.GET,
+    [c.COLLECTION_ID]: 'tests',
+    [c.LIMIT]: 3
+  });
+
+  t.equal(getResponse[c.STATUS], 200, 'has status');
+  t.equal(getResponse[c.DATA].length, 3, 'returned 1 document');
 
   await client.close();
   await servers.close();

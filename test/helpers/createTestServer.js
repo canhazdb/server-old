@@ -3,7 +3,7 @@ import { v4 as uuid } from 'uuid';
 import canhazdb from '../../lib/index.js';
 
 try {
-  fs.rmdirSync('./canhazdata', { recursive: true });
+  fs.rmSync('./canhazdata', { recursive: true });
 } catch (error) {}
 fs.mkdirSync('./canhazdata');
 
