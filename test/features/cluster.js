@@ -1,8 +1,10 @@
 import test from 'basictap';
-import createTestServer from './helpers/createTestServer.js';
+import createTestServer from '../helpers/createTestServer.js';
 
-import c from '../lib/constants.js';
+import c from '../../lib/constants.js';
 import tcpocket from 'tcpocket';
+
+const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 test('cluster - post', async t => {
   t.plan(11);
@@ -125,5 +127,22 @@ test('cluster - post - two goes down', async t => {
   t.equal(sortedDocuments[2].foo, 'bar3', 'has foo=bar3 property');
 
   await client.close();
+  await servers.close();
+});
+
+test('cluster - syncing - node goes down', async t => {
+  t.plan(1);
+
+  const servers = await createTestServer(2);
+  await sleep(50);
+
+  await Promise.all([
+    servers[1].close()
+  ]);
+
+  await sleep(500);
+
+  t.pass('completed at least one sync without crashing');
+
   await servers.close();
 });

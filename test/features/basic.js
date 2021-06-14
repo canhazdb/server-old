@@ -1,7 +1,7 @@
 import test from 'basictap';
-import createTestServer from './helpers/createTestServer.js';
+import createTestServer from '../helpers/createTestServer.js';
 
-import c from '../lib/constants.js';
+import c from '../../lib/constants.js';
 import tcpocket from 'tcpocket';
 
 function createExampleDocuments (client, count) {
@@ -19,6 +19,42 @@ function createExampleDocuments (client, count) {
     })
   );
 }
+
+test('invalid data', async t => {
+  t.plan(1);
+
+  const servers = await createTestServer(1);
+  const client = tcpocket.createClient(servers[0].clientConfig);
+  await client.waitUntilConnected();
+
+  await createExampleDocuments(client, 1);
+
+  const getResponse = await client.send('');
+
+  t.equal(getResponse[c.STATUS], 400, 'has status');
+
+  await client.close();
+  await servers.close();
+});
+
+test('invalid command', async t => {
+  t.plan(1);
+
+  const servers = await createTestServer(1);
+  const client = tcpocket.createClient(servers[0].clientConfig);
+  await client.waitUntilConnected();
+
+  await createExampleDocuments(client, 1);
+
+  const getResponse = await client.send({
+    [c.COMMAND]: -1
+  });
+
+  t.equal(getResponse[c.STATUS], 404, 'has status');
+
+  await client.close();
+  await servers.close();
+});
 
 test('info', async t => {
   t.plan(5);
