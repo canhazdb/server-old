@@ -15,24 +15,21 @@ test('cluster - post', async t => {
   await client.waitUntilConnected();
 
   const postResponses = await Promise.all([
-    client.send({
-      [c.COMMAND]: c.POST,
+    client.send(c.POST, {
       [c.COLLECTION_ID]: 'tests',
       [c.DATA]: {
         foo: 'bar1'
       }
     }),
 
-    client.send({
-      [c.COMMAND]: c.POST,
+    client.send(c.POST, {
       [c.COLLECTION_ID]: 'tests',
       [c.DATA]: {
         foo: 'bar2'
       }
     }),
 
-    client.send({
-      [c.COMMAND]: c.POST,
+    client.send(c.POST, {
       [c.COLLECTION_ID]: 'tests',
       [c.DATA]: {
         foo: 'bar3'
@@ -40,19 +37,18 @@ test('cluster - post', async t => {
     })
   ]);
 
-  t.equal(postResponses[0][c.STATUS], 201, 'has status');
-  t.ok(postResponses[0][c.DATA].id, 'has id');
-  t.equal(postResponses[0][c.DATA].foo, 'bar1', 'has foo property');
+  t.equal(postResponses[0].command, c.STATUS_CREATED, 'has status');
+  t.ok(postResponses[0].json()[c.DATA].id, 'has id');
+  t.equal(postResponses[0].json()[c.DATA].foo, 'bar1', 'has foo property');
 
-  const getResponse = await client.send({
-    [c.COMMAND]: c.GET,
+  const getResponse = await client.send(c.GET, {
     [c.COLLECTION_ID]: 'tests'
   });
 
-  t.equal(getResponse[c.STATUS], 200, 'has status');
-  t.equal(getResponse[c.DATA].length, 3, 'returned 1 document');
+  t.equal(getResponse.command, c.STATUS_OK, 'has status');
+  t.equal(getResponse.json()[c.DATA].length, 3, 'returned 1 document');
 
-  const sortedDocuments = getResponse[c.DATA]
+  const sortedDocuments = getResponse.json()[c.DATA]
     .sort((a, b) => a.foo > b.foo ? 1 : -1);
 
   t.ok(sortedDocuments[0].id, 'has id property');
@@ -74,24 +70,21 @@ test('cluster - post - two goes down', async t => {
   await client.waitUntilConnected();
 
   const postResponses = await Promise.all([
-    client.send({
-      [c.COMMAND]: c.POST,
+    client.send(c.POST, {
       [c.COLLECTION_ID]: 'tests',
       [c.DATA]: {
         foo: 'bar1'
       }
     }),
 
-    client.send({
-      [c.COMMAND]: c.POST,
+    client.send(c.POST, {
       [c.COLLECTION_ID]: 'tests',
       [c.DATA]: {
         foo: 'bar2'
       }
     }),
 
-    client.send({
-      [c.COMMAND]: c.POST,
+    client.send(c.POST, {
       [c.COLLECTION_ID]: 'tests',
       [c.DATA]: {
         foo: 'bar3'
@@ -99,24 +92,23 @@ test('cluster - post - two goes down', async t => {
     })
   ]);
 
-  t.equal(postResponses[0][c.STATUS], 201, 'has status');
-  t.ok(postResponses[0][c.DATA].id, 'has id');
-  t.equal(postResponses[0][c.DATA].foo, 'bar1', 'has foo property');
+  t.equal(postResponses[0].command, c.STATUS_CREATED, 'has status');
+  t.ok(postResponses[0].json()[c.DATA].id, 'has id');
+  t.equal(postResponses[0].json()[c.DATA].foo, 'bar1', 'has foo property');
 
   await Promise.all([
     servers[1].close(),
     servers[2].close()
   ]);
 
-  const getResponse = await client.send({
-    [c.COMMAND]: c.GET,
+  const getResponse = await client.send(c.GET, {
     [c.COLLECTION_ID]: 'tests'
   });
 
-  t.equal(getResponse[c.STATUS], 200, 'has status');
-  t.equal(getResponse[c.DATA].length, 3, 'returned 1 document');
+  t.equal(getResponse.command, c.STATUS_OK, 'has status');
+  t.equal(getResponse.json()[c.DATA].length, 3, 'returned 1 document');
 
-  const sortedDocuments = getResponse[c.DATA]
+  const sortedDocuments = getResponse.json()[c.DATA]
     .sort((a, b) => a.foo > b.foo ? 1 : -1);
 
   t.ok(sortedDocuments[0].id, 'has id property');

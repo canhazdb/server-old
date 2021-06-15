@@ -6,11 +6,11 @@ import createDriver from '../../../lib/driver/index.js';
 test('count: no records', async t => {
   t.plan(1);
 
-  await fs.promises.rmdir('./_tmpTestData', { recursive: true }).catch(_ => {});
+  await fs.promises.rmdir('./canhazdata/tmptest', { recursive: true }).catch(_ => {});
 
   const driver = await createDriver({
     options: {
-      dataDirectory: './_tmpTestData'
+      dataDirectory: './canhazdata/tmptest'
     }
   });
 
@@ -24,11 +24,11 @@ test('count: no records', async t => {
 test('get: no records', async t => {
   t.plan(1);
 
-  await fs.promises.rmdir('./_tmpTestData', { recursive: true }).catch(_ => {});
+  await fs.promises.rmdir('./canhazdata/tmptest', { recursive: true }).catch(_ => {});
 
   const driver = await createDriver({
     options: {
-      dataDirectory: './_tmpTestData'
+      dataDirectory: './canhazdata/tmptest'
     }
   });
 
@@ -42,11 +42,11 @@ test('get: no records', async t => {
 test('post: records', async t => {
   t.plan(2);
 
-  await fs.promises.rmdir('./_tmpTestData', { recursive: true }).catch(_ => {});
+  await fs.promises.rmdir('./canhazdata/tmptest', { recursive: true }).catch(_ => {});
 
   const driver = await createDriver({
     options: {
-      dataDirectory: './_tmpTestData'
+      dataDirectory: './canhazdata/tmptest'
     }
   });
 
@@ -62,11 +62,11 @@ test('post: records', async t => {
 test('get: records - with projection', async t => {
   t.plan(1);
 
-  await fs.promises.rmdir('./_tmpTestData', { recursive: true }).catch(_ => {});
+  await fs.promises.rmdir('./canhazdata/tmptest', { recursive: true }).catch(_ => {});
 
   const driver = await createDriver({
     options: {
-      dataDirectory: './_tmpTestData'
+      dataDirectory: './canhazdata/tmptest'
     }
   });
 
@@ -91,11 +91,11 @@ test('get: records - with projection', async t => {
 test('put: record', async t => {
   t.plan(2);
 
-  await fs.promises.rmdir('./_tmpTestData', { recursive: true }).catch(_ => {});
+  await fs.promises.rmdir('./canhazdata/tmptest', { recursive: true }).catch(_ => {});
 
   const driver = await createDriver({
     options: {
-      dataDirectory: './_tmpTestData'
+      dataDirectory: './canhazdata/tmptest'
     }
   });
 
@@ -123,11 +123,11 @@ test('put: record', async t => {
 test('patch: record', async t => {
   t.plan(2);
 
-  await fs.promises.rmdir('./_tmpTestData', { recursive: true }).catch(_ => {});
+  await fs.promises.rmdir('./canhazdata/tmptest', { recursive: true }).catch(_ => {});
 
   const driver = await createDriver({
     options: {
-      dataDirectory: './_tmpTestData'
+      dataDirectory: './canhazdata/tmptest'
     }
   });
 
@@ -155,11 +155,11 @@ test('patch: record', async t => {
 test('del: record', async t => {
   t.plan(2);
 
-  await fs.promises.rmdir('./_tmpTestData', { recursive: true }).catch(_ => {});
+  await fs.promises.rmdir('./canhazdata/tmptest', { recursive: true }).catch(_ => {});
 
   const driver = await createDriver({
     options: {
-      dataDirectory: './_tmpTestData'
+      dataDirectory: './canhazdata/tmptest'
     }
   });
 
