@@ -1,5 +1,5 @@
 import test from 'basictap';
-import createTestServer from '../helpers/createTestServer.js';
+import createTestServers from '../helpers/createTestServers.js';
 
 import c from '../../lib/constants.js';
 import tcpocket from 'tcpocket';
@@ -9,7 +9,7 @@ const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 test('cluster - post', async t => {
   t.plan(11);
 
-  const servers = await createTestServer(5);
+  const servers = await createTestServers(5);
 
   const client = tcpocket.createClient(servers[0].clientConfig);
   await client.waitUntilConnected();
@@ -65,7 +65,7 @@ test('cluster - post', async t => {
 test('cluster - post - two goes down', async t => {
   t.plan(11);
 
-  const servers = await createTestServer(3);
+  const servers = await createTestServers(3);
   const client = tcpocket.createClient(servers[0].clientConfig);
   await client.waitUntilConnected();
 
@@ -125,7 +125,7 @@ test('cluster - post - two goes down', async t => {
 test('cluster - syncing - node goes down', async t => {
   t.plan(1);
 
-  const servers = await createTestServer(2);
+  const servers = await createTestServers(2);
   await sleep(50);
 
   await Promise.all([

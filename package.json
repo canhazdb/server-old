@@ -5,7 +5,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "./makeCerts.sh && NODE_ENV=test c8 --check-coverage --lines 97 node test"
+    "test": "./makeCerts.sh && NODE_ENV=test c8 --check-coverage --lines 94 node test"
   },
   "keywords": [],
   "author": "",
@@ -19,9 +19,7 @@
     "mql-to-jql": "^1.1.9",
     "node-ejdb-lite": "^3.4.2",
     "server-destroy": "^1.0.1",
-    "split2": "^3.2.2",
-    "tcpocket": "^7.2.0",
-    "wtfnode": "^0.8.4"
+    "tcpocket": "^7.3.0"
   },
   "devDependencies": {
     "c8": "^7.7.3",

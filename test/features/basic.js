@@ -1,5 +1,5 @@
 import test from 'basictap';
-import createTestServer from '../helpers/createTestServer.js';
+import createTestServers from '../helpers/createTestServers.js';
 
 import c from '../../lib/constants.js';
 import tcpocket from 'tcpocket';
@@ -22,7 +22,7 @@ function createExampleDocuments (client, count) {
 test('invalid command', async t => {
   t.plan(1);
 
-  const servers = await createTestServer(1);
+  const servers = await createTestServers(1);
   const client = tcpocket.createClient(servers[0].clientConfig);
   await client.waitUntilConnected();
 
@@ -39,7 +39,7 @@ test('invalid command', async t => {
 test('info', async t => {
   t.plan(5);
 
-  const servers = await createTestServer(1);
+  const servers = await createTestServers(1);
   const client = tcpocket.createClient(servers[0].clientConfig);
 
   await client.waitUntilConnected();
@@ -62,7 +62,7 @@ test('info', async t => {
 test('post', async t => {
   t.plan(11);
 
-  const servers = await createTestServer(1);
+  const servers = await createTestServers(1);
   const client = tcpocket.createClient(servers[0].clientConfig);
   await client.waitUntilConnected();
 
@@ -96,7 +96,7 @@ test('post', async t => {
 test('get - with order (ascending)', async t => {
   t.plan(5);
 
-  const servers = await createTestServer(1);
+  const servers = await createTestServers(1);
   const client = tcpocket.createClient(servers[0].clientConfig);
   await client.waitUntilConnected();
 
@@ -121,7 +121,7 @@ test('get - with order (ascending)', async t => {
 test('get - with order (descending)', async t => {
   t.plan(5);
 
-  const servers = await createTestServer(1);
+  const servers = await createTestServers(1);
   const client = tcpocket.createClient(servers[0].clientConfig);
   await client.waitUntilConnected();
 
@@ -146,7 +146,7 @@ test('get - with order (descending)', async t => {
 test('get - with limit', async t => {
   t.plan(2);
 
-  const servers = await createTestServer(1);
+  const servers = await createTestServers(1);
   const client = tcpocket.createClient(servers[0].clientConfig);
   await client.waitUntilConnected();
 
