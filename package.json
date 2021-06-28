@@ -11,9 +11,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "basictap": "^1.1.13",
+    "basictap": "^1.3.1",
     "chalk": "^4.1.1",
-    "lockbase": "^1.0.9",
+    "lockbase": "^1.1.0",
     "logslot": "^2.1.0",
     "minimist": "^1.2.5",
     "mql-to-jql": "^1.1.9",
@@ -23,7 +23,7 @@
   },
   "devDependencies": {
     "c8": "^7.7.3",
-    "eslint": "^7.28.0",
+    "eslint": "^7.29.0",
     "semistandard": "^16.0.1",
     "uuid": "^8.3.2"
   }
