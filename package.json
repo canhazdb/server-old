@@ -5,7 +5,7 @@
   "description": "",
   "main": "lib/index.js",
   "scripts": {
-    "test": "./makeCerts.sh && NODE_ENV=test c8 --check-coverage --lines 94 node test"
+    "test": "./makeCerts.sh && NODE_ENV=test c8 --check-coverage --lines 89 node test"
   },
   "keywords": [],
   "author": "",
