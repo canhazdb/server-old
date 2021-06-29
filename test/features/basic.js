@@ -4,7 +4,7 @@ import createTestServers from '../helpers/createTestServers.js';
 import c from '../../lib/constants.js';
 import tcpocket from 'tcpocket';
 
-function createExampleDocuments (client, count) {
+function createExampleDocuments (client, count, extraData) {
   const counts = Array(count).fill('').map((_, index) => index);
 
   return Promise.all(
@@ -12,6 +12,7 @@ function createExampleDocuments (client, count) {
       return client.send(c.POST, {
         [c.COLLECTION_ID]: 'tests',
         [c.DATA]: {
+          ...extraData,
           foo: 'bar' + (count + 1)
         }
       });
@@ -88,6 +89,92 @@ test('post', async t => {
   t.equal(sortedDocuments[1].foo, 'bar2', 'has foo property');
   t.ok(sortedDocuments[2].id, 'has id property');
   t.equal(sortedDocuments[2].foo, 'bar3', 'has foo property');
+
+  await client.close();
+  await servers.close();
+});
+
+test('put', async t => {
+  t.plan(3);
+
+  const servers = await createTestServers(1);
+  const client = tcpocket.createClient(servers[0].clientConfig);
+  await client.waitUntilConnected();
+
+  await createExampleDocuments(client, 3);
+
+  const putResponses = await client.send(c.PUT, {
+    [c.COLLECTION_ID]: 'tests',
+    [c.DATA]: { foo: 'barz' }
+  });
+
+  const getResponse = await client.send(c.GET, {
+    [c.COLLECTION_ID]: 'tests'
+  });
+
+  t.equal(getResponse.command, c.STATUS_OK, 'has status');
+
+  const foos = getResponse.json()[c.DATA]
+    .map(item => item.foo);
+  t.deepEqual(foos, ['barz', 'barz', 'barz'], 'returned 1 document');
+
+  t.equal(putResponses.json()[c.DATA], 3, 'altered the correct number of documents');
+  await client.close();
+  await servers.close();
+});
+
+test('patch', async t => {
+  t.plan(3);
+
+  const servers = await createTestServers(1);
+  const client = tcpocket.createClient(servers[0].clientConfig);
+  await client.waitUntilConnected();
+
+  await createExampleDocuments(client, 3, { b: 1 });
+
+  const putResponses = await client.send(c.PATCH, {
+    [c.COLLECTION_ID]: 'tests',
+    [c.DATA]: { foo: 'barz' }
+  });
+
+  const getResponse = await client.send(c.GET, {
+    [c.COLLECTION_ID]: 'tests'
+  });
+
+  t.equal(getResponse.command, c.STATUS_OK, 'has status');
+
+  const finalResponse = getResponse.json()[c.DATA]
+    .map(item => {
+      const { id, ...withoutId } = item;
+      return withoutId;
+    });
+  t.deepEqual(finalResponse, [
+    { foo: 'barz', b: 1 },
+    { foo: 'barz', b: 1 },
+    { foo: 'barz', b: 1 }
+  ], 'returned 1 document');
+
+  t.equal(putResponses.json()[c.DATA], 3, 'altered the correct number of documents');
+  await client.close();
+  await servers.close();
+});
+
+test('delete', async t => {
+  t.plan(2);
+
+  const servers = await createTestServers(1);
+  const client = tcpocket.createClient(servers[0].clientConfig);
+  await client.waitUntilConnected();
+
+  await createExampleDocuments(client, 3);
+
+  const deleteResponse = await client.send(c.DELETE, {
+    [c.COLLECTION_ID]: 'tests',
+    [c.QUERY]: { foo: 'bar2' }
+  });
+
+  t.equal(deleteResponse.command, c.STATUS_OK, 'has status');
+  t.equal(deleteResponse.json()[c.DATA], 1, 'returned 1 change');
 
   await client.close();
   await servers.close();
