@@ -16,7 +16,7 @@
     "lockbase": "^1.1.0",
     "logslot": "^2.1.0",
     "minimist": "^1.2.5",
-    "mql-to-jql": "^1.3.0",
+    "mql-to-jql": "^1.4.0",
     "node-ejdb-lite": "^3.4.2",
     "server-destroy": "^1.0.1",
     "tcpocket": "^7.3.0"
