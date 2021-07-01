@@ -141,15 +141,15 @@ await db.getAll('system.collections')
 
 /*
   [{
-  id: 'uuid-uuid-uuid-uuid',
-  collectionId: 'tests',
-  documentCount: 1
+    id: 'uuid-uuid-uuid-uuid',
+    collectionId: 'tests',
+    documentCount: 1
   }]
 */
 ```
 
 ## API
-See the API documentation for the [client](https://github.com/canhazdb/server).
+See the API documentation for the [client docs](https://canhazdb.github.io/client/modules/index.html).
 
 ## License
 This project is licensed under the terms of the AGPL-3.0 license.
