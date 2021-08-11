@@ -60,6 +60,72 @@ test('info', async t => {
   ]);
 });
 
+test('count', async t => {
+  t.plan(2);
+
+  const servers = await createTestServers(1);
+  const client = tcpocket.createClient(servers[0].clientConfig);
+  await client.waitUntilConnected();
+
+  await createExampleDocuments(client, 3);
+
+  const getResponse = await client.send(c.COUNT, {
+    [c.COLLECTION_ID]: 'tests'
+  });
+
+  t.equal(getResponse.command, c.STATUS_OK, 'has status');
+  t.equal(getResponse.json()[c.DATA], 3, 'returned 3');
+
+  await client.close();
+  await servers.close();
+});
+
+test('get - with order (descending)', async t => {
+  t.plan(5);
+
+  const servers = await createTestServers(1);
+  const client = tcpocket.createClient(servers[0].clientConfig);
+  await client.waitUntilConnected();
+
+  await createExampleDocuments(client, 3);
+
+  const getResponse = await client.send(c.GET, {
+    [c.COLLECTION_ID]: 'tests',
+    [c.ORDER]: ['desc(foo)']
+  });
+
+  t.equal(getResponse.command, c.STATUS_OK, 'has status');
+  t.equal(getResponse.json()[c.DATA].length, 3, 'returned 1 document');
+
+  t.equal(getResponse.json()[c.DATA][0].foo, 'bar3', 'has foo property');
+  t.equal(getResponse.json()[c.DATA][1].foo, 'bar2', 'has foo property');
+  t.equal(getResponse.json()[c.DATA][2].foo, 'bar1', 'has foo property');
+
+  await client.close();
+  await servers.close();
+});
+
+test('get - with limit', async t => {
+  t.plan(2);
+
+  const servers = await createTestServers(1);
+  const client = tcpocket.createClient(servers[0].clientConfig);
+  await client.waitUntilConnected();
+
+  await createExampleDocuments(client, 5);
+
+  const getResponse = await client.send(c.GET, {
+    [c.COLLECTION_ID]: 'tests',
+    [c.LIMIT]: 3
+  });
+
+  t.equal(getResponse.command, c.STATUS_OK, 'has status');
+  t.equal(getResponse.json()[c.DATA].length, 3, 'returned 1 document');
+
+  await client.close();
+  await servers.close();
+});
+
 test('post', async t => {
   t.plan(11);
 
@@ -205,47 +271,48 @@ test('get - with order (ascending)', async t => {
   await servers.close();
 });
 
-test('get - with order (descending)', async t => {
-  t.plan(5);
+test('notify - collection', async t => {
+  t.plan(3);
 
   const servers = await createTestServers(1);
   const client = tcpocket.createClient(servers[0].clientConfig);
   await client.waitUntilConnected();
 
-  await createExampleDocuments(client, 3);
-
-  const getResponse = await client.send(c.GET, {
-    [c.COLLECTION_ID]: 'tests',
-    [c.ORDER]: ['desc(foo)']
+  client.on('message', ({ command, data }) => {
+    t.equal(command, c.STATUS_OK);
+    t.ok(data.toString().startsWith('{"5":"POST:/tests/'));
   });
 
-  t.equal(getResponse.command, c.STATUS_OK, 'has status');
-  t.equal(getResponse.json()[c.DATA].length, 3, 'returned 1 document');
-
-  t.equal(getResponse.json()[c.DATA][0].foo, 'bar3', 'has foo property');
-  t.equal(getResponse.json()[c.DATA][1].foo, 'bar2', 'has foo property');
-  t.equal(getResponse.json()[c.DATA][2].foo, 'bar1', 'has foo property');
-
-  await client.close();
-  await servers.close();
-});
-
-test('get - with limit', async t => {
-  t.plan(2);
-
-  const servers = await createTestServers(1);
-  const client = tcpocket.createClient(servers[0].clientConfig);
-  await client.waitUntilConnected();
-
-  await createExampleDocuments(client, 5);
-
-  const getResponse = await client.send(c.GET, {
-    [c.COLLECTION_ID]: 'tests',
-    [c.LIMIT]: 3
+  const notifyResponse = await client.send(c.NOTIFY_ON, {
+    [c.NOTIFY_PATH]: '.*:/tests/.*'
   });
 
-  t.equal(getResponse.command, c.STATUS_OK, 'has status');
-  t.equal(getResponse.json()[c.DATA].length, 3, 'returned 1 document');
+  await client.send(c.POST, {
+    [c.COLLECTION_ID]: 'notests',
+    [c.DATA]: {
+      baz: 'baz'
+    }
+  });
+
+  await client.send(c.POST, {
+    [c.COLLECTION_ID]: 'tests',
+    [c.DATA]: {
+      foo: 'bar'
+    }
+  });
+
+  await client.send(c.NOTIFY_OFF, {
+    [c.NOTIFY_PATH]: '.*:/tests/.*'
+  });
+
+  await client.send(c.POST, {
+    [c.COLLECTION_ID]: 'tests',
+    [c.DATA]: {
+      foo: 'bar'
+    }
+  });
+
+  t.equal(notifyResponse.command, c.STATUS_OK, 'has status');
 
   await client.close();
   await servers.close();
