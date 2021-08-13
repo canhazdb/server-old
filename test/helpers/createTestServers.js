@@ -30,14 +30,22 @@ async function createTestServers (count) {
         const port = getNewPort();
         const nodeName = uuid();
 
-        const server = canhazdb({
-          dataDirectory: './canhazdata/' + nodeName,
-          nodeName: nodeName,
-          host: 'localhost',
-          port: port,
-          join,
-          tls
-        });
+        const create = async () => {
+          const server = await canhazdb({
+            dataDirectory: './canhazdata/' + nodeName,
+            nodeName: nodeName,
+            host: 'localhost',
+            port: port,
+            join,
+            tls
+          });
+
+          server.recreate = create;
+
+          return server;
+        };
+
+        const server = create();
 
         join.push('localhost:' + port);
 

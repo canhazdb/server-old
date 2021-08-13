@@ -4,6 +4,8 @@ import createTestServers from '../helpers/createTestServers.js';
 import c from '../../lib/constants.js';
 import tcpocket from 'tcpocket';
 
+const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+
 function createExampleDocuments (client, count, extraData) {
   const counts = Array(count).fill('').map((_, index) => index);
 
@@ -271,7 +273,7 @@ test('get - with order (ascending)', async t => {
   await servers.close();
 });
 
-test('notify - collection', async t => {
+test('notify', async t => {
   t.plan(3);
 
   const servers = await createTestServers(1);
@@ -279,7 +281,7 @@ test('notify - collection', async t => {
   await client.waitUntilConnected();
 
   client.on('message', ({ command, data }) => {
-    t.equal(command, c.STATUS_OK);
+    t.equal(command, c.NOTIFY);
     t.ok(data.toString().startsWith('{"5":"POST:/tests/'));
   });
 
@@ -316,4 +318,67 @@ test('notify - collection', async t => {
 
   await client.close();
   await servers.close();
+});
+
+test('notify - client disconnections clean up', async t => {
+  t.plan(1);
+
+  const servers = await createTestServers(2);
+  const client = tcpocket.createClient(servers[0].clientConfig);
+  await client.waitUntilConnected();
+
+  await client.send(c.NOTIFY_ON, {
+    [c.NOTIFY_PATH]: '.*:/tests/.*'
+  });
+
+  client.close();
+
+  await sleep(100);
+
+  t.equal(servers[0].notify.internalNotifiers.length, 0, 'internal notifier was removed');
+
+  await servers.close();
+});
+
+test('notify - reconnections', async t => {
+  t.plan(2);
+
+  let [server1, server2] = await createTestServers(2);
+  const [client1] = [
+    tcpocket.createClient(server1.clientConfig)
+  ];
+  await client1.waitUntilConnected();
+
+  client1.on('message', ({ command, data }) => {
+    t.equal(command, c.NOTIFY);
+    t.ok(data.toString().startsWith('{"5":"POST:/tests/'));
+  });
+
+  await client1.send(c.NOTIFY_ON, {
+    [c.NOTIFY_PATH]: '.*:/tests/.*'
+  });
+
+  server2.close();
+  await sleep(100);
+  server2 = await server2.recreate();
+  await sleep(100);
+
+  const client2 = tcpocket.createClient(server2.clientConfig);
+  await client2.waitUntilConnected();
+
+  await client2.send(c.POST, {
+    [c.COLLECTION_ID]: 'tests',
+    [c.DATA]: {
+      foo: 'bar'
+    }
+  });
+
+  await sleep(200);
+
+  await Promise.all([
+    client1.close(),
+    client2.close(),
+    server1.close(),
+    server2.close()
+  ]);
 });
