@@ -8,8 +8,12 @@
     "test": "./makeCerts.sh && NODE_ENV=test c8 --check-coverage --lines 89 node test"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": {
+    "name": "Mark Wylde",
+    "email": "me@markwylde.com",
+    "url": "https://github.com/markwylde"
+  },
+  "license": "AGPL-3.0",
   "dependencies": {
     "basictap": "^2.0.2",
     "chalk": "^4.1.2",
