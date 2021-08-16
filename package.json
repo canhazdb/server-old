@@ -17,7 +17,7 @@
   "dependencies": {
     "basictap": "^2.0.2",
     "chalk": "^4.1.2",
-    "lockbase": "^1.1.0",
+    "lockbase": "^1.1.1",
     "logslot": "^2.1.0",
     "minimist": "^1.2.5",
     "mql-to-jql": "^1.4.0",
