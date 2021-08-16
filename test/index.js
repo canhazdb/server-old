@@ -1,5 +1,6 @@
 import './features/basic.js';
 import './features/notify.js';
+import './features/lock.js';
 import './features/cluster.js';
 
 import './lib/driver/index.js';
