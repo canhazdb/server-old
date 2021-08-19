@@ -1,10 +1,20 @@
-import './features/basic.js';
-import './features/notify.js';
-import './features/lock.js';
-import './features/cluster.js';
+import wtfnode from 'wtfnode';
+import basictap from 'basictap';
 
-import './lib/driver/index.js';
-import './lib/prepareOptions.js';
+wtfnode.init();
 
-// import basictap from 'basictap';
-// basictap.maximumConcurrentTests = Infinity;
+basictap.on('finish', () => {
+  setTimeout(() => {
+    wtfnode.dump();
+  }, 500);
+});
+
+import('./features/basic.js');
+// import('./features/cluster.js');
+import('./features/health.js');
+import('./features/notify.js');
+import('./features/lock.js');
+import('./features/systemCollections.js');
+
+import('./lib/driver/index.js');
+import('./lib/prepareOptions.js');

@@ -45,7 +45,7 @@ test('info', async t => {
 
   await client.waitUntilConnected();
   const result = await client.send(c.INFO, {
-    [c.INTERNAL]: true
+    [c.SYSTEM]: true
   });
 
   t.equal(result.command, c.STATUS_OK, 'response had 200 status');

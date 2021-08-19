@@ -15,20 +15,22 @@
   },
   "license": "AGPL-3.0",
   "dependencies": {
-    "basictap": "^2.0.2",
     "chalk": "^4.1.2",
+    "debarrel": "^1.0.2",
     "lockbase": "^1.1.1",
     "logslot": "^2.1.0",
     "minimist": "^1.2.5",
     "mql-to-jql": "^1.4.0",
     "node-ejdb-lite": "^3.4.4",
     "server-destroy": "^1.0.1",
-    "tcpocket": "^7.3.1"
+    "tcpocket": "^7.3.1",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
+    "basictap": "^2.0.2",
     "c8": "^7.8.0",
     "eslint": "^7.32.0",
     "semistandard": "^16.0.1",
-    "uuid": "^8.3.2"
+    "wtfnode": "^0.9.1"
   }
 }
