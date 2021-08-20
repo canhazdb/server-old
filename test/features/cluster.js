@@ -66,7 +66,7 @@ test('cluster - post - two goes down', async t => {
   t.plan(12);
 
   const servers = await createTestServers(3);
-  let client = tcpocket.createClient(servers[0].clientConfig);
+  const client = tcpocket.createClient(servers[0].clientConfig);
   await client.waitUntilConnected();
 
   const postResponses = await Promise.all([

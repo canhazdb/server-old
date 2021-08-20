@@ -157,7 +157,7 @@ test('lock: and post some data (conflict + fail)', async t => {
   await client.close();
   await servers.close();
 
-  t.equal(postRequest.command, c.STATUS_BAD_REQUEST);
+  t.equal(postRequest.command, c.STATUS_LOCKED);
 });
 
 test('lock: and post some data (conflict + wait)', async t => {
@@ -284,8 +284,8 @@ test('lock: and wait but client closes', async t => {
     }
   }).then(() => {
     t.fail('should not have resolved successfully');
-  }).catch(error => {
-    servers.close();
+  }).catch(async error => {
+    await servers.close();
     t.equal(error.message, 'client disconnected');
   });
 
@@ -312,7 +312,7 @@ test('lock: and wait but node closes', async t => {
       foo: 'bar'
     }
   }).then((postResponse) => {
-    t.equal(postResponse.command, c.STATUS_SERVER_ERROR);
+    t.equal(postResponse.command, c.STATUS_SERVER_CLOSED);
     client.close();
   });
 
