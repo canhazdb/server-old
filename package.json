@@ -23,7 +23,7 @@
     "mql-to-jql": "^1.4.0",
     "node-ejdb-lite": "^3.4.4",
     "server-destroy": "^1.0.1",
-    "tcpocket": "^7.3.1",
+    "tcpocket": "^7.3.2",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
