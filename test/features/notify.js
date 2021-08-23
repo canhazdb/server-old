@@ -22,7 +22,62 @@ function createExampleDocuments (client, count, extraData) {
   );
 }
 
-test.todo('notify - with multiple servers');
+test('notify - with multiple servers', async t => {
+  t.plan(4);
+
+  const servers = await createTestServers(2);
+  const client1 = tcpocket.createClient(servers[0].clientConfig);
+  const client2 = tcpocket.createClient(servers[1].clientConfig);
+  await client1.waitUntilConnected();
+  await client2.waitUntilConnected();
+
+  client1.on('message', ({ command, data }) => {
+    t.equal(command, c.NOTIFY);
+    t.ok(data.toString().startsWith('{"' + c.DATA + '":"POST:/tests/'));
+  });
+
+  const notifyResponse = await client1.send(c.NOTIFY_ON, {
+    [c.NOTIFY_PATH]: '.*:/tests/.*'
+  });
+
+  await client2.send(c.POST, {
+    [c.COLLECTION_ID]: 'notests',
+    [c.DATA]: {
+      baz: 'baz'
+    }
+  });
+
+  const postResponse = await client2.send(c.POST, {
+    [c.COLLECTION_ID]: 'tests',
+    [c.DATA]: {
+      foo: 'bar'
+    }
+  });
+
+  t.equal(postResponse.command, c.STATUS_CREATED, 'postResponse has STATUS_CREATED');
+
+  await sleep(200);
+
+  await client1.send(c.NOTIFY_OFF, {
+    [c.NOTIFY_PATH]: '.*:/tests/.*'
+  });
+
+  await client2.send(c.POST, {
+    [c.COLLECTION_ID]: 'tests',
+    [c.DATA]: {
+      foo: 'bar'
+    }
+  });
+
+  t.equal(notifyResponse.command, c.STATUS_OK, 'has status');
+
+  setTimeout(async () => {
+    await client1.close();
+    await client2.close();
+    await servers.close();
+    t.pass('instance closed successfully');
+  }, 200);
+});
 
 test('notify', async t => {
   t.plan(4);
