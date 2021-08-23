@@ -62,7 +62,7 @@ test('cluster - post', async t => {
   await servers.close();
 });
 
-test('cluster - post - two goes down', async t => {
+test('cluster - post - one goes down', async t => {
   t.plan(12);
 
   const servers = await createTestServers(3);
@@ -97,15 +97,14 @@ test('cluster - post - two goes down', async t => {
   t.equal(postResponses[0].json()[c.DATA].foo, 'bar1', 'has foo property');
 
   await Promise.all([
-    servers[1].close(),
-    servers[2].close()
+    servers[1].close()
   ]);
 
   const getResponse = await client.send(c.GET, {
     [c.COLLECTION_ID]: 'tests'
   });
 
-  t.equal(getResponse.command, c.STATUS_OK, 'has status');
+  t.equal(getResponse.command, c.STATUS_OK, 'getResponse has status');
   t.equal(getResponse.json()[c.DATA].length, 3, 'returned 1 document');
 
   const sortedDocuments = getResponse.json()[c.DATA]

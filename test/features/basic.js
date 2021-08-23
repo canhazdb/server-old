@@ -184,7 +184,7 @@ test('put', async t => {
     .map(item => item.foo);
   t.deepEqual(foos, ['barz', 'barz', 'barz'], 'returned 1 document');
 
-  t.equal(putResponses.json()[c.DATA], 3, 'altered the correct number of documents');
+  t.equal(putResponses.json()[c.DATA].length, 3, 'altered the correct number of documents');
   await client.close();
   await servers.close();
 });
@@ -220,7 +220,7 @@ test('patch', async t => {
     { foo: 'barz', b: 1 }
   ], 'returned 1 document');
 
-  t.equal(putResponses.json()[c.DATA], 3, 'altered the correct number of documents');
+  t.equal(putResponses.json()[c.DATA].length, 3, 'altered the correct number of documents');
   await client.close();
   await servers.close();
 });
@@ -240,7 +240,7 @@ test('delete', async t => {
   });
 
   t.equal(deleteResponse.command, c.STATUS_OK, 'has status');
-  t.equal(deleteResponse.json()[c.DATA], 1, 'returned 1 change');
+  t.equal(deleteResponse.json()[c.DATA].length, 1, 'returned 1 change');
 
   await client.close();
   await servers.close();

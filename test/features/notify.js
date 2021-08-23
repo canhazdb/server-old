@@ -22,8 +22,10 @@ function createExampleDocuments (client, count, extraData) {
   );
 }
 
+test.todo('notify - with multiple servers');
+
 test('notify', async t => {
-  t.plan(3);
+  t.plan(4);
 
   const servers = await createTestServers(1);
   const client = tcpocket.createClient(servers[0].clientConfig);
@@ -45,12 +47,16 @@ test('notify', async t => {
     }
   });
 
-  await client.send(c.POST, {
+  const postResponse = await client.send(c.POST, {
     [c.COLLECTION_ID]: 'tests',
     [c.DATA]: {
       foo: 'bar'
     }
   });
+
+  t.equal(postResponse.command, c.STATUS_CREATED, 'postResponse has STATUS_CREATED');
+
+  await sleep(200);
 
   await client.send(c.NOTIFY_OFF, {
     [c.NOTIFY_PATH]: '.*:/tests/.*'
@@ -65,8 +71,11 @@ test('notify', async t => {
 
   t.equal(notifyResponse.command, c.STATUS_OK, 'has status');
 
-  await client.close();
-  await servers.close();
+  setTimeout(async () => {
+    await client.close();
+    await servers.close();
+    t.pass('instance closed successfully');
+  }, 200);
 });
 
 test('notify - post', async t => {
@@ -228,10 +237,10 @@ test('notify - client disconnections clean up', async t => {
   await servers.close();
 });
 
-test.skip('notify - reconnections', async t => {
-  t.plan(2);
+test('notify - reconnections', async t => {
+  t.plan(3);
 
-  let [server1, server2] = await createTestServers(2);
+  let [server1, server2, server3] = await createTestServers(3);
   const [client1] = [
     tcpocket.createClient(server1.clientConfig)
   ];
@@ -254,12 +263,14 @@ test.skip('notify - reconnections', async t => {
   const client2 = tcpocket.createClient(server2.clientConfig);
   await client2.waitUntilConnected();
 
-  await client2.send(c.POST, {
+  const postResponse = await client2.send(c.POST, {
     [c.COLLECTION_ID]: 'tests',
     [c.DATA]: {
       foo: 'bar'
     }
   });
+
+  t.equal(postResponse.command, c.STATUS_CREATED);
 
   await sleep(200);
 
@@ -267,6 +278,7 @@ test.skip('notify - reconnections', async t => {
     client1.close(),
     client2.close(),
     server1.close(),
-    server2.close()
+    server2.close(),
+    server3.close()
   ]);
 });

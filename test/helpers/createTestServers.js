@@ -61,7 +61,10 @@ async function createTestServers (count, options = {}) {
 
           if (options.waitUntilOnline) {
             await waitUntil(() => {
-              return server.thisNode && server.thisNode.status === 'healthy';
+              return (
+                server.thisNode && server.thisNode.status === 'healthy' &&
+                server.nodes.every(node => node.status === 'healthy')
+              );
             });
           }
 
