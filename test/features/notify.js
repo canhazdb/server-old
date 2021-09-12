@@ -32,6 +32,10 @@ test('notify - with multiple servers', async t => {
   await client2.waitUntilConnected();
 
   client1.on('message', ({ command, data }) => {
+    if (command !== c.NOTIFY) {
+      return;
+    }
+
     t.equal(command, c.NOTIFY);
     t.ok(data.toString().startsWith('{"' + c.DATA + '":"POST:/tests/'));
   });
@@ -87,6 +91,10 @@ test('notify', async t => {
   await client.waitUntilConnected();
 
   client.on('message', ({ command, data }) => {
+    if (command !== c.NOTIFY) {
+      return;
+    }
+
     t.equal(command, c.NOTIFY);
     t.ok(data.toString().startsWith('{"' + c.DATA + '":"POST:/tests/'));
   });
@@ -141,6 +149,10 @@ test('notify - post', async t => {
   await client.waitUntilConnected();
 
   client.on('message', ({ command, data }) => {
+    if (command !== c.NOTIFY) {
+      return;
+    }
+
     t.equal(command, c.NOTIFY);
     t.ok(data.toString().startsWith('{"' + c.DATA + '":"POST:/tests/'));
   });
@@ -175,6 +187,10 @@ test('notify - put', async t => {
   const documentId = documents[0].json()[c.DATA].id;
 
   client.on('message', ({ command, data }) => {
+    if (command !== c.NOTIFY) {
+      return;
+    }
+
     t.equal(command, c.NOTIFY);
     t.ok(data.toString().startsWith('{"' + c.DATA + '":"PUT:/tests/' + documentId));
   });
@@ -212,6 +228,10 @@ test('notify - patch', async t => {
   const documentId = documents[0].json()[c.DATA].id;
 
   client.on('message', ({ command, data }) => {
+    if (command !== c.NOTIFY) {
+      return;
+    }
+
     t.equal(command, c.NOTIFY);
     t.ok(data.toString().startsWith('{"' + c.DATA + '":"PATCH:/tests/' + documentId));
   });
@@ -249,6 +269,10 @@ test('notify - delete', async t => {
   const documentId = documents[0].json()[c.DATA].id;
 
   client.on('message', ({ command, data }) => {
+    if (command !== c.NOTIFY) {
+      return;
+    }
+
     t.equal(command, c.NOTIFY);
     t.ok(data.toString().startsWith('{"' + c.DATA + '":"DELETE:/tests/' + documentId));
   });
@@ -302,6 +326,10 @@ test('notify - reconnections', async t => {
   await client1.waitUntilConnected();
 
   client1.on('message', ({ command, data }) => {
+    if (command !== c.NOTIFY) {
+      return;
+    }
+
     t.equal(command, c.NOTIFY);
     t.ok(data.toString().startsWith('{"' + c.DATA + '":"POST:/tests/'));
   });
