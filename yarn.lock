@@ -1685,10 +1685,10 @@ table@^6.0.9:
     string-width "^4.2.0"
     strip-ansi "^6.0.0"
 
-tcpocket@^7.4.0:
-  version "7.4.0"
-  resolved "https://registry.yarnpkg.com/tcpocket/-/tcpocket-7.4.0.tgz#ea823a51314ca2dcbd3ae0ecabebc0445ce1f7ff"
-  integrity sha512-sd1/H1JkvKgW0UVzMJHTqI2WTQAFDFvFW244kb728fu8I31Jymu0sb7ov9GnZ4lZ8AyBBUV1eeWVWF36A/hvfw==
+tcpocket@^7.4.1:
+  version "7.4.1"
+  resolved "https://registry.yarnpkg.com/tcpocket/-/tcpocket-7.4.1.tgz#32edc43e7724831493c17aa586b3281e445f6a4d"
+  integrity sha512-goTuv2uLrfDf2JDQJTxUTUAsgwpj2A499205IjRZDnlzDY98c/3bhPwmsvVR29oL69PyxXugCAodRqwYFTwNLg==
   dependencies:
     increlation "^1.0.1"
 
