@@ -834,6 +834,11 @@ imurmurhash@^0.1.4:
   resolved "https://registry.yarnpkg.com/imurmurhash/-/imurmurhash-0.1.4.tgz#9218b9b2b928a238b13dc4fb6b6d576f231453ea"
   integrity sha1-khi5srkoojixPcT7a21XbyMUU+o=
 
+increlation@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/increlation/-/increlation-1.0.1.tgz#70a9f1981b860109f9c97d2d2b89c8c48a4dbc5a"
+  integrity sha512-6PhPU/vEN5TP4zqQAab0biOyKtLOSGp6jDkGdHthH2b6Q9cG5LXPfP9ti78jxLagBz9iXnF2cAVnqCMx2fyJaQ==
+
 inflight@^1.0.4:
   version "1.0.6"
   resolved "https://registry.yarnpkg.com/inflight/-/inflight-1.0.6.tgz#49bd6331d7d02d0c09bc910a1075ba8165b56df9"
@@ -1680,10 +1685,12 @@ table@^6.0.9:
     string-width "^4.2.0"
     strip-ansi "^6.0.0"
 
-tcpocket@^7.3.2:
-  version "7.3.2"
-  resolved "https://registry.yarnpkg.com/tcpocket/-/tcpocket-7.3.2.tgz#47ba5836f961ff92258b3d6ebea1058443aad685"
-  integrity sha512-RhiQc2w6aPrOFGFnkQJwAVIS2KNhhmltOw+X3w1I4WCPZ1TMGuh0D+kUU3f5yzr0SQ77YV//cFKcxTy34Ko7zA==
+tcpocket@^7.4.0:
+  version "7.4.0"
+  resolved "https://registry.yarnpkg.com/tcpocket/-/tcpocket-7.4.0.tgz#ea823a51314ca2dcbd3ae0ecabebc0445ce1f7ff"
+  integrity sha512-sd1/H1JkvKgW0UVzMJHTqI2WTQAFDFvFW244kb728fu8I31Jymu0sb7ov9GnZ4lZ8AyBBUV1eeWVWF36A/hvfw==
+  dependencies:
+    increlation "^1.0.1"
 
 test-exclude@^6.0.0:
   version "6.0.0"
