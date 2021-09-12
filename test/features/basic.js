@@ -161,7 +161,7 @@ test('post', async t => {
 });
 
 test('put', async t => {
-  t.plan(3);
+  t.plan(5);
 
   const servers = await createTestServers(1);
   const client = tcpocket.createClient(servers[0].clientConfig);
@@ -169,7 +169,7 @@ test('put', async t => {
 
   await createExampleDocuments(client, 3);
 
-  const putResponses = await client.send(c.PUT, {
+  const putResponse = await client.send(c.PUT, {
     [c.COLLECTION_ID]: 'tests',
     [c.DATA]: { foo: 'barz' }
   });
@@ -177,20 +177,22 @@ test('put', async t => {
   const getResponse = await client.send(c.GET, {
     [c.COLLECTION_ID]: 'tests'
   });
-
   t.equal(getResponse.command, c.STATUS_OK, 'has status');
+  t.equal(putResponse.command, c.STATUS_OK, 'has status');
+  t.equal(getResponse.json()[c.DATA].length, 3, 'put 3 documents');
 
   const foos = getResponse.json()[c.DATA]
     .map(item => item.foo);
-  t.deepEqual(foos, ['barz', 'barz', 'barz'], 'returned 1 document');
+  t.deepEqual(foos, ['barz', 'barz', 'barz'], 'returned 3 documents');
 
-  t.equal(putResponses.json()[c.DATA].length, 3, 'altered the correct number of documents');
+  t.equal(putResponse.json()[c.DATA].length, 3, 'altered the correct number of documents');
+
   await client.close();
   await servers.close();
 });
 
 test('patch', async t => {
-  t.plan(3);
+  t.plan(5);
 
   const servers = await createTestServers(1);
   const client = tcpocket.createClient(servers[0].clientConfig);
@@ -198,7 +200,7 @@ test('patch', async t => {
 
   await createExampleDocuments(client, 3, { b: 1 });
 
-  const patchResponses = await client.send(c.PATCH, {
+  const patchResponse = await client.send(c.PATCH, {
     [c.COLLECTION_ID]: 'tests',
     [c.DATA]: { foo: 'barz' }
   });
@@ -208,6 +210,8 @@ test('patch', async t => {
   });
 
   t.equal(getResponse.command, c.STATUS_OK, 'has status');
+  t.equal(patchResponse.command, c.STATUS_OK, 'has status');
+  t.equal(patchResponse.json()[c.DATA].length, 3, 'patched 3 documents');
 
   const finalResponse = getResponse.json()[c.DATA]
     .map(item => {
@@ -220,7 +224,8 @@ test('patch', async t => {
     { foo: 'barz', b: 1 }
   ], 'returned 1 document');
 
-  t.equal(patchResponses.json()[c.DATA].length, 3, 'altered the correct number of documents');
+  t.equal(patchResponse.json()[c.DATA].length, 3, 'altered the correct number of documents');
+
   await client.close();
   await servers.close();
 });
