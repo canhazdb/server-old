@@ -29,7 +29,7 @@ test('invalid command', async t => {
 
   await createExampleDocuments(client, 1);
 
-  const getResponse = await client.send(255);
+  const getResponse = await client.send(254);
 
   t.equal(getResponse.command, c.STATUS_NOT_FOUND, 'has status');
 
@@ -198,7 +198,7 @@ test('patch', async t => {
 
   await createExampleDocuments(client, 3, { b: 1 });
 
-  const putResponses = await client.send(c.PATCH, {
+  const patchResponses = await client.send(c.PATCH, {
     [c.COLLECTION_ID]: 'tests',
     [c.DATA]: { foo: 'barz' }
   });
@@ -220,7 +220,7 @@ test('patch', async t => {
     { foo: 'barz', b: 1 }
   ], 'returned 1 document');
 
-  t.equal(putResponses.json()[c.DATA].length, 3, 'altered the correct number of documents');
+  t.equal(patchResponses.json()[c.DATA].length, 3, 'altered the correct number of documents');
   await client.close();
   await servers.close();
 });

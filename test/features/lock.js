@@ -157,7 +157,7 @@ test('lock: and post some data (conflict + fail)', async t => {
   await client.close();
   await servers.close();
 
-  t.equal(postRequest.command, c.STATUS_LOCKED);
+  t.equal(postRequest.command, c.STATUS_SERVER_ERROR);
 });
 
 test('lock: and post some data (conflict + wait)', async t => {
@@ -312,7 +312,7 @@ test('lock: and wait but node closes', async t => {
       foo: 'bar'
     }
   }).then((postResponse) => {
-    t.equal(postResponse.command, c.STATUS_SERVER_CLOSED);
+    t.equal(postResponse.command, c.STATUS_SERVER_ERROR);
     client.close();
   });
 
