@@ -61,7 +61,6 @@ test('conflicts - post failure creates conflict', async t => {
   await sleep(500);
 
   for (const server of servers) {
-    console.log(server);
     t.equal(server.thisNode.status, 'healthy', 'server status is healthy');
   }
 
