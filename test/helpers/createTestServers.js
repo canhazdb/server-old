@@ -54,7 +54,13 @@ async function createTestServers (count, options = {}) {
             host: 'localhost',
             port: port,
             join,
-            tls
+            tls,
+            settings: {
+              infoInterval: 250,
+              conflictSyncInterval: 100,
+              conflictCleanupInterval: 1000,
+              replicas: 3
+            }
           });
 
           server.recreate = create;

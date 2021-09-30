@@ -1,3 +1,4 @@
+import assert from 'assert';
 import c from '../../lib/constants.js';
 import createTestServers from '../helpers/createTestServers.js';
 import tcpocket from 'tcpocket';
@@ -5,15 +6,7 @@ import test from 'basictap';
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
-test('conflicts - post failure creates conflict', async t => {
-  t.plan(7);
-  t.timeout(3000);
-
-  const servers = await createTestServers(2);
-  const client = tcpocket.createClient(servers[0].clientConfig);
-  await client.waitUntilConnected();
-
-  // Let us fake an error from one of the servers
+async function createConflict (servers, client) {
   let disablePost = true;
 
   servers[1].controllers.internal.add({
@@ -32,7 +25,7 @@ test('conflicts - post failure creates conflict', async t => {
     }
   });
 
-  t.equal(result.command, c.STATUS_CREATED, 'post should return STATUS_CREATED');
+  assert.equal(result.command, c.STATUS_CREATED);
 
   // Test all servers receive the conflict
   await sleep(500);
@@ -42,11 +35,22 @@ test('conflicts - post failure creates conflict', async t => {
       return conflict.document && conflict.document.foo === 'bar';
     });
 
-    t.ok(foundConflict, 'found conflict');
+    assert.ok(foundConflict);
   }
 
   // Disable our fake error and test all servers receive the resolution
   disablePost = false;
+}
+
+test('conflicts - post failure creates conflict', async t => {
+  t.plan(4);
+  t.timeout(3000);
+
+  const servers = await createTestServers(2);
+  const client = tcpocket.createClient(servers[0].clientConfig);
+  await client.waitUntilConnected();
+
+  await createConflict(servers, client);
 
   await sleep(500);
 
@@ -62,6 +66,42 @@ test('conflicts - post failure creates conflict', async t => {
 
   for (const server of servers) {
     t.equal(server.thisNode.status, 'healthy', 'server status is healthy');
+  }
+
+  await Promise.all([
+    client.close(),
+    servers.close()
+  ]);
+});
+
+test('conflicts - cleanup resolved', async t => {
+  t.plan(4);
+  t.timeout(3000);
+
+  const servers = await createTestServers(2);
+  const client = tcpocket.createClient(servers[0].clientConfig);
+  await client.waitUntilConnected();
+
+  await createConflict(servers, client);
+
+  await sleep(500);
+
+  for (const server of servers) {
+    const foundConflict = server.conflicts.items.find(conflict => {
+      return !conflict.resolved && conflict.document && conflict.document.foo === 'bar';
+    });
+
+    t.equal(foundConflict, undefined, 'conflict not found');
+  }
+
+  await sleep(1500);
+
+  for (const server of servers) {
+    const foundConflict = server.conflicts.items.find(conflict => {
+      return conflict.document && conflict.document.foo === 'bar';
+    });
+
+    t.equal(foundConflict, undefined, 'conflict should not be found');
   }
 
   await Promise.all([
