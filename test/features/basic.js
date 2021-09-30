@@ -275,3 +275,29 @@ test('get - with order (ascending)', async t => {
   await client.close();
   await servers.close();
 });
+
+test('system.nodes', async t => {
+  t.plan(7);
+
+  const servers = await createTestServers(1);
+  const client = tcpocket.createClient(servers[0].clientConfig);
+  await client.waitUntilConnected();
+
+  const getResponse = await client.send(c.GET, {
+    [c.COLLECTION_ID]: 'system.nodes'
+  });
+
+  const nodes = getResponse.json()[c.DATA];
+
+  t.equal(getResponse.command, c.STATUS_OK, 'has status');
+  t.equal(nodes.length, 1, 'returned 1');
+
+  t.equal(nodes[0].connected, true, 'connected was correct');
+  t.equal(nodes[0].online, true, 'online was correct');
+  t.equal(nodes[0].host, 'localhost', 'host was correct');
+  t.ok(nodes[0].port, 'port existed');
+  t.equal(nodes[0].status, 'healthy', 'status was correct');
+
+  await client.close();
+  await servers.close();
+});
