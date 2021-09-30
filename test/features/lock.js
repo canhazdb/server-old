@@ -4,7 +4,7 @@ import createTestServers from '../helpers/createTestServers.js';
 import c from '../../lib/constants.js';
 import tcpocket from 'tcpocket';
 
-test('lock: and post some data (success)', async t => {
+test('lock - and post some data (success)', async t => {
   t.plan(5);
 
   const servers = await createTestServers(1);
@@ -49,7 +49,7 @@ test('lock: and post some data (success)', async t => {
   t.equal(getRequest.command, c.STATUS_OK);
 });
 
-test('unlock: delete lock with incorrect id', async t => {
+test('lock - delete lock with incorrect id', async t => {
   t.plan(1);
   const servers = await createTestServers(1);
   const client = tcpocket.createClient(servers[0].clientConfig);
@@ -65,7 +65,7 @@ test('unlock: delete lock with incorrect id', async t => {
   await servers.close();
 });
 
-test('lock: multiple happen in order', async t => {
+test('lock - multiple happen in order', async t => {
   t.plan(6);
 
   const servers = await createTestServers(1);
@@ -129,7 +129,7 @@ test('lock: multiple happen in order', async t => {
   t.ok(secondFinished, 'second lock ran');
 });
 
-test('lock: and post some data (conflict + fail)', async t => {
+test('lock - and post some data (conflict + fail)', async t => {
   t.plan(2);
 
   const servers = await createTestServers(1);
@@ -160,7 +160,7 @@ test('lock: and post some data (conflict + fail)', async t => {
   t.equal(postRequest.command, c.STATUS_SERVER_ERROR);
 });
 
-test('lock: and post some data (conflict + wait)', async t => {
+test('lock - and post some data (conflict + wait)', async t => {
   t.plan(5);
 
   const servers = await createTestServers(1);
@@ -205,7 +205,7 @@ test('lock: and post some data (conflict + wait)', async t => {
   t.equal(unlockRequest.command, c.STATUS_OK);
 });
 
-test('lock: all methods lock', async t => {
+test('lock - all methods lock', async t => {
   t.plan(4);
 
   const servers = await createTestServers(1);
@@ -265,7 +265,7 @@ test('lock: all methods lock', async t => {
   unlocked = true;
 });
 
-test('lock: and wait but client closes', async t => {
+test('lock - and wait but client closes', async t => {
   t.plan(1);
 
   const servers = await createTestServers(1);
@@ -294,7 +294,7 @@ test('lock: and wait but client closes', async t => {
   }, 200);
 });
 
-test('lock: and wait but node closes', async t => {
+test('lock - and wait but node closes', async t => {
   t.plan(1);
 
   const servers = await createTestServers(1);
@@ -319,4 +319,33 @@ test('lock: and wait but node closes', async t => {
   setTimeout(() => {
     servers.close();
   }, 500);
+});
+
+test('lock - system collection (system.locks)', async t => {
+  t.plan(5);
+
+  const servers = await createTestServers(1);
+  const client = tcpocket.createClient(servers[0].clientConfig);
+  await client.waitUntilConnected();
+
+  const lockRequest = await client.send(c.LOCK, {
+    [c.LOCK_KEYS]: ['tests']
+  });
+
+  t.equal(lockRequest.command, c.STATUS_OK, 'lockRequest has ok status');
+
+  const getResponse = await client.send(c.GET, {
+    [c.COLLECTION_ID]: 'system.locks'
+  });
+
+  t.equal(getResponse.command, c.STATUS_OK, 'getResponse has ok status');
+
+  const locks = getResponse.json()[c.DATA];
+
+  t.equal(locks.length, 1, 'had 1 lock');
+  t.ok(locks[0].id, 'first lock had id');
+  t.deepEqual(locks[0].keys, ['tests']);
+
+  await client.close();
+  await servers.close();
 });

@@ -11,6 +11,7 @@ async function createConflict (servers, client) {
 
   servers[1].controllers.internal.add({
     command: c.POST,
+    priority: 10,
     conditions: [() => disablePost],
     handler: async () => {
       throw new Error('some error, preventing post');

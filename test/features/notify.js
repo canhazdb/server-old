@@ -365,3 +365,30 @@ test('notify - reconnections', async t => {
     server3.close()
   ]);
 });
+
+test('notify - system collection (system.notifys)', async t => {
+  t.plan(3);
+
+  const servers = await createTestServers(1);
+  const client = tcpocket.createClient(servers[0].clientConfig);
+  await client.waitUntilConnected();
+
+  const notifyResponse = await client.send(c.NOTIFY_ON, {
+    [c.NOTIFY_PATH]: '.*:/tests/.*'
+  });
+
+  t.equal(notifyResponse.command, c.STATUS_OK, 'has status');
+
+  const getResponse = await client.send(c.GET, {
+    [c.COLLECTION_ID]: 'system.notifys'
+  });
+
+  t.equal(getResponse.command, c.STATUS_OK, 'has status');
+
+  t.deepEqual(getResponse.json()[c.DATA], [
+    { notifyPath: '.*:/tests/.*' }
+  ]);
+
+  await client.close();
+  await servers.close();
+});
