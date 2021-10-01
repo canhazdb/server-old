@@ -3,6 +3,7 @@ import('./lib/utils/calculateAllowedErrorCount.js');
 import('./lib/prepareOptions.js');
 
 import('./features/basic.js');
+import('./features/http.js');
 import('./features/cluster.js');
 import('./features/conflicts.js');
 import('./features/health.js');

@@ -45,6 +45,7 @@ async function createTestServers (count, options = {}) {
       .fill(null)
       .map(async (_, index) => {
         const port = getNewPort();
+        const httpPort = getNewPort();
         const nodeName = uuid();
 
         const create = async () => {
@@ -53,6 +54,8 @@ async function createTestServers (count, options = {}) {
             nodeName: nodeName,
             host: 'localhost',
             port: port,
+            httpHost: 'localhost',
+            httpPort: httpPort,
             join,
             tls,
             settings: {

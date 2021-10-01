@@ -17,16 +17,18 @@
   "dependencies": {
     "chalk": "^4.1.2",
     "debarrel": "^1.0.2",
-    "lockbase": "^1.3.0",
+    "lockbase": "^1.3.1",
     "logslot": "^2.1.0",
     "minimist": "^1.2.5",
     "mql-to-jql": "^1.4.0",
     "node-ejdb-lite": "^3.4.4",
+    "servatron": "^2.2.3",
     "server-destroy": "^1.0.1",
     "tcpocket": "^7.4.2",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
+    "axios": "^0.22.0",
     "basictap": "^2.2.1",
     "c8": "^7.9.0",
     "eslint": "^7.32.0",
