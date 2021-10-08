@@ -338,7 +338,7 @@ test('notify - reconnections', async t => {
     [c.NOTIFY_PATH]: '.*:/tests/.*'
   });
 
-  server2.close();
+  await server2.close();
   await sleep(100);
   server2 = await server2.recreate();
   await sleep(100);

@@ -349,3 +349,24 @@ test('lock - system collection (system.locks)', async t => {
   await client.close();
   await servers.close();
 });
+
+test('lock - releases when node disconnects', async t => {
+  t.plan(1);
+
+  const servers = await createTestServers(2);
+  const client = tcpocket.createClient(servers[0].clientConfig);
+  await client.waitUntilConnected();
+
+  await client.send(c.LOCK, {
+    [c.LOCK_KEYS]: ['tests']
+  });
+
+  await servers[0].close();
+
+  const testLocks = servers[1].locks.state.locks.filter(lock => lock[1][0] === 'tests');
+
+  t.equal(testLocks.length, 0);
+
+  await client.close();
+  await servers.close();
+});
