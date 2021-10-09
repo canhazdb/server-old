@@ -6,7 +6,7 @@ import createDriver from '../../../lib/driver/index.js';
 test('count: no records', async t => {
   t.plan(1);
 
-  await fs.promises.rmdir('./canhazdata/tmptest', { recursive: true }).catch(_ => {});
+  await fs.promises.rm('./canhazdata/tmptest', { recursive: true }).catch(_ => {});
 
   const driver = await createDriver({
     options: {
@@ -24,7 +24,7 @@ test('count: no records', async t => {
 test('get: no records', async t => {
   t.plan(1);
 
-  await fs.promises.rmdir('./canhazdata/tmptest', { recursive: true }).catch(_ => {});
+  await fs.promises.rm('./canhazdata/tmptest', { recursive: true }).catch(_ => {});
 
   const driver = await createDriver({
     options: {
@@ -42,7 +42,7 @@ test('get: no records', async t => {
 test('post: records', async t => {
   t.plan(2);
 
-  await fs.promises.rmdir('./canhazdata/tmptest', { recursive: true }).catch(_ => {});
+  await fs.promises.rm('./canhazdata/tmptest', { recursive: true }).catch(_ => {});
 
   const driver = await createDriver({
     options: {
@@ -62,7 +62,7 @@ test('post: records', async t => {
 test('get: records - with projection', async t => {
   t.plan(1);
 
-  await fs.promises.rmdir('./canhazdata/tmptest', { recursive: true }).catch(_ => {});
+  await fs.promises.rm('./canhazdata/tmptest', { recursive: true }).catch(_ => {});
 
   const driver = await createDriver({
     options: {
@@ -91,7 +91,7 @@ test('get: records - with projection', async t => {
 test('put: record', async t => {
   t.plan(2);
 
-  await fs.promises.rmdir('./canhazdata/tmptest', { recursive: true }).catch(_ => {});
+  await fs.promises.rm('./canhazdata/tmptest', { recursive: true }).catch(_ => {});
 
   const driver = await createDriver({
     options: {
@@ -123,7 +123,7 @@ test('put: record', async t => {
 test('patch: record', async t => {
   t.plan(2);
 
-  await fs.promises.rmdir('./canhazdata/tmptest', { recursive: true }).catch(_ => {});
+  await fs.promises.rm('./canhazdata/tmptest', { recursive: true }).catch(_ => {});
 
   const driver = await createDriver({
     options: {
@@ -155,7 +155,7 @@ test('patch: record', async t => {
 test('del: record', async t => {
   t.plan(2);
 
-  await fs.promises.rmdir('./canhazdata/tmptest', { recursive: true }).catch(_ => {});
+  await fs.promises.rm('./canhazdata/tmptest', { recursive: true }).catch(_ => {});
 
   const driver = await createDriver({
     options: {

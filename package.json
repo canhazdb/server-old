@@ -38,7 +38,7 @@
   "devDependencies": {
     "@emotion/styled": "^11.3.0",
     "axios": "^0.22.0",
-    "basictap": "^2.2.2",
+    "basictap": "^2.4.0",
     "c8": "^7.10.0",
     "esbuild": "^0.13.4",
     "eslint": "^7.32.0",
