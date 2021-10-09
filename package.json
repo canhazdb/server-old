@@ -13,6 +13,9 @@
     "email": "me@markwylde.com",
     "url": "https://github.com/markwylde"
   },
+  "semistandard": {
+    "ignore": "client"
+  },
   "license": "AGPL-3.0",
   "dependencies": {
     "canhazdb-client": "file:./client",

@@ -65,7 +65,7 @@ const CollectionsTree = styled.div(`
 `);
 
 function MainUI (props) {
-  const [collections, collectionsState] = useApi('/api/system.collections', {
+  const [collections] = useApi('/api/system.collections', {
     headers: {
       authorisation: props.authToken
     }

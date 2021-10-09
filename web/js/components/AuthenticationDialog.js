@@ -4,11 +4,13 @@ import FileInput from '../components/FileInput.js';
 import useApi from '../hooks/useApi.js';
 import useHttp from 'use-http';
 
+const allowCustomCA = false;
+
 function AuthenticationDialog (props) {
-  const { post, response, loading, error } = useHttp({
+  const { post } = useHttp({
     cachePolicy: 'no-cache'
   });
-  const [settings, settingsState] = useApi('/api/settings');
+  const [settings] = useApi('/api/settings');
   const [authenticationData, setAuthenticationData] =
     useLocalStorage('authenticationData', {});
 
@@ -17,7 +19,9 @@ function AuthenticationDialog (props) {
       return;
     }
 
-    if (!authenticationData.ca && settings.ca) {
+    const sameCA = authenticationData.ca === settings.ca;
+
+    if (!authenticationData.ca || (!sameCA && !allowCustomCA)) {
       setAuthenticationData({
         ...authenticationData,
         ca: settings.ca
