@@ -16,7 +16,7 @@ import('./features/systemCollections.js');
 import('./modules/controllers/createControllerStore.js');
 
 // process.on('beforeExit', () => {
-//   setTimeout(() => {
+//   setInterval(() => {
 //     wtfnode.dump();
 //   }, 5000);
 // });

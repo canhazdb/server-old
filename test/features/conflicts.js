@@ -3,6 +3,7 @@ import c from '../../lib/constants.js';
 import createTestServers from '../helpers/createTestServers.js';
 import tcpocket from 'tcpocket';
 import test from 'basictap';
+import waitUntil from '../../lib/utils/waitUntil.js';
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -44,7 +45,7 @@ async function createConflict (servers, client) {
 }
 
 test('conflicts - post failure creates conflict', async t => {
-  t.plan(4);
+  t.plan(2);
   t.timeout(3000);
 
   const servers = await createTestServers(2);
@@ -63,11 +64,13 @@ test('conflicts - post failure creates conflict', async t => {
     t.equal(foundConflict, undefined, 'conflict not found');
   }
 
-  await sleep(500);
+  await waitUntil(() => {
+    const unhealthyServers = servers.filter((server) => {
+      return server.thisNode.status !== 'healthy';
+    });
 
-  for (const server of servers) {
-    t.equal(server.thisNode.status, 'healthy', 'server status is healthy');
-  }
+    return unhealthyServers.length === 0;
+  });
 
   await Promise.all([
     client.close(),

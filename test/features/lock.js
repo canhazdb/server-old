@@ -322,7 +322,7 @@ test('lock - and wait but node closes', async t => {
 });
 
 test('lock - system collection (system.locks)', async t => {
-  t.plan(5);
+  t.plan(4);
 
   const servers = await createTestServers(1);
   const client = tcpocket.createClient(servers[0].clientConfig);
@@ -342,9 +342,10 @@ test('lock - system collection (system.locks)', async t => {
 
   const locks = getResponse.json()[c.DATA];
 
-  t.equal(locks.length, 1, 'had 1 lock');
-  t.ok(locks[0].id, 'first lock had id');
-  t.deepEqual(locks[0].keys, ['tests']);
+  const filteredLocks = locks.filter(lock => lock.keys[0] === 'tests');
+
+  t.equal(filteredLocks.length, 1, 'had 1 lock');
+  t.ok(filteredLocks[0].id, 'first lock had id');
 
   await client.close();
   await servers.close();

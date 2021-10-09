@@ -5,7 +5,7 @@
   "description": "",
   "main": "lib/index.js",
   "scripts": {
-    "test": "./makeCerts.sh && NODE_ENV=test c8 --check-coverage --lines 89 node test"
+    "test": "./makeCerts.sh && NODE_ENV=test c8 -x client --check-coverage --lines 89 node test"
   },
   "keywords": [],
   "author": {
@@ -15,6 +15,7 @@
   },
   "license": "AGPL-3.0",
   "dependencies": {
+    "canhazdb-client": "file:./client",
     "chalk": "^4.1.2",
     "crypto-random-string": "^4.0.0",
     "debarrel": "^1.0.2",
@@ -26,7 +27,7 @@
     "node-ejdb-lite": "^3.4.4",
     "servatron": "^2.2.3",
     "server-destroy": "^1.0.1",
-    "tcpocket": "^7.4.3",
+    "tcpocket": "^7.5.0",
     "use-http": "^1.0.26",
     "uuid": "^8.3.2"
   },
