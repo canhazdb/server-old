@@ -1,6 +1,7 @@
 import React from 'react';
 import useApi from '../hooks/useApi.js';
 import styled from '@emotion/styled';
+import classnames from 'classnames';
 
 const mainUiStyle = {
   display: 'flex',
@@ -20,11 +21,7 @@ const CollectionsListView = styled.div(`
     padding: 0;
     list-style: none;
   }
-  ul > li > a > img {
-    height: 20px;
-    margin-right: 5px;
-  }
-  ul > li > a {
+  ul > li {
     display: flex;
     place-items: center;
     padding: 5px;
@@ -47,12 +44,15 @@ const CollectionsTree = styled.div(`
   }
 
   ul > li > a:hover {
-    background-color: black;
+    background-color: #325759;
   }
 
   ul > li > a > img {
     height: 20px;
     margin-right: 5px;
+  }
+  ul > li.active > a {
+    background-color: #325759;
   }
   ul > li > a {
     display: flex;
@@ -65,7 +65,15 @@ const CollectionsTree = styled.div(`
 `);
 
 function MainUI (props) {
+  const collectionId = window.location.pathname.substr(1);
+
   const [collections] = useApi('/api/system.collections', {
+    headers: {
+      authorisation: props.authToken
+    }
+  });
+
+  const [documents] = useApi(`/api/${collectionId}?limit=10`, {
     headers: {
       authorisation: props.authToken
     }
@@ -77,7 +85,14 @@ function MainUI (props) {
         <ul>
           {(collections || []).map(collection => {
             return (
-              <li key={collection.id}>
+              <li
+                key={collection.id}
+                className={
+                  classnames({
+                    active: collection.id === collectionId
+                  })
+                }
+              >
                 <a href={`/${collection.id}`}>
                   <img src={require('../../img/folderWhite.svg').default} />
                   {collection.collectionId}
@@ -89,15 +104,12 @@ function MainUI (props) {
       </CollectionsTree>
 
       <CollectionsListView>
-        <div className='panel-title'>system.collections</div>
+        <div className='panel-title'>{collectionId}</div>
         <ul>
-          {(collections || []).map(collection => {
+          {(documents || []).map(collection => {
             return (
               <li key={collection.id}>
-                <a href={`/${collection.id}`}>
-                  <img src={require('../../img/file.svg').default} />
-                  {collection.collectionId}
-                </a>
+                <pre><code>{JSON.stringify(collection, null, 2)}</code></pre>
               </li>
             );
           })}
