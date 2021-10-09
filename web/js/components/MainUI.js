@@ -89,11 +89,11 @@ function MainUI (props) {
                 key={collection.id}
                 className={
                   classnames({
-                    active: collection.id === collectionId
+                    active: collection.collectionId === collectionId
                   })
                 }
               >
-                <a href={`/${collection.id}`}>
+                <a href={`/${collection.collectionId}`}>
                   <img src={require('../../img/folderWhite.svg').default} />
                   {collection.collectionId}
                 </a>
