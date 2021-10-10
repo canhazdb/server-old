@@ -1,4 +1,5 @@
-// import wtfnode from 'wtfnode';
+import wtfnode from 'wtfnode';
+import basictap from 'basictap';
 
 import('./lib/driver/index.js');
 import('./lib/utils/calculateAllowedErrorCount.js');
@@ -15,8 +16,23 @@ import('./features/systemCollections.js');
 
 import('./modules/controllers/createControllerStore.js');
 
-// process.on('beforeExit', () => {
-//   setInterval(() => {
-//     wtfnode.dump();
-//   }, 5000);
-// });
+let timer;
+let testsFinished;
+
+basictap.on('finish', () => {
+  testsFinished = true;
+  console.log('Finding hanging tasks...');
+});
+
+process.on('beforeExit', () => {
+  if (testsFinished) {
+    clearInterval(timer);
+    return;
+  }
+  timer = setInterval(() => {
+    if (testsFinished) {
+      clearInterval(timer);
+    }
+    wtfnode.dump();
+  }, 5000);
+});

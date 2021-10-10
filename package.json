@@ -28,7 +28,7 @@
     "logslot": "^2.1.0",
     "minimist": "^1.2.5",
     "mql-to-jql": "^1.4.0",
-    "node-ejdb-lite": "^3.4.4",
+    "node-ejdb-lite": "^3.4.5",
     "servatron": "^2.2.3",
     "server-destroy": "^1.0.1",
     "tcpocket": "^7.5.2",

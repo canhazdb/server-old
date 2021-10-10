@@ -65,7 +65,7 @@ const CollectionsTree = styled.div(`
 `);
 
 function MainUI (props) {
-  const collectionId = window.location.pathname.substr(1);
+  const collectionId = window.location.pathname.substr(1) || 'system.collections';
 
   const [collections] = useApi('/api/system.collections', {
     headers: {

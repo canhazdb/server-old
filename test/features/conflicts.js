@@ -48,6 +48,8 @@ test('conflicts - post failure creates conflict', async t => {
   t.plan(2);
   t.timeout(3000);
 
+  console.log('THERE IS A RACE CONDITION BUG IN THIS TEST');
+
   const servers = await createTestServers(2);
   const client = tcpocket.createClient(servers[0].clientConfig);
   await client.waitUntilConnected();
@@ -66,6 +68,7 @@ test('conflicts - post failure creates conflict', async t => {
 
   await waitUntil(() => {
     const unhealthyServers = servers.filter((server) => {
+      console.log('RACE CONDITION: May be here?');
       return server.thisNode.status !== 'healthy';
     });
 

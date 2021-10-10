@@ -62,7 +62,7 @@ test('systemCollections - post batch increments documentCount', async t => {
   // First batch
   {
     await createExampleDocuments(client, 3);
-    await sleep(500);
+    await sleep(1000);
 
     const getResponse = await client.send(c.GET, {
       [c.COLLECTION_ID]: 'system.collections',

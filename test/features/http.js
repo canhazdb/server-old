@@ -22,7 +22,7 @@ async function prepareTest () {
 }
 
 test('get: root pathname', async t => {
-  t.plan(1);
+  t.plan(2);
 
   const { client, servers, domain } = await prepareTest();
 
@@ -30,6 +30,8 @@ test('get: root pathname', async t => {
 
   await client.close();
   await servers.close();
+
+  t.equal(request.headers['content-type'], 'application/json');
 
   t.deepEqual(request.data, {
     info: 'https://canhazdb.com',
@@ -44,7 +46,7 @@ test('http - get collection', async t => {
 
   const { client, servers, domain } = await prepareTest();
 
-  const request = await httpRequest(`https://${domain}/api/tests`);
+  const request = await httpRequest(`https://${domain}/tests`);
   const documents = request.data.sort((a, b) => {
     return a.foo > b.foo ? 1 : -1;
   });
@@ -63,7 +65,7 @@ test('http - get document', async t => {
   const { client, servers, domain, exampleDocuments } = await prepareTest();
   const document = exampleDocuments[0].json()[c.DATA];
 
-  const request = await httpRequest(`https://${domain}/api/tests/${document.id}`);
+  const request = await httpRequest(`https://${domain}/tests/${document.id}`);
 
   t.equal(request.status, 200);
   t.ok(request.data.id, 'has an id');
