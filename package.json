@@ -31,7 +31,7 @@
     "node-ejdb-lite": "^3.4.4",
     "servatron": "^2.2.3",
     "server-destroy": "^1.0.1",
-    "tcpocket": "^7.5.0",
+    "tcpocket": "^7.5.2",
     "use-http": "^1.0.26",
     "uuid": "^8.3.2"
   },
@@ -46,6 +46,7 @@
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "semistandard": "^16.0.1",
+    "write-response": "^1.2.3",
     "wtfnode": "^0.9.1"
   }
 }

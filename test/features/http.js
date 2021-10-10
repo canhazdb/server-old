@@ -21,7 +21,7 @@ async function prepareTest () {
   return { client, servers, domain, exampleDocuments };
 }
 
-test.skip('get: root pathname', async t => {
+test('get: root pathname', async t => {
   t.plan(1);
 
   const { client, servers, domain } = await prepareTest();
