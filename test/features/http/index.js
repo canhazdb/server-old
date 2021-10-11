@@ -1,25 +1,16 @@
 import fs from 'fs';
 import test from 'basictap';
-import tcpocket from 'tcpocket';
-import createTestServers from '../helpers/createTestServers.js';
-import httpRequest from '../helpers/httpRequest.js';
-import createExampleDocuments from '../helpers/createExampleDocuments.js';
-import c from '../../lib/constants.js';
+import httpRequest from '../../helpers/httpRequest.js';
+import c from '../../../lib/constants.js';
+
+import prepareTest from './prepareTest.js';
+import rootMethodNotAllowed from './rootMethodNotAllowed.js';
+import validateBodyExists from './validateBodyExists.js';
+import validateBodyJson from './validateBodyJson.js';
 
 const packageJson = JSON.parse(
   fs.readFileSync('./package.json', 'utf8')
 );
-
-async function prepareTest () {
-  const servers = await createTestServers(1);
-  const client = tcpocket.createClient(servers[0].clientConfig);
-  await client.waitUntilConnected();
-  const domain = `${servers[0].options.httpHost}:${servers[0].options.httpPort}`;
-
-  const exampleDocuments = await createExampleDocuments(client, 3);
-
-  return { client, servers, domain, exampleDocuments };
-}
 
 test('get: root pathname', async t => {
   t.plan(2);
@@ -40,6 +31,19 @@ test('get: root pathname', async t => {
     version: packageJson.version
   });
 });
+
+test('post: root pathname', rootMethodNotAllowed('post'));
+test('put: root pathname', rootMethodNotAllowed('put'));
+test('patch: root pathname', rootMethodNotAllowed('patch'));
+test('delete: root pathname', rootMethodNotAllowed('delete'));
+
+test('post: body exists', validateBodyExists('post'));
+test('put: body exists', validateBodyExists('put'));
+test('patch: body exists', validateBodyExists('patch'));
+
+test('post: body is json', validateBodyJson('post'));
+test('put: body is json', validateBodyJson('put'));
+test('patch: body is json', validateBodyJson('patch'));
 
 test('http - get collection', async t => {
   t.plan(3);
