@@ -20,7 +20,7 @@
     "lockbase": "^1.0.9",
     "minimist": "^1.2.5",
     "ndjson-fe": "^1.2.7",
-    "npm": "^7.15.1",
+    "npm": "^8.11.0",
     "qs": "^6.10.1",
     "reconnecting-websocket": "^4.4.0",
     "server-destroy": "^1.0.1",
