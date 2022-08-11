@@ -72,7 +72,8 @@ async function createTestServers (count, options = {}) {
             await waitUntil(() => {
               return (
                 server.thisNode && server.thisNode.status === 'healthy' &&
-                server.nodes.every(node => node.status === 'healthy')
+                server.nodes.every(node => node.status === 'healthy') &&
+                server?.raft?.leader
               );
             });
           }
