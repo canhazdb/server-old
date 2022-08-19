@@ -6,7 +6,7 @@
 [![GitHub](https://img.shields.io/github/license/canhazdb/server)](https://github.com/canhazdb/server/blob/master/LICENSE)
 [![js-semistandard-style](https://img.shields.io/badge/code%20style-semistandard-brightgreen.svg)](https://github.com/standard/semistandard)
 
-An embedable or standalone database, that shardes data across a cluster of nodes, with eventing.
+An embeddable or standalone database, that shards data across a cluster of nodes, with eventing.
 
 ## Getting Started
 You must have a minimum version of Node 16 installed.
@@ -26,9 +26,9 @@ docker run -itp 8060:8060 canhazdb/server --single
 Then visit http://localhost:8080
 
 But you can create a production ready and scalable stack by
-using the [stack.yml](stack.yml) file as an example.
+using the [demo.sh](demo.sh) file as an example.
 
-This will give you TLS authenication and encryption along with
+This will give you TLS authentication and encryption along with
 persistent storage.
 
 ### Server Via the CLI

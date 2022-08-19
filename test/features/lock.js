@@ -322,7 +322,7 @@ test('lock - and wait but node closes', async t => {
   }, 500);
 });
 
-test.skip('lock - system collection (system.locks)', async t => {
+test('lock - system collection (system.locks)', async t => {
   t.plan(4);
 
   const servers = await createTestServers(1);
@@ -343,7 +343,7 @@ test.skip('lock - system collection (system.locks)', async t => {
 
   const locks = getResponse.json()[c.DATA];
 
-  const filteredLocks = locks.filter(lock => lock.keys[0] === 'tests');
+  const filteredLocks = locks.filter(lock => lock.path === 'tests');
 
   t.equal(filteredLocks.length, 1, 'had 1 lock');
   t.ok(filteredLocks[0].id, 'first lock had id');
@@ -366,14 +366,14 @@ test.skip('lock - releases when node disconnects', async t => {
   t.equal(lockResult.command, c.STATUS_OK, 'lock had ok status');
 
   {
-    const testLocks = servers[1].locks.locks.filter(lock => lock[1][0] === 'tests');
+    const testLocks = servers[1].locks.queue.filter(lock => lock.path === 'tests');
     t.equal(testLocks.length, 1, 'lock was added');
   }
 
   await servers[0].close();
 
   const testLocks = await waitUntil(() => {
-    const testLocks = servers[1].locks.locks.filter(lock => lock[1][0] === 'tests');
+    const testLocks = servers[1].locks.queue.filter(lock => lock.path === 'tests');
 
     return testLocks.length === 0 ? testLocks : null;
   });

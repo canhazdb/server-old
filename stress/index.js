@@ -10,18 +10,20 @@ const tls = {
 };
 
 const metrics = {};
-setInterval(() => {
-  console.log(metrics);
-}, 500);
 
 async function main () {
   let count = 0;
   const client = tcpocket.createClient({
     host: 'localhost',
-    port: 11001,
+    port: 7060,
     ...tls
   });
+  console.log('Waiting for server to connect...');
   await client.waitUntilConnected();
+  setInterval(() => {
+    console.log(metrics);
+  }, 500);
+  console.log('Successfully connected');
 
   await Promise.all([
     client.send(c.POST, {
