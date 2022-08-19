@@ -353,12 +353,36 @@ test('lock - system collection (system.locks)', async t => {
   await servers.close();
 });
 
+test('lock - resolves only after all servers are synced with lock', async t => {
+  t.plan(3);
+
+  const servers = await createTestServers(3);
+  const client = tcpocket.createClient(servers[0].clientConfig);
+  await client.waitUntilConnected();
+  await servers.waitForInitialLocks();
+
+  await client.send(c.LOCK, {
+    [c.LOCK_KEY]: 'tests'
+  });
+
+  t.equal(servers[0].locks.queue.length, 1);
+  t.equal(servers[1].locks.queue.length, 1);
+  t.equal(servers[2].locks.queue.length, 1);
+
+  await client.close();
+  await servers.close();
+});
+
 test.skip('lock - releases when node disconnects', async t => {
   t.plan(3);
 
   const servers = await createTestServers(3);
   const client = tcpocket.createClient(servers[0].clientConfig);
   await client.waitUntilConnected();
+  await servers.waitForInitialLocks();
+
+  const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+  await sleep(200);
 
   const lockResult = await client.send(c.LOCK, {
     [c.LOCK_KEY]: 'tests'
