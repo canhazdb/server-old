@@ -301,6 +301,7 @@ test('lock - and wait but node closes', async t => {
   const servers = await createTestServers(1);
   const client = tcpocket.createClient(servers[0].clientConfig);
   await client.waitUntilConnected();
+  await servers.waitForInitialLocks();
 
   await client.send(c.LOCK, {
     [c.LOCK_KEY]: 'tests'

@@ -3,6 +3,8 @@ import { promisify } from 'util';
 import { v4 as uuid } from 'uuid';
 import canhazdb from '../../lib/index.js';
 
+const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+
 try {
   fs.rmSync('./canhazdata', { recursive: true });
 } catch (error) {}
@@ -88,6 +90,15 @@ async function createTestServers (count, options = {}) {
         return server;
       })
   );
+
+  servers.waitForInitialLocks = function () {
+    return waitUntil(() => {
+      return (
+        servers[0]?.locks?.incremental > 0 &&
+        servers[0]?.locks?.queue?.length === 0
+      );
+    });
+  };
 
   servers.close = function () {
     return Promise.all(servers.map(server => server.close()));
