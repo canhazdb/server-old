@@ -11,7 +11,7 @@
     "test": "test"
   },
   "dependencies": {
-    "axios": "^0.21.1",
+    "axios": "^0.27.2",
     "chalk": "^4.1.1",
     "debarrel": "^1.0.1",
     "final-stream": "^2.0.3",
@@ -21,7 +21,6 @@
     "minimist": "^1.2.5",
     "ndjson-fe": "^1.2.7",
     "node-ejdb-lite": "^2.73.8",
-    "npm": "^8.11.0",
     "qs": "^6.10.1",
     "reconnecting-websocket": "^4.4.0",
     "server-destroy": "^1.0.1",
@@ -35,8 +34,9 @@
     "basictap": "^1.1.13",
     "c8": "^7.7.2",
     "canhazdb-driver-ejdb": "^1.1.5",
-    "eslint": "^7.27.0",
-    "semistandard": "^16.0.0"
+    "eslint": "^8.22.0",
+    "npm": "^8.18.0",
+    "semistandard": "^16.0.1"
   },
   "scripts": {
     "lint": "eslint .",
