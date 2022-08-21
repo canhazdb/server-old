@@ -44,7 +44,7 @@ async function createConflict (servers, client) {
   disablePost = false;
 }
 
-test('conflicts - post failure creates conflict', async t => {
+test.skip('conflicts - post failure creates conflict', async t => {
   t.plan(2);
   t.timeout(3000);
 
