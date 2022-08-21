@@ -32,6 +32,7 @@ test('raft - two nodes elect a leader', async t => {
 
 test('raft - lock syncs raft state to all nodes', async t => {
   t.plan(2);
+  t.timeout(5000);
 
   const servers = await createTestServers(2);
 
