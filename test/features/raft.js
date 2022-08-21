@@ -37,6 +37,7 @@ test('raft - lock syncs raft state to all nodes', async t => {
 
   const client = tcpocket.createClient(servers[0].clientConfig);
   await client.waitUntilConnected();
+  await servers.waitForInitialLocks();
 
   await client.send(c.LOCK, {
     [c.LOCK_KEY]: 'tests'

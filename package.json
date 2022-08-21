@@ -28,7 +28,7 @@
     "logslot": "^2.1.1",
     "minimist": "^1.2.6",
     "mql-to-jql": "^1.4.1",
-    "node-ejdb-lite": "^2.73.7",
+    "node-ejdb-lite": "^2.73.9",
     "servatron": "^2.3.1",
     "server-destroy": "^1.0.1",
     "tcpocket": "^7.5.2",
@@ -38,7 +38,7 @@
   "devDependencies": {
     "@emotion/styled": "^10.3.0",
     "axios": "^0.27.2",
-    "basictap": "^3.4.0",
+    "basictap": "^3.4.1",
     "c8": "^7.12.0",
     "classnames": "^2.3.1",
     "esbuild": "^0.15.5",
