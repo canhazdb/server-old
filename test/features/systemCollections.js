@@ -33,7 +33,7 @@ test('systemCollections - post increments documentCount', async t => {
 
   t.equal(postResponses[0].command, c.STATUS_CREATED, 'has correct status');
 
-  await sleep(500);
+  await sleep(3000);
 
   const getResponse = await client.send(c.GET, {
     [c.COLLECTION_ID]: 'system.collections',
@@ -62,7 +62,7 @@ test('systemCollections - post batch increments documentCount', async t => {
   // First batch
   {
     await createExampleDocuments(client, 3);
-    await sleep(1000);
+    await sleep(3000);
 
     const getResponse = await client.send(c.GET, {
       [c.COLLECTION_ID]: 'system.collections',

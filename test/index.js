@@ -10,6 +10,6 @@ import('./features/lock.js');
 import('./features/cluster.js');
 import('./features/conflicts.js');
 import('./features/notify.js');
+import('./features/systemCollections.js');
 
 // import('./features/health.js');
-// import('./features/systemCollections.js');
