@@ -1,0 +1,90 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: arial;
+  background-color: #cedddd;
+}
+
+app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+header {
+  background: white;
+  border-bottom: 5px solid #588486;
+  display: flex;
+  place-items: center;
+}
+
+header > img {
+  margin-bottom: 5px;
+  height: 50px;
+  width: 55px;
+}
+
+header > div {
+  display: flex;
+  flex-direction: column;
+  font-size: 20px;
+}
+
+.form-field {
+  padding-bottom: 10px;
+}
+
+.form-field label:after {
+  content: ':';
+}
+
+.form-field label {
+  display: block;
+  font-weight: bold;
+  padding-bottom: 5px;
+}
+
+dialog > article > h1 {
+  margin: 0;
+  padding: 0;
+}
+
+dialog {
+  background-color: rgba(0, 0, 0, 0.4);
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  margin: 0;
+  padding: 0;
+  overflow: auto;
+}
+
+dialog > article {
+  margin: auto;
+  margin-top: max(10vh);
+  padding: 20px;
+  max-width: 500px;
+  margin-bottom: 20vh;
+  background-color: white;
+  border: 5px solid #588486;
+  border-radius: 10px;
+  box-shadow: 1px 1px 45px -25px black;
+}
+
+.file-value {
+  display: flex;
+  place-items: center;
+  border: 2px solid #939393;
+  padding: 4px 0;
+  margin-bottom: 2px;
+}
+
+.file-value > img {
+  width: 20px;
+  height: 20px;
+  margin-right: 5px;
+}

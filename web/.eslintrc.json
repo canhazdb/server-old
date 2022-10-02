@@ -1,0 +1,22 @@
+{
+  "plugins": [
+    "react-hooks"
+  ],
+  "extends": [
+    "semistandard",
+    "standard-jsx",
+    "plugin:react/recommended"
+  ],
+  "rules": {
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn",
+    "react/prop-types": "off",
+    "no-use-before-define": "off"
+  },
+  "settings": {
+    "react": {
+      "pragma": "React",
+      "version": "detect"
+    }
+  }
+}
